@@ -147,3 +147,89 @@ Applied to `01_CANONICAL_SCHEMA.sql` per `02_SCHEMA_REDTEAM.md`. Schema-only; no
 - **Attendance:** dedup historical Firestore duplicate same-day rows before load (RESTRICT/partial keys will reject dups); map `status` null/`'normal'` → `'present'`.
 - **Aggregations:** do NOT migrate; recompute via Postgres triggers/jobs (unbuilt).
 - **Notes/drafts:** two-pass load for the `source_*`/`posted_note_id` cross-pointers.
+
+---
+
+## Phase A transitional divergence — `swimmers.family_id` (OD-1, ratified 2026-06-08)
+
+**[FYI] The live BSPC DB intentionally diverges from canonical during Phase A.**
+Kevin ratified the **transitional** strategy (OD-1): Phase A adds `guardianships`,
+the SECURITY DEFINER RLS helpers, `coach_groups`, and the `enforce_profile_self_update`
+guard **alongside** the existing `swimmers.family_id` model
+(`BSPC/ACTIVE/supabase/migrations/00002_phase_a_identity.sql`, additive only —
+nothing altered/dropped). Existing `family_id`-based RLS keeps working.
+
+Canonical (`01_CANONICAL_SCHEMA.sql`) has `swimmers.family_id` **removed**; the live
+DB keeps it for now. This is a deliberate, time-boxed divergence.
+
+- **[FOLLOWUP] Planned convergence step (post–Phase A code-side work, before/with the
+  cutover):** (1) backfill `guardianships` from `swimmers.family_id`; (2) switch BSPC
+  reads (`fetchFamilySwimmers`, `approveFamily`) and RLS policies from `family_id` to
+  `is_my_swimmer()`/guardianships; (3) update the `family_id`-based pgTAP tests; (4)
+  a final migration **drops `swimmers.family_id`**. Only after (1)–(4) does the live
+  DB match canonical on this point.
+- Other ratified Phase A decisions: **OD-3** new accounts require approval (BSPC's
+  gated provisioning wins; no auto-approve). **NM-5** auto-admin-on-first-login is
+  removed. **NM-1** super_admin assigned deliberately (Kevin = super_admin; remaining
+  Coach "admins" → `coach_admin` — the live list must be pulled from the `coaches`
+  collection at backfill time for Kevin to confirm; not derivable from code).
+  **OD-6** password cutover = aim for Firebase→Supabase import, forced-reset fallback,
+  decided at cutover with a dry-run (does not block code-side work). **OD-2**/**OD-4**:
+  safe handling chosen — dailyDigest deferred whole to Phase G; redeemInvite stays
+  Phase I with A→I run back-to-back (revisit at I).
+
+### Pre-existing 00001 profiles RLS recursion — FOUND & FIXED (2026-06-08)
+- **[FIXED] Latent infinite recursion in BSPC `profiles` RLS.** `00001`'s
+  `profiles_select_admin` / `profiles_update_admin` used a self-referential
+  `EXISTS (SELECT 1 FROM profiles ...)`, which raises *"infinite recursion detected
+  in policy for relation profiles"* on ANY authenticated read touching `profiles`
+  (directly or via another table's policy subquery — swimmers, announcements, etc.).
+  Discovered the first time pgTAP ran on real Postgres (4 of 5 RLS files failed;
+  baseline 00001-only failed identically → pre-existing, not caused by Phase A).
+  Exactly the "latent self-referential recursion risk on profiles" canonical NOTES
+  flagged. **Fixed in `00002_phase_a_identity.sql`** by rewriting ONLY those two
+  policies to the SECURITY DEFINER `is_staff()` helper (RLS-bypassing, recursion-
+  free, semantically identical). Verified: all 5 pgTAP files, 31 tests PASS. The
+  remaining inline `EXISTS`-on-profiles admin policies are deferred to the
+  convergence sweep (NOT done now). **Open: Kevin is checking whether the deployed
+  prod DB actually has this recursion or diverges from repo `00001`.**
+- **[PROCESS] BSPC "green" now means BOTH jest AND pgTAP.** The "774 green" baseline
+  was **jest-only**, and jest **mocks Supabase** — so RLS bugs (like the recursion
+  above) are invisible to it and only surface under pgTAP (`npm run test:rls`, needs
+  Docker/colima + local Supabase). Going forward, a BSPC change is not "green" until
+  **both** the jest suite (774+) **and** the pgTAP suite (31+) pass. (Coach App +
+  functions remain jest-only — no DB/RLS layer of their own.)
+
+### [DECIDE] AuthContext migration can't be partial — `coach.uid` semantics (2026-06-08)
+Discovered while starting code-side commit 2 (Coach `AuthContext` → Supabase):
+- **The auth-provider swap and the identity-doc read are INSEPARABLE.** `profiles`
+  has **no `firebase_uid` column** (canonical keys identity on `auth.users.id`).
+  So you cannot read a coach's Supabase `profiles` row while the session is still
+  Firebase Auth (a Firebase UID matches no `profiles.user_id`). Migrating the
+  identity read therefore *requires* moving the session to Supabase Auth too.
+- **Blast radius:** 36 files call `useAuth()`. Most read `coach` (the `Coach`
+  object); ~15 use **`coach.uid` as a Firestore write-key** — `attendance.markedBy`,
+  video/audio `coachId`, `import`, notification-rules, etc. Several are
+  COPPA-relevant (attendance presence, media ownership).
+- **Consequence:** the moment `AuthContext` resolves identity from Supabase,
+  `coach.uid` changes meaning from *Firebase UID* → *Supabase UUID* (profiles.id or
+  user_id) for every downstream writer — while those writers still target Firestore
+  until their own phases. jest stays green (mocks), but it commits us to cutting the
+  identity cluster over together (matches 04's "identity cluster moves as one").
+- **Options:**
+  (a) **Migrate AuthContext now (code-first), `coach.uid` := profiles.id**, accept
+      the half-state until the coordinated cutover; downstream services keep their
+      mocked tests green and adopt the UUID at their phases. Most aligned with the
+      plan + 04, but it's the riskiest single change and touches COPPA flows.
+  (b) **Defer AuthContext to the coordinated identity cutover step** and do the
+      lower-risk code-side identity work first (parent-portal `auth.ts`, the
+      `parentPortal` function identity gate, backfill scaffolding), so the auth
+      provider flips as part of the cluster, not in isolation.
+  (c) **Add a transitional `profiles.firebase_uid` column** (a schema migration) so
+      the identity read can be resolved during a Firebase-session window without a
+      full provider swap — smaller immediate blast radius, but adds a transient
+      column to canonical-track and a dual-key period.
+- **Recommendation: (b)** — defer the AuthContext provider swap to the cluster
+  cutover; do parent-portal/auth.ts + parentPortal-gate + backfill scaffolding now
+  (all keep three suites + pgTAP green with small blast radius). Revisit (a) vs (c)
+  when we stage the identity cutover. **Needs Kevin's call before commit 2.**
