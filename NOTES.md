@@ -233,3 +233,25 @@ Discovered while starting code-side commit 2 (Coach `AuthContext` → Supabase):
   cutover; do parent-portal/auth.ts + parentPortal-gate + backfill scaffolding now
   (all keep three suites + pgTAP green with small blast radius). Revisit (a) vs (c)
   when we stage the identity cutover. **SETTLED 2026-06-09 — Kevin ratified Option (b):** the AuthContext provider swap is DEFERRED to the coordinated identity-cluster cutover. Proceeding now with the lower-risk code-side identity work: parent-portal `auth.ts`, the `parentPortal` function identity gate, and the backfill scaffolding (`migration_identity_map` + pure mapping unit tests).
+
+### Phase A Option (b) code-side work — LANDED 2026-06-09 (same session)
+All three ratified pieces committed, every suite green:
+1. **parent-portal `auth.ts`** — profile read split into `lib/profile.ts`, resolving
+   `profiles` by `user_id` + deriving `linkedSwimmerIds` from `guardianships` via a
+   new portal Supabase client (`NEXT_PUBLIC_SUPABASE_URL`/`_ANON_KEY`, placeholder-safe).
+   `auth.ts` re-exports the frozen `ParentProfile`; the Firebase session provider is
+   untouched pending cutover. Coach suite 968→973. (Coach `b642056`)
+2. **`parentPortal` callable identity gate** — new `functions/src/identity.ts`
+   `resolveParentIdentity` via service-role client (`SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`);
+   the Firestore `parents/{uid}` read is gone; data payloads stay on Firestore until
+   B/C/D. All four behavioral assertions preserved verbatim. Functions 106→109. (Coach `2805bda`)
+3. **Backfill scaffolding** — `BSPC/ACTIVE/migration/identity/`: transient
+   `migration_identity_map` DDL (§3.2; deliberately NOT in `supabase/migrations/`),
+   pure mapping fns (role map #3, NM-4 placeholder carry, NM-6 dangling drop+report)
+   + §9 audits, README with the staged cutover run order. Provisioning runner
+   deferred on OD-6. BSPC jest 774→792, pgTAP 31/31. (BSPC `41515ce`)
+
+**New green bar: BSPC 792 (TZ=UTC) + pgTAP 31 · Coach 973 · functions 109.**
+Remaining in Phase A, all cutover-coupled by design: AuthContext provider swap
+(option (b)), dailyDigest enumeration source (OD-4: deferred whole to G),
+redeemInvite RPC (designs in A, lands in I).
