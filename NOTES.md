@@ -174,7 +174,8 @@ DB keeps it for now. This is a deliberate, time-boxed divergence.
   Coach "admins" → `coach_admin` — the live list must be pulled from the `coaches`
   collection at backfill time for Kevin to confirm; not derivable from code).
   **OD-6** password cutover = aim for Firebase→Supabase import, forced-reset fallback,
-  decided at cutover with a dry-run (does not block code-side work). **OD-2**/**OD-4**:
+  decided at cutover with a dry-run (does not block code-side work) — **superseded
+  2026-06-09: SETTLED as NO import, see below**. **OD-2**/**OD-4**:
   safe handling chosen — dailyDigest deferred whole to Phase G; redeemInvite stays
   Phase I with A→I run back-to-back (revisit at I).
 
@@ -255,3 +256,25 @@ All three ratified pieces committed, every suite green:
 Remaining in Phase A, all cutover-coupled by design: AuthContext provider swap
 (option (b)), dailyDigest enumeration source (OD-4: deferred whole to G),
 redeemInvite RPC (designs in A, lands in I).
+
+---
+
+## Ratifications — 2026-06-09 (post–Phase A session)
+
+### [SETTLED] OD-6 — cutover credentials: NO password-hash import
+Kevin ratified: do **NOT** import Firebase password hashes. Both apps are
+pre-launch with **zero real users**, so there is nothing to import — at the
+identity cutover, accounts are provisioned with **fresh Supabase credentials**
+(forced reset / invite path per the plan). The hash-import machinery (Firebase
+scrypt parameter export, hash-format conversion, import dry-run) is **skipped
+entirely**. This unblocks the §9 provisioning-runner design
+(`BSPC/ACTIVE/migration/identity/README.md` step 3), which was waiting on this
+decision: the runner simply creates auth users (email + temporary/reset
+credential), records `(firebase_uid, user_id)` in `migration_identity_map`,
+and never touches password material.
+
+### [SETTLED] Sequencing — continue code-first into Phase B (swimmers)
+Kevin ratified: proceed **code-first into Phase B (swimmers roster)** per
+`04_CROSS_TIER_SEQUENCING.md`. The identity-cutover mini-plan is staged
+**later**, at the point 04 calls for it — consistent with the code-first,
+cutover-last model (no dual-write bridges needed pre-launch).
