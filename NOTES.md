@@ -200,7 +200,7 @@ DB keeps it for now. This is a deliberate, time-boxed divergence.
   **both** the jest suite (774+) **and** the pgTAP suite (31+) pass. (Coach App +
   functions remain jest-only — no DB/RLS layer of their own.)
 
-### [DECIDE] AuthContext migration can't be partial — `coach.uid` semantics (2026-06-08)
+### [SETTLED 2026-06-09] AuthContext migration can't be partial — `coach.uid` semantics (raised 2026-06-08)
 Discovered while starting code-side commit 2 (Coach `AuthContext` → Supabase):
 - **The auth-provider swap and the identity-doc read are INSEPARABLE.** `profiles`
   has **no `firebase_uid` column** (canonical keys identity on `auth.users.id`).
@@ -232,4 +232,4 @@ Discovered while starting code-side commit 2 (Coach `AuthContext` → Supabase):
 - **Recommendation: (b)** — defer the AuthContext provider swap to the cluster
   cutover; do parent-portal/auth.ts + parentPortal-gate + backfill scaffolding now
   (all keep three suites + pgTAP green with small blast radius). Revisit (a) vs (c)
-  when we stage the identity cutover. **Needs Kevin's call before commit 2.**
+  when we stage the identity cutover. **SETTLED 2026-06-09 — Kevin ratified Option (b):** the AuthContext provider swap is DEFERRED to the coordinated identity-cluster cutover. Proceeding now with the lower-risk code-side identity work: parent-portal `auth.ts`, the `parentPortal` function identity gate, and the backfill scaffolding (`migration_identity_map` + pure mapping unit tests).
