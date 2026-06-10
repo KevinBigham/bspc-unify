@@ -1190,3 +1190,60 @@ rules reject — caller filters stay), RH-7 (cross-coach rating is provably
 broken today — rules deny it). **No Phase H code written; bar unchanged
 (835 TZ=UTC + 209 / 1034 / 125).** seasonPlanning's 19 tests are pure-helper
 only — the 04 tests-FIRST mandate is §5 commit 1.
+
+---
+
+## 2026-06-10 — Phase H PARTIAL ratifications (Kevin, verbatim intent recorded; records-and-readback session, NO H code)
+
+Four of the 12 §7 [DECIDE] blocks are resolved. Each ratification was
+checked against its block's question and options as written before
+recording — all four match; nothing was force-fit. Still OPEN after this
+entry: **D-H2(a)** (the practice-plans bucket design), **D-H3** (calendar
+sync amendment), **D-H4** (RSVP upsert), **D-H6** (cross-coach rating
+parity-deny), **D-H7** (live meets policy alignment), and the **§4 FYI
+bundle** — all read back to Kevin verbatim this session, awaiting his
+calls. Pre-approved by Kevin as norm compliance, no further text needed:
+the publication 14→22 same-commit growth (RH-12).
+
+- **D-H1 RATIFIED — within-staff walls; canonical is amended to match
+  ratified law, not the reverse.** Practice plans are owner-private, with
+  the explicit public-share arm preserved exactly as it behaves today —
+  other staff read only what a coach has deliberately shared. Import jobs
+  are readable by their owner and admins only. D-F4 already decided
+  within-staff privacy; the drafted all-staff walls were a drafting error
+  against standing law, and the amendment corrects the draft. (Resolves
+  D-H1 as option (a): the `is_my_profile()` helper; practice_plans SELECT
+  own-or-is_public within staff, writes own-only with no reassign;
+  import_jobs SELECT owner-or-super_admin, writes own-only, DELETE
+  super_admin; season_plans stays staff-shared — that IS today's wall,
+  unchanged by this ratification.)
+- **D-H5 RATIFIED — option (b): the coach calendar ships staff-only.** No
+  parent calendar screen exists in either app, and granting standing
+  access to data with no feature behind it is widening with zero user
+  benefit — the no-widening doctrine wins the tiebreak. The parent read
+  and RSVP arms are **banked as a named post-cutover product line item,
+  contingent on an actual parent calendar feature**, and canonical is
+  amended so the deferral is recorded law rather than drift (the
+  [SCOPE-DEFERRED] annotation on the calendar_events/rsvps parent
+  policies, not a rewrite).
+- **D-H2(b) RATIFIED — there will be no imports storage bucket.** No
+  import file has ever been uploaded by any code; the storage rule guards
+  a path nothing writes. Per the Phase G precedent, parity with a feature
+  that never functioned is that feature's absence. **The D-F4 bank entry
+  is corrected on the record: the per-coach-private files banked into H
+  are the practice-plan PDFs only.** (Scope note, no force-fit: this
+  resolves only the (b) half of D-H2 — the (a) half, the practice-plans
+  bucket itself with its caps and the is_staff()+owner wall and the named
+  one-bit hole-closing, remains OPEN.)
+- **D-H8 RATIFIED — import_jobs is pulled into Phase H, and 04 is amended
+  to say so.** D-F4's "with their data" implies it, the table's walls are
+  amended in this same phase (D-H1), and work assigned to no phase is
+  work that gets forgotten.
+
+Paperwork per the A1/A2/A3 precedent: the canonical 01 text edits (D-H1
+per-coach walls, D-H5 [SCOPE-DEFERRED] annotation) and the 04 §H line
+addition (import_jobs) are hereby ratified; the document text edits land
+with the Phase H execution session — 12 + this entry are authoritative
+until then. Records-and-readback session only: UNIFY is the sole repo
+touched; BSPC and Coach unchanged; bar untouched
+(835 TZ=UTC + 209 / 1034 / 125).
