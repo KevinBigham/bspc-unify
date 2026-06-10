@@ -351,3 +351,39 @@ and the OD-1 convergence items unchanged (family_id drop, last_name NOT NULL
 relax, TEXT→enum) stay convergence-step work. Next per 04: **Phase C
 (attendance) — flagged the single riskiest step; treat as its own mini-plan
 with a red-team pass.**
+
+---
+
+## Phase C mini-plan WRITTEN + red-teamed — 2026-06-09 (planning only; no code)
+
+`07_PHASE_C_ATTENDANCE.md` is the full plan (schema 00004 spec, COPPA wall
+table + pgTAP 007 proof list, swap specs, commit sequence, rollback/stop
+points, RC-1…RC-14 red-team register, canonical amendments A1–A3). Headline
+findings: attendance is the one collection where the two live schemas
+disagree on the MODEL (event-keyed marking vs date-keyed check-in); the live
+table has ZERO pgTAP coverage today; parents currently `select("*")` the
+table directly (the canonical staff-only-table + parent-view wall replaces
+that); PostgREST cannot upsert against partial unique indexes (drives the
+check-in RPC and keeping the live event UNIQUE constraint); and the parent
+view needs a transitional family_id OR-arm or live families would see
+nothing pre-guardianship-backfill.
+
+### [DECIDE] Phase C decisions awaiting Kevin (details in 07 §2/§3/§5/§9)
+1. **D-C1 function scope:** (a) all 5 functions' attendance reads in C, vs
+   (b) C = client + parentPortal; evaluator→G, digest→G (OD-4), both
+   aggregation CFs→J whole. **Recommend (b).**
+2. **D-C2 check-in dedup:** (a) `attendance_check_in` SECURITY DEFINER RPC,
+   (b) select-then-write adapter, (c) UNIQUE NULLS NOT DISTINCT (reopens
+   D-B). **Recommend (a).**
+3. **D-C4 parent status surface:** (a) portal adopts the view's
+   present/absent collapse, (b) raw status passthrough to guardians.
+   **Recommend (a).**
+4. **D-C5 Coach reads exclude `status='absent'` rows** (BSPC-marked
+   absences) to preserve the record=attended contract: yes/no.
+   **Recommend yes.**
+5. **Canonical amendments:** A1 `media_consent_granted_by_name` (carried
+   from B), A2 event-key partial-index→constraint swap, A3 check-in RPC
+   into canonical. **Recommend ratify all three.**
+6. Bundled FYIs to ratify with the plan: D-C6 status value map
+   ('normal'↔'present', NULL↔undefined), D-C7 marked_by stays auth.users-FK
+   until convergence, RC-10 CASCADE→RESTRICT behavior change.
