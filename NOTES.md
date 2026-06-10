@@ -1942,3 +1942,57 @@ handle_new_user owns account creation since A).
 **Execution blocks on D-I1–D-I4. No Phase I implementation this
 session; bar untouched (835 TZ=UTC + 274 / 1077 / 128); UNIFY is the
 sole repo touched.**
+
+---
+
+## 2026-06-10 — Phase I ratifications COMPLETE (D-I1–D-I4 + FYI bundle; Kevin, verbatim intent recorded) — execution unblocked
+
+Each ratification was checked against its §7 block as written before
+recording: all four match (D-I1 = option (a) plus a precisification rider
+that DEFINES the block's "stays dark" clause rather than altering it;
+D-I2 = option (a) as drafted; D-I3 = option (a) plus a load-bearing
+rider; D-I4 = option (a)). Nothing force-fit; no mismatches found.
+
+- **D-I1 RATIFIED — both doors ship and compose.** Redemption is
+  staff-authorized LINK creation; approval is ACCOUNT activation. The
+  coach invite feature continues; OD-3 stands untouched; the Coach-world
+  auto-provisioning arm retires in favor of handle_new_user per Phase A.
+  **Precisification on the record:** "dark until approval" means ZERO
+  rows from every swimmer-keyed table, proven in pgTAP; it is explicitly
+  acknowledged and accepted that a pending redeemer reads their own
+  guardianships row (six fields, opaque swimmer UUID) under ratified
+  Phase A law, and learns the swimmer's name once in the frozen callable
+  response (contract parity). **Kevin explicitly DECLINES a D-I5
+  amendment to `guardianships_select_own`** — the row is new state
+  created by the redeemer's own action under already-ratified law; no
+  widening signature is required; future narrowing remains available and
+  unbanked.
+- **D-I2 RATIFIED as written** — the single `redeem_parent_invite` RPC
+  with the defaulted-param contract: spoof-proof caller derivation
+  (end-user param IGNORED; service-role explicit param per the
+  established exemption precedent), one-statement atomic claim,
+  already-linked never consumes the code, distinct error signals for the
+  frozen message map, redemption never touches profiles.account_status
+  (pinned), return includes swimmer_id and the joined swimmer name.
+- **D-I3 RATIFIED — align the gate to the wall NOW:**
+  resolveParentIdentity and portal profile.ts filter to
+  `account_status = 'approved'`, with tests. **Recorded as LOAD-BEARING
+  for D-I1's composition:** without it the service-role door contradicts
+  the RLS wall for pending-but-linked parents. Accepted narrowing class
+  (P1-8/D-H7).
+- **D-I4 RATIFIED — the OD-1 family_id convergence stays banked** for
+  its own named sweep; Phase I lands invites guardianship-only; the
+  manifest restates the cutover ordering (backfill guardianships →
+  switch BSPC reads/RLS → drop family_id).
+- **FYI bundle: all eight items accepted as named.** The §6.1 cutover
+  verification probe is accepted as BANKED, carried by reference in
+  commit 5's cutover lines.
+
+§5 executes now, commit 4 INCLUDED per D-I3(a); all standing norms in
+force: four bars green at every commit, never advance on red; one green
+commit per logical change; data layer only (business logic, UI, and the
+callable's external contract frozen); RC-3 — commit 1 carries the table,
+the RPC, the walls, pgTAP 013, and the 011 publication pin 22→23
+together; ZERO test deletions pre-declared; the tripwire stays armed
+mid-execution; no backfill runs, no file copies — commit 5's manifest is
+instructions-only behind its HARD-STOP header.
