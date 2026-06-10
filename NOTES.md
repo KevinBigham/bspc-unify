@@ -495,3 +495,41 @@ remap→OD-1 convergence. **Cutover checklist line (D-C1): the attendance DATA
 cutover requires C+G+J reader code landed, or accepts
 digest/notification-rules/dashboard-aggregations dark during the window.**
 Next per 04: **Phase D (times/PRs/meet results)**.
+
+---
+
+## CONVERGENCE / CUTOVER REMOVAL CHECKLIST — consolidated 2026-06-09
+
+The single authoritative list of every transitional artifact that must be
+removed or remapped at the OD-1 convergence step (or, where marked, after
+cutover). Earlier scattered mentions remain where they were written; THIS
+list is the one the convergence session works through. New transitional
+artifacts MUST be added here in the phase that creates them. (TR-1 ratified
+post-hoc by Kevin 2026-06-09.)
+
+1. Backfill `guardianships` from `swimmers.family_id` (OD-1 step 1; runner
+   in `migration/identity/`, swimmer resolver = `migration_swimmer_map`).
+2. Switch BSPC family reads (`fetchFamilySwimmers`, `approveFamily`) and all
+   `family_id`-based RLS to `is_my_swimmer()`/guardianships (OD-1 step 2).
+3. **DROP the `attendance_parent_view` transitional family_id OR-arm**
+   (RC-1): recreate the view guardianship-only; update the pgTAP 007
+   family-arm tests to prove the live-family parent still sees rows via the
+   backfilled guardianship instead.
+4. **DROP TR-1**: the `attendance_derive_practice_date` BEFORE INSERT
+   trigger + function, once the BSPC app's mark/upsert payloads send
+   `practice_date` natively (canonical app shape). Update pgTAP 007's
+   trigger-derivation test to assert the native payload instead.
+5. Remap `attendance.marked_by` auth.users→profiles + relax NOT NULL→
+   canonical nullable (D-C7), then re-point the Coach coachName read from
+   the two-query lookup to the FK embed.
+6. Update the `family_id`-based pgTAP tests (OD-1 step 3) and finally
+   **DROP `swimmers.family_id`** (OD-1 step 4); relax `swimmers.last_name`
+   NOT NULL; convert TEXT CHECK columns → canonical enums.
+7. Sweep the remaining inline `EXISTS`-on-profiles admin policies →
+   `is_staff()` (deferred from 00002).
+8. After cutover completes: DROP the transient map tables
+   (`migration_identity_map`, `migration_swimmer_map`).
+
+Cutover-sequencing constraints (not removals): the D-C1 line above
+(attendance data cutover needs C+G+J readers, or accepts those functions
+dark during the window); Phase J recompute must be status-aware (07 §2).
