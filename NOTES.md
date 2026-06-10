@@ -1489,3 +1489,456 @@ bucket, its limits, and its walls in words — **due no later than the
 convergence sweep.** Joins the banked list alongside the existing items
 (coach push delivery, `ai_drafts_ready` wiring, `rate_workout` RPC, the
 D-H5(b) calendar parent arms, and the convergence-sweep obligations).
+
+---
+
+## 2026-06-10 — Phase I SCOPE (parent invites + identity) — scoping ONLY, no code; mini-plan + red-team + [DECIDE] D-I1–D-I4
+
+Scope-before-code session per Kevin's mandate: no migrations, no service
+swaps, no schema changes, no Deno changes; UNIFY paperwork commits only.
+Full Phase I surface read end to end on both apps before writing this:
+Coach parentInvites.ts + its two test files + the invite-parent screen +
+firestore.rules; functions redeemInvite.ts + parentPortal.ts + identity.ts
++ index.ts + both test files (+ the ORIGINAL parentPortal at `b7e0c74` via
+git, for the schedule field's provenance); the parent-portal Next.js app
+(all five lib files + all three pages); BSPC features/auth + features/admin
++ 00001 (profiles/families/handle_new_user) + 00002 (Phase A identity,
+verbatim) + 00003 (family_id NOT NULL drop); canonical 01 parent_invites /
+guardianships / profiles DDL + policies; 04's four Phase I mentions; 05 §§
+1/2/3/5.6/8 + the recorded OD-1/OD-2/OD-3/OD-6 + NM-1..NM-6 rulings.
+**04's "Depends on A+B" is satisfied: A and B are code-side complete.**
+Bar untouched this session (835 TZ=UTC + 274 / 1077 / 128); no code repo
+modified.
+
+### §1 — Inventory: the Coach-world invite surface (all of it)
+
+**`src/services/parentInvites.ts` — 3 functions, the LAST Firestore
+reads/writes in the Coach app data layer:**
+- `createParentInvite(swimmerId, swimmerName, coachId, coachName)` —
+  `addDoc` to `parent_invites`: `{code, swimmerId, swimmerName, coachId,
+  coachName, redeemed: false, expiresAt: client-computed now+7d,
+  createdAt: serverTimestamp}`. The code is `secureInviteCode()`
+  (crypto-random, format `XXXX-XXXX`, alphabet `A-HJ-NP-Z2-9` — no
+  I/O/0/1). **Firestore enforces NO uniqueness on code** (addDoc only).
+  swimmerName/coachName are write-time denorms (the house drop-and-derive
+  class). coachId arrives verbatim from `useAuth().coach.uid` (D-B7).
+- `subscribeInvitesForSwimmer(swimmerId, cb)` — onSnapshot `where
+  swimmerId ==`, client-side sort createdAt desc.
+- `revokeInvite(inviteId)` — `updateDoc {redeemed: true}` — revoke IS
+  "mark redeemed"; redeemedBy/redeemedAt stay absent (a revoked code is
+  indistinguishable from a redeemed one except by the missing redeemer).
+**Sole UI consumer:** `app/swimmer/invite-parent.tsx` (generate / share /
+revoke; active-vs-past split computed client-side from redeemed + expiry;
+share text says "Sign up at the BSPC Parent Portal and enter this code").
+**Tests:** 7 in `__tests__/parentInvites.test.ts` + 3 in
+`test/critical-ops/parentInvites.criticalOp.test.ts` (code shape/alphabet,
+no-Math.random, 7-day expiry, payload, swimmerId query, revoke).
+**Today's wall (firestore.rules L144):** `parent_invites` read+write
+`isCoach()` — staff-shared, NOT per-coach; parents NEVER read the
+collection ("parents redeem through Cloud Functions only").
+`parents/{uid}`: own-read only, client write `false` (functions only).
+
+**`functions/src/callable/redeemInvite.ts` — fully Firestore (UNMIGRATED;
+this phase's core):** auth required → code sanity (≥8-char string) →
+normalize `toUpperCase().trim()` → query `parent_invites` where code ==
+AND redeemed == false, limit 1 → `not-found` ("Invalid or already redeemed
+invite code") → expiry check vs now → `failed-precondition` ("This invite
+code has expired") → read `parents/{uid}`: exists? already-linked →
+`already-exists` ("This swimmer is already linked to your account"), else
+arrayUnion(swimmerId); not exists? **CREATE the parent doc** `{uid, email
+(from token, `|| ''`), displayName: email.split('@')[0], linkedSwimmerIds:
+[swimmerId]}` → mark invite `{redeemed: true, redeemedBy: uid,
+redeemedAt}` → return `{success, swimmerId, swimmerName}` (swimmerName
+from the invite's denorm). 10 jest tests pin all of the above. **Note the
+read-then-write claim:** redeemed-check and redeemed-set are two steps —
+no atomic claim (Firestore-era race tolerated).
+
+**Already migrated (NOT this phase's work, verified):**
+`callable/parentPortal.ts` reads canonical swimmers (B) +
+swimmer_coach_profile/goals (B) + swim_results (D) + attendance with the
+D-C4 collapse (C); identity via `identity.ts resolveParentIdentity` (A) —
+profiles by user_id, guardianships by guardian_profile_id, **no
+account_status filter**, unknown caller → empty-profile fallback
+(`displayName 'Parent', linkedSwimmerIds []`). `schedule: []` in the
+swimmer payload is **pre-existing** (verified in the original at
+`b7e0c74`, line 217) — the portal has NEVER returned schedule data.
+
+**Parent-portal (Next.js):** session is Firebase email/password
+(`lib/firebase.ts` + `lib/auth.ts` signIn/signUp/signOut — cutover-banked,
+per the Phase A Option (b) ratification); `lib/profile.ts` getParentProfile
+already reads profiles+guardianships (goes live at cutover; returns null
+for unknown); `lib/parentPortal.ts` wraps the three callables including
+`redeemParentInvite(code)`; the redeem UI is an invite-code input on
+`dashboard/page.tsx` (≥8 chars → callable → reload). **The portal touches
+NO Firestore collection directly** — 04's terrain line "Directly touches
+only `posts`" is STALE (no `posts` usage exists anywhere in
+parent-portal/src; correction on the record, the D-H2b accuracy class).
+Code-side, the portal needs ZERO changes in Phase I: the callable
+contract is frozen.
+
+### §2 — Inventory: how a parent account comes into existence in BSPC
+
+BSPC has **no invite surface at all** (the only "invite" hits in the repo
+are meet names). Its locked product decision (BSPC CLAUDE.md, "Family
+Onboarding — CHANGED from V1"): **"Open signup + admin approval (replaces
+claim code system)"** — claim codes were deliberately REMOVED from BSPC's
+design. The lifecycle today:
+1. `features/auth/api.ts signUp` → `supabase.auth.signUp` with
+   `options.data.full_name`;
+2. `00001 handle_new_user()` trigger → profiles row `{role: 'family',
+   account_status: 'pending', full_name: metadata || 'New User'}`;
+3. pending = limited access (announcements/schedule via the
+   is_active_account-class policies; nothing swimmer-specific);
+4. `features/admin/api.ts approveFamily({profileId, familyName,
+   swimmerData[]})` — INSERT families row → UPDATE profiles
+   `{account_status: 'approved', family_id}` → **INSERT swimmers rows
+   created from admin-typed data, linked by `swimmers.family_id`** (the
+   OD-1 transitional model — NOT guardianships);
+5. full access via the family_id RLS path. (`deactivateAccount` sets
+   'deactivated'; `enforce_profile_self_update` P0-1 guard means only
+   staff change account_status/family_id, only super_admin changes role —
+   service-role exempt.)
+
+**Phase A already covers:** guardianships table + select_own/staff_write
+policies, all seven SECURITY DEFINER helpers (`is_my_swimmer` =
+approved-guardian-only by design), the P0-1 guard, coach_groups — all
+live in 00002 verbatim-from-canonical; 00003 dropped `swimmers.family_id
+NOT NULL` ("a NULL family_id never matches the family RLS subquery").
+**The live BSPC DB has NO parent_invites table** (no migration creates
+it) and **no redeem RPC** — both are Phase I's to add. The
+`migration_identity_map` scaffolding + identity backfill mapping tests
+exist from A; OD-6 settled credentials as fresh-provision (no hash
+import).
+
+### §3 — What the law currently says Phase I contains (exact quotes)
+
+- 04 phase table: "| **I** | **parent_invites + parent-portal cutover** |
+  redeemInvite creates guardianships; portal callable now reads migrated
+  A/B(+C/D). Parent-facing cutover. |"
+- 04 per-step: "**I — parent_invites + portal.** Client: parentInvites.ts.
+  Functions: `redeemInvite` (guardianship creation), `parentPortal` (now
+  reads migrated data). Depends on A+B. Guardrails: functions suite +
+  parent-portal build."
+- 04 collection map: "| parent_invites | parentInvites.ts | redeemed by a
+  function |"; function map: "| callable/redeemInvite | parent_invites,
+  parents (W) — **creates the parent↔swimmer link (D-A)** |"
+- 01 L216-217 (comment over the DDL): "parent_invites — [D-A] redemption
+  creates a guardianship (link redeemer<->swimmer) via a SECURITY DEFINER
+  RPC. coach_id authorship -> RESTRICT [P1-1]; redeemer -> SET NULL." The
+  table: `code TEXT NOT NULL UNIQUE`, `swimmer_id` CASCADE, `coach_id`
+  NOT NULL RESTRICT, `redeemed BOOLEAN NOT NULL DEFAULT FALSE`,
+  `redeemed_by` SET NULL, `redeemed_at`, `expires_at TIMESTAMPTZ NOT
+  NULL`, `created_at` — **no swimmerName/coachName denorms** (derive on
+  read), + `idx_parent_invites_code/swimmer`.
+- 01 L1102: "CREATE POLICY parent_invites_staff ON parent_invites FOR ALL
+  TO authenticated USING (is_staff()) WITH CHECK (is_staff());"
+- 01 L1090-1091 (guardianships): "writes are staff-only (or via the
+  SECURITY DEFINER invite-redemption RPC). No family self-insert."
+- **01 contains NO redeem-RPC DDL.** 05 §5.6 assigns it: "(design, lands
+  code in I) redeemInvite SECURITY DEFINER redeem RPC. Specify and
+  unit-test the RPC that, on valid invite, creates a `guardianships` row
+  (never a client-side insert — D-A)." The RPC's CONTRACT is therefore
+  materially unpinned → D-I2.
+- Standing rulings that bind here: **OD-3** "new accounts require
+  approval (BSPC's gated provisioning wins; no auto-approve)"; **OD-2**
+  "redeemInvite stays Phase I with A→I run back-to-back (revisit at I)" —
+  revisited in §6 below; **NM-5** auto-admin-on-first-login removed (at
+  cutover); **D-A** family users never self-insert guardianships.
+
+### §4 — Code-side-now vs cutover-time (the HARD STOP map)
+
+**Code-side, this phase's commits (§5):** BSPC migration 00010
+(parent_invites + redeem RPC) + pgTAP 013 + the 011 publication pin;
+Coach parentInvites.ts swap + tests; functions redeemInvite internals →
+the RPC behind the frozen callable contract + tests; (per D-I3) the
+identity-gate approved-filter; migration/i manifests; paperwork.
+
+**Cutover-time, NAMED and PARKED behind the HARD STOP — none of this is
+planned into this phase's commits:**
+- **The production auth provider** (Firebase → Supabase) for the Coach
+  app (AuthContext swap, Option (b), already banked) and the
+  parent-portal session (`lib/auth.ts` signIn/signUp/signOut +
+  `lib/firebase.ts`) — live credential paths, untouchable now.
+- **Account-creation flow coupling**: `handle_new_user()` stays exactly
+  as-is; nothing in Phase I touches signup, password, or provisioning.
+  OD-6 fresh-credential provisioning runs at cutover only.
+- **The portal's post-cutover data path**: once sessions are Supabase,
+  `httpsCallable` arrives with no Firebase auth — the portal must either
+  re-point loads to direct RLS reads (profile.ts is the first such read,
+  already staged) or retire in favor of the BSPC app. That is the
+  "parent-facing cutover" of 04's Phase I row: a RUNTIME event, designed
+  in the cutover mini-plan 05 §6 already mandates, not a Phase I commit.
+- **NM-5 removal** (AuthContext auto-admin, still at AuthContext.tsx:62
+  today) — dies with the provider swap, ratified.
+- **OD-1 convergence** (approveFamily/fetchFamilySwimmers/RLS off
+  family_id onto guardianships, then DROP family_id) — banked for the
+  convergence sweep (D-I4 confirms timing).
+- **All backfill RUNS** (parent_invites rows, guardianships from
+  linkedSwimmerIds — the latter already scaffolded in A's identity
+  manifest; Phase I adds the invites manifest only).
+
+### §5 — Mini-plan: the green commits (each lands all four bars green)
+
+1. **BSPC `00010_phase_i_parent_invites.sql` + pgTAP
+   `013-parent-invites-walls.test.sql` + 011's publication pin 22 → 23 in
+   the SAME commit (RH-12 class).** The table verbatim-from-canonical
+   (code UNIQUE; swimmer CASCADE; coach RESTRICT; redeemer SET NULL; both
+   indexes; RLS `parent_invites_staff` = today's isCoach() wall, the
+   verified same-set swap class) + the `redeem_parent_invite` RPC per
+   D-I2 + GRANT EXECUTE to authenticated + publication ADD. Proofs:
+   columns_are; FK probes (RESTRICT blocks deleting an invite-authoring
+   coach, SET NULL on redeemer, CASCADE on swimmer); code-collision
+   23505; per-principal walls (family/pending/deactivated/anon read ZERO
+   invites and 42501 on writes; staff full CRUD; staff-B reads staff-A's
+   invites — staff-SHARED is today's parity, no D-F4 narrowing exists to
+   preserve); **family self-insert into guardianships still 42501 WITH
+   the RPC present (D-A)**; RPC happy path creates EXACTLY one
+   guardianship + flags the invite (redeemed/redeemed_by/redeemed_at);
+   re-redeem fails atomically; expired fails; unknown code fails;
+   already-linked fails clean (UNIQUE intact); **account_status untouched
+   by redemption (the OD-3 pin)**; case-insensitive code entry; pending
+   redeemer: link lands, `is_my_swimmer` still false until approval (the
+   OD-3 composition proof).
+2. **Coach `parentInvites.ts` swap + tests.** House idiom: Row interface
+   + SELECT with `swimmer:swimmers(first_name,last_name)` +
+   `coach:profiles(full_name)` embeds (denorms derived on read);
+   `createParentInvite` SIGNATURE FROZEN — swimmerName/coachName params
+   become dead (kept for compat, never written; D-B7: coachId verbatim);
+   insert().select('id'); code still client-generated `secureInviteCode()`
+   (UNIQUE constraint now backstops collisions — surfaced via the
+   screen's existing catch); expiresAt client-computed now+7d verbatim
+   (parity); `subscribeInvitesForSwimmer` = eq swimmer_id + order
+   created_at desc + filtered channel (stable key); `revokeInvite` = one
+   UPDATE `{redeemed: true}` verbatim. Both test files re-pointed, all
+   ten subjects preserved; counts rise.
+3. **Functions `redeemInvite.ts` internals → the RPC, contract FROZEN.**
+   Resolve caller → profile id (the identity.ts lookup), call
+   `redeem_parent_invite`, map RPC errors onto the EXACT HttpsError codes
+   + message strings pinned today (`not-found` / `failed-precondition` /
+   `already-exists` / unauthenticated / invalid-argument), return
+   `{success, swimmerId, swimmerName}` with swimmerName derived (join,
+   not denorm). The parent-doc CREATE arm retires — account creation is
+   `handle_new_user()`'s job since A (named, §6.1). All 10 test subjects
+   preserved + new pins (RPC args, error map, status-untouched). The
+   parent-portal needs NO change (frozen callable); its build is the
+   guardrail if anything shared moves.
+4. **(lands only if D-I3 = option (a)) identity-gate approved-filter.**
+   `resolveParentIdentity` + portal `profile.ts` add the
+   `account_status = 'approved'` filter with tests — the service-role
+   gate then says exactly what the RLS wall says (one wall, one rule)
+   before any parent ever uses either at runtime.
+5. **`BSPC/ACTIVE/migration/i/README.md` (HARD-STOP header, manifest
+   only) + NOTES landed log; push; report.** Invite rows: code verbatim;
+   swimmerId via the roster map (unresolvable STOPS); coachId via the
+   identity map (a missing author REPORTS AND STOPS — RESTRICT forbids
+   orphans); redeemed/redeemedBy/redeemedAt/expiresAt/createdAt verbatim
+   (redeemed_by via identity map, unmapped → REPORT, land NULL);
+   pre-launch expectation: zero-to-test-only docs. Cross-reference (not
+   duplicate) A's identity manifest for linkedSwimmerIds→guardianships.
+   Cutover lines: the §6.1 provisioning probe; the portal data-path
+   mini-plan pointer; OD-1 convergence ordering (backfill guardianships →
+   switch reads/RLS → drop family_id).
+
+Expected deltas: BSPC jest unchanged; pgTAP +25-to-35; Coach +small;
+Functions +small — exact old → new per bar reported at execution.
+
+### §6 — Red-team
+
+**6.1 The F lesson — every do-nothing default, audited for auth-cutover
+coupling (this is the phase that lesson was made for):**
+- `identity.ts` unknown-caller → **empty profile, no error.** Pre-cutover
+  runtime: every Firebase uid misses `profiles.user_id` → EVERY portal
+  caller resolves to zero swimmers, silently. Post-cutover: a
+  provisioning miss looks IDENTICAL to a parent with no links. The
+  default is parity (the old `parents/{uid}` fallback) and stays — but
+  the cutover runbook gains a NAMED probe: after provisioning, every
+  Firestore parents-doc uid must resolve a NON-empty profile via the
+  map; zero-resolves = STOP. The mask is removed by verification, not by
+  code (data-layer freeze).
+- Portal `profile.ts` unknown → null; dashboard renders email fallback —
+  same class, same probe covers it.
+- `parentPortal` `schedule: []` — pre-existing (original verified);
+  absence is parity; stays empty until a portal schedule FEATURE ships
+  (D-H5(b)'s calendar arms are the eventual source; banked there).
+- `redeemInvite`'s `email || ''` + `displayName = email.split('@')[0]`
+  (NM-4's dirty-data source) — RETIRES with the create-arm in §5.3. New
+  accounts get real names from signup metadata via handle_new_user.
+- AuthContext auto-admin (NM-5) — named; dies at cutover per ratified
+  law; NOT a Phase I commit.
+- UI guards (invite screen's `!coach` return; dashboard's <8-char gate) —
+  benign, unchanged.
+**6.2 No-widening, applied to every invite/identity policy:**
+- parent_invites staff wall = today's isCoach() set (same-set swap, the
+  G/H verified class). Parents/pending/deactivated/anon: zero rows today
+  (rules deny), zero rows after (is_staff()) — pinned in 013.
+- guardianships policies: UNCHANGED from A. The RPC adds a write PATH,
+  not a policy — and 013 proves family self-insert still fails WITH the
+  RPC installed. No principal gains read access anywhere. **No D-I block
+  proposes a widening, so none cites the D-H9 precedent; if execution
+  uncovers one, it arrives as a [DECIDE] naming its shipping surface,
+  per D-H9's narrow-precedent condition.**
+- Publication 22→23 is transport, not access (RLS walls realtime rows
+  identically — the G-era finding); pin updates in the same commit.
+**6.3 Absence is parity:** BSPC gets NO invite UI (it never had one — and
+its design REMOVED claim codes deliberately); the portal gets no invite
+LIST (parents have never read invites); revoked-vs-redeemed stays
+indistinguishable (today's exact semantics); no expiry sweeper exists
+today → none is built (expired codes simply fail redemption, verbatim).
+**6.4 Capability follows product:** the invite feature exists and SHIPS
+in both directions (Coach invite-parent screen; portal redeem input) —
+migrating it grants no new capability to anyone. The redeem RPC is the
+D-A-ratified mechanism for an existing product flow, not a new surface.
+**6.5 OD-2 revisited (as the A-era ruling requires):** the A↔I
+split-brain window (new redemptions writing Firestore linkedSwimmerIds
+while reads come from guardianships) existed only under STAGED per-phase
+cutovers. The project converged on one coordinated cutover with
+code-first everywhere: redeemInvite is already the RPC version before any
+runtime flip, and pre-launch there are zero live redemptions. **The
+window is structurally gone; option (a) confirmed costless; no dual-write
+bridge.** (If a staged parent-facing cutover is ever chosen instead, this
+re-opens — flagged for the cutover mini-plan.)
+**6.6 The wall the inventory caught (→ D-I3):** the portal callable
+authorizes on guardianship EXISTENCE (service-role, no status check);
+BSPC RLS authorizes on guardianship + `account_status = 'approved'`
+(is_my_swimmer, by Phase A design). Post-merge, a pending-but-linked
+parent reads a child's data through the portal door while the database
+wall denies the same read — two rules on one wall. Today's portal
+behavior is honest Coach-world parity (NM-3: no status concept existed),
+so this is a RECONCILIATION decision, not a bug fix: D-I3.
+**6.7 Tripwire check — do the two apps disagree about what an invite
+IS?** They disagree about the ONBOARDING MODEL an invite lives in, and
+per the mandate that disagreement is presented as the FIRST decision
+(D-I1) rather than guessed around. Concretely: Coach-world = coach issues
+a per-swimmer code against the existing roster; redemption AUTO-CREATES
+the parent account (no approval concept) and self-links it. BSPC-world =
+open signup + admin approval; the ADMIN creates the swimmers and the link
+at approval time; claim codes deliberately removed. Canonical already
+holds both write doors (staff writes + the SECURITY DEFINER RPC) and
+OD-3 already settled that approval governs ACCOUNTS — what no law yet
+states is how the two LINK doors compose in the unified product. That is
+D-I1; D-I2/3/4 are conditional on it.
+
+### §7 — [DECIDE] queue (verbatim blocks; nothing compressed)
+
+**[DECIDE] D-I1 — What is an invite in the unified product? (the
+model-reconciliation tripwire, decided FIRST)**
+The two apps hold incompatible onboarding stories. Coach app: an invite
+is a coach-issued, 7-day, per-swimmer code; redeeming it creates the
+parent's account record on the spot and links it to the swimmer — the
+invite IS the authorization, no approval step exists. BSPC app: there are
+no codes (the design explicitly REPLACED its old claim-code system);
+parents self-signup, wait pending with team-wide-only access, and an
+ADMIN both approves the account and creates/links the swimmers. Canonical
+already reconciles the DATA layer (both doors write `guardianships`;
+parent_invites exists; D-A forbids family self-insert; OD-3 says approval
+governs new accounts — no auto-approve). The unresolved PRODUCT question:
+do both LINK-creation doors ship in the unified product, and how do
+redemption and approval compose?
+- **(a) — RECOMMENDED — both doors ship; redemption = staff-authorized
+  LINK creation; approval = ACCOUNT activation; they compose.** A parent
+  may exist via open signup (pending) and redeem a coach's code: the
+  guardianship lands immediately (the coach's code IS staff
+  authorization for the LINK), but swimmer-specific access stays dark
+  until an admin approves the ACCOUNT (OD-3 honored; `is_my_swimmer`
+  already enforces exactly this). The admin door (approveFamily)
+  continues unchanged on its transitional family_id path until the OD-1
+  convergence. Nothing widens; both apps' shipping flows keep working;
+  the Coach-world auto-provisioning arm retires (its job moved to
+  handle_new_user at A).
+- **(b) Invites retire; admin-linking becomes the only door.** Honors
+  BSPC's "replaces claim code system" doctrine team-wide, but deletes a
+  SHIPPING Coach feature (screen + service + callable + portal input) —
+  that is product removal, not parity, and it leaves parent_invites in
+  canonical as dead law.
+- **(c) Invites become the only door; admin approval auto-follows
+  redemption.** The Coach model wins; redemption flips account_status →
+  approved. This AMENDS ratified OD-3 ("no auto-approve") and is an
+  access-granting default — it fails the F-lesson audit in the dangerous
+  direction (a leaked/guessed code would mint an approved account with a
+  child link, no human in the loop).
+If (b) or (c), D-I2–D-I4 and §5 re-derive first.
+
+**[DECIDE] D-I2 — The `redeem_parent_invite` RPC contract (the law 01
+never wrote).** D-A pins THAT redemption creates a guardianship via a
+SECURITY DEFINER RPC; no document pins HOW. Proposed contract, every
+clause a pgTAP pin:
+- **Name/args/grant:** `redeem_parent_invite(p_code TEXT,
+  p_redeemer_profile_id UUID DEFAULT NULL)`; SECURITY DEFINER, search_path
+  public; GRANT EXECUTE to authenticated (+ service_role implicitly).
+- **Caller derivation (the spoof-proof clause):** redeemer :=
+  `auth_profile_id()` when `auth.uid()` IS NOT NULL (end-user calls — the
+  param is IGNORED; a family user can never redeem AS someone else);
+  else the explicit param (service-role calls from the frozen callable —
+  the enforce_profile_self_update exemption precedent). NULL both ways →
+  error.
+- **Atomic claim (strictly-better class, the D-H4 precedent):** `UPDATE
+  parent_invites SET redeemed = true, redeemed_by = v_redeemer,
+  redeemed_at = now() WHERE code = upper(trim(p_code)) AND redeemed =
+  false AND expires_at > now() RETURNING ...` — one statement claims the
+  code; the Firestore-era read-then-write race is unrepresentable.
+  Distinct error signals preserved for the callable's frozen message map:
+  unknown-or-redeemed vs expired vs already-linked.
+- **Link creation:** INSERT guardianships (guardian_profile_id :=
+  redeemer, swimmer_id from the claimed invite; relationship NULL,
+  is_primary false — linkedSwimmerIds parity). UNIQUE collision → the
+  invite is NOT consumed (already-linked errors BEFORE the claim, or the
+  claim rolls back — same transaction).
+- **OD-3 clause:** the RPC NEVER touches profiles.account_status (or any
+  profiles column). Pinned by proof.
+- **Return:** swimmer_id + the swimmer's name (derived via join — the
+  callable's frozen `{success, swimmerId, swimmerName}` needs it).
+Alternative (b): no defaulted param — two RPCs (user-facing zero-arg +
+an internal service one). More objects, same walls; recommend (a).
+
+**[DECIDE] D-I3 — One wall, one rule for the portal identity gate
+(§6.6).** The portal callable (service-role) grants swimmer reads on
+guardianship existence; the database wall (`is_my_swimmer`) requires the
+guardian be APPROVED. Post-merge those disagree for pending-but-linked
+parents.
+- **(a) — RECOMMENDED — align the gate to the wall, now, in Phase I:**
+  `resolveParentIdentity` (and portal `profile.ts`) filter to
+  `account_status = 'approved'`. This is a NARROWING (the P1-8/D-H7
+  accepted class), it lands before any parent ever hits either path at
+  runtime (pre-launch; pre-cutover the resolver returns empty anyway),
+  and it makes the service-role door and the RLS wall state one rule. A
+  pending parent sees the same team-wide-only world through every door.
+- **(b) Leave the gate as-is; bank a cutover line.** Defers the
+  reconciliation to the riskiest moment (cutover) and leaves a standing
+  two-rules wall in code — the exact drift class this project exists to
+  prevent. Only argument for (b): zero code in A-migrated files this
+  phase; weak against a one-line filter + tests.
+
+**[DECIDE] D-I4 — OD-1 convergence timing vs Phase I.** Redemption
+writes guardianships; BSPC's approveFamily + reads still run on
+family_id (transitional). Until the banked convergence sweep, an
+RPC-created link is visible to the portal but INVISIBLE to the BSPC app.
+- **(a) — RECOMMENDED — convergence stays banked (its own named sweep,
+  per the standing FOLLOWUP);** Phase I lands invites guardianship-only
+  (the canonical primitive), the manifest restates the cutover ordering
+  (backfill guardianships → switch BSPC reads/RLS → drop family_id), and
+  pre-launch the visibility gap has zero users standing in it. Phase I
+  stays small and single-subject.
+- **(b) Pull the convergence INTO Phase I** (rewrite approveFamily +
+  fetchFamilySwimmers + family RLS + their pgTAP onto guardianships now).
+  Real work, real risk, in the parent app's tested core — and it belongs
+  to the convergence sweep that already owns family_id's death. Only if
+  Kevin wants the two-tables window closed before any cutover staging.
+
+**FYI bundle (named, no decision needed unless objected):** (1)
+publication 22→23 with the 011 pin in the same commit — the
+pre-approved RH-12 class; (2) swimmerName/coachName denorms drop,
+derived via embeds (the house drop-and-derive class; params stay for
+frozen signatures); (3) invite codes stay client-generated
+`secureInviteCode()` verbatim — canonical's UNIQUE adds a collision
+backstop Firestore never had (strictly-better, named); (4) expiresAt
+stays client-computed now+7d verbatim (business datum, not a
+bookkeeping stamp); (5) revoke stays `redeemed := true` with no
+redeemer (today's exact semantics, indistinguishability preserved); (6)
+relationship/is_primary land NULL/false on RPC links (linkedSwimmerIds
+parity); (7) the 04 terrain "portal touches `posts`" line corrected as
+stale (§1); (8) the redeemInvite create-arm retirement (§5.3/§6.1 —
+handle_new_user owns account creation since A).
+
+**Execution blocks on D-I1–D-I4. No Phase I implementation this
+session; bar untouched (835 TZ=UTC + 274 / 1077 / 128); UNIFY is the
+sole repo touched.**
