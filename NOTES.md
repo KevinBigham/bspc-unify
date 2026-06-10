@@ -387,3 +387,33 @@ nothing pre-guardianship-backfill.
 6. Bundled FYIs to ratify with the plan: D-C6 status value map
    ('normal'↔'present', NULL↔undefined), D-C7 marked_by stays auth.users-FK
    until convergence, RC-10 CASCADE→RESTRICT behavior change.
+
+---
+
+## Phase C decisions RATIFIED — 2026-06-09 (Kevin)
+
+Every item in the [DECIDE] block above is settled; 07 executes as written,
+as amended here:
+
+- **D-C1: (b) RATIFIED** — Phase C = Coach client + parentPortal only.
+  `evaluateNotificationRules` and `dailyDigest` move whole in Phase G; both
+  aggregation functions (`onAttendanceWritten`, `dashboardAggregations`)
+  move whole in Phase J. **Cutover-checklist line (recorded):** the
+  attendance DATA cutover requires C+G+J reader code landed, or accepts
+  digest/notification-rules/dashboard-aggregations dark during the window.
+- **D-C2: (a) RATIFIED** — `attendance_check_in` SECURITY DEFINER RPC:
+  atomic, double-tap-proof, pgTAP-tested.
+- **D-C4: (a) RATIFIED** — parents get the same present/absent collapse
+  everywhere (view AND portal). One wall, one rule.
+- **D-C5: YES** — Coach reads exclude BSPC-marked `'absent'` rows; the
+  roster means "who's here."
+- **Canonical amendments A1, A2, A3: all three RATIFIED** —
+  `media_consent_granted_by_name TEXT` joins canonical swimmers; canonical's
+  partial `attendance_event_key` index becomes the plain
+  `UNIQUE(swimmer_id, schedule_event_id)` constraint (day-side partial index
+  stays); `attendance_check_in` RPC joins canonical. (01 text edit is
+  convergence-sweep paperwork; 07 §3 + this entry are authoritative until
+  then.)
+- **Bundled FYIs accepted as noted:** D-C6 status value map, D-C7 marked_by
+  stays on its current auth.users FK until convergence, RC-10
+  CASCADE→RESTRICT behavior change.
