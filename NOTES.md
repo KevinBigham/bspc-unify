@@ -1139,3 +1139,54 @@ before anything was committed). The landed 011 declares `plan(42)` and
 contains exactly 42 test calls — re-verified today by direct count
 (167 + 42 = the green 209); no pgTAP proof was ever deleted or merged, so
 the deletion norm never engaged.
+
+---
+
+## 2026-06-10 — Phase H scoping tripwire: FIRED → 12_PHASE_H_CALENDAR_MEETS_PLANS.md
+
+Baseline confirmed at session start (bar 835+209/1034/125, all three repos
+clean/synced). Full Phase H surface read end to end on BOTH apps before any
+code: Coach calendar.ts / meets.ts / practicePlans.ts / workoutLibrary.ts /
+seasonPlanning.ts / importJobs.ts / search.ts meets+calendar halves /
+meetResultsImport meets-half / syncCalendar + icalParser; firestore.rules +
+storage.rules verbatim; BSPC features/meets + features/schedule +
+calendar-feed Edge Function + live 00001–00008 policies; canonical 01 for
+all eight H tables + enums + RLS; every banked item pulled from the bank by
+name (12 §1e).
+
+**Fired on five grounds (12 §0):** (1) canonical's staff-wide RLS on
+practice_plans + import_jobs contradicts the ratified D-F4 within-staff
+no-widening doctrine — live walls are per-coach (+public arm / +admin arm);
+(2) canonical calendar_events cannot host syncCalendar's writes (coach_id
+NOT NULL FK vs the 'ical_sync' sentinel; no source/ical_uid/raw_rrule/
+synced_at columns — and ical_uid is the idempotency key); (3) canonical
+grants calendar read to active accounts + family RSVP write where today's
+wall is coach-only — ratified law vs the later no-widening doctrine, Kevin
+arbitrates; (4) the D-F4 premise is half-imprecise: practice-plan PDFs are
+real and per-coach, but import FILES have never existed (no uploader was
+ever written; `imports/**` is a rules-only dead path; csvImport's
+storagePath is the constant 'manual/pasted-roster.csv'); (5) 04 assigns
+import_jobs to no phase while D-F4's "with their data" implies H.
+
+**Scope confirmation (12 §1e, stated plainly):** 04's "calendar + meets +
+plans" and the handoff-era "leftover searches + per-coach-private files"
+differ in exactly two material places — import_jobs (04: phase-less; plan
+proposes H, D-H8) and import files (bank presumed files that don't exist;
+plan records absence-as-parity, D-G2 class, D-H2b). Everything else is the
+union of both lists. Out of scope by name: BSPC schedule_events + scrape
+pipeline (BSPC-native, already canonical), aggregations (J), parent_invites
+(I), SETTLED-#5 dead collections, P2-9 recurring expansion.
+
+12 ends with **[DECIDE] D-H1..D-H8 + an FYI bundle** (per-coach canonical
+amendment incl. the project's first within-staff pgTAP walls; the file
+tier; the calendar sync amendment; RSVP upsert; the calendar parent-arm
+widening question — the one genuine coin-flip, recommendation (b)
+staff-only-now; rateWorkout parity-deny; live meets policy alignment;
+import_jobs into H), each with a recommendation. Notable register entries:
+RH-4 (the Firestore lexical "-31" month bound is an invalid PG date
+literal), RH-12 (pgTAP 011 pins the publication set EXACTLY — 00009 must
+update it 14→22 in the same commit), RH-2 (PG RLS filters where Firestore
+rules reject — caller filters stay), RH-7 (cross-coach rating is provably
+broken today — rules deny it). **No Phase H code written; bar unchanged
+(835 TZ=UTC + 209 / 1034 / 125).** seasonPlanning's 19 tests are pure-helper
+only — the 04 tests-FIRST mandate is §5 commit 1.
