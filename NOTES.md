@@ -529,6 +529,10 @@ post-hoc by Kevin 2026-06-09.)
    `is_staff()` (deferred from 00002).
 8. After cutover completes: DROP the transient map tables
    (`migration_identity_map`, `migration_swimmer_map`).
+9. **DROP the Phase D transitional family-id OR-arms** (RD-10, the RC-1
+   pattern): narrow `swim_results_select_own`, `personal_bests_select_own`
+   and `goals_select_own` to `is_my_swimmer()` only; update pgTAP 008's
+   family-arm tests to prove the same reads via backfilled guardianships.
 
 Cutover-sequencing constraints (not removals): the D-C1 line above
 (attendance data cutover needs C+G+J readers, or accepts those functions
@@ -618,3 +622,79 @@ Execution order: 08 §6 exactly, as ratified. The 00005 migration and the
 BSPC unit flip land as the atomic pair (no commit may exist where the
 database and the app disagree on units — RC-3 spirit). Honor RD-1..RD-13
 fixes including analytics D-C5.
+
+---
+
+## Phase D (times / PRs / meet results) CODE-SIDE LANDED — 2026-06-09
+
+Executed per 08 §6 exactly as ratified, same session as the ratifications.
+One green commit each; full bar re-run at every step.
+
+- **BSPC `00005_phase_d_times.sql` + pgTAP 008** (`faae3d5`): D-D2/D-D3 unit
+  cut on all four time_ms tables behind the hard ÷10 audit DO-block (RD-3) +
+  seed flip same commit — **the audit found ZERO offending rows** (live data
+  = the 6 team_records seed rows, all clean ms); swim_results gains
+  course/splits/meet_name/source/created_by + nullable date (P0-5);
+  personal_bests gains course (D-D4 derive-else-SCY backfill — zero rows
+  existed, machinery proven but idle) + meet_name + canonical
+  UNIQUE(swimmer, event, course) (P1-13); **`maintain_personal_bests()`
+  trigger (D-D5)** — advisory-locked per-key recompute, AFTER
+  INSERT/DELETE/UPDATE-of-PR-relevant-columns (the flag's own update can't
+  re-fire it), SECURITY DEFINER, mirrors PB rows with achieved_at :=
+  COALESCE(date, created_at::date) provenance; RD-10 dual-arm widening of
+  both select_own policies (family arm now approved-only, closing the live
+  pending-parent hole); **D-D6/RD-1 catch-up DDL: `goals` + `group_notes`
+  now EXIST**, satisfying the swapped services' SELECT strings exactly
+  (columns_are = the contract), goals dual-arm family-readable, group_notes
+  strictly staff-only. pgTAP 008 = 32 proofs: shape/unit/key, trigger math
+  for real (first-time flag, faster takes flag, slower no-op, delete
+  promotes w/ provenance, group-empty deletes PB, course-split, edit
+  recompute), the ownership wall (family arm / guardianship arm / pending=0
+  / family INSERT throws + UPDATE 0 / staff all / anon nothing ×4 tables),
+  goals+group_notes payload round-trips + walls. pgTAP 001's fixtures now
+  speak hundredths and stopped hand-writing personal_bests (trigger truth
+  collides with hand-written rows — the D-D5 model working); its 4
+  assertions unchanged. Proven on BOTH paths: migration-up on the live DB
+  and a from-scratch `db reset`.
+- **BSPC unit flip 5a** (`aaa7237`, the atomic pair partner, same session):
+  types time_ms→time_hundredths ×4 (+ new nullable result columns),
+  formatTimeFromMs→formatTimeFromHundredths (÷100) in progress/standards/
+  legacy + the pdf copy, fetchSwimmerResults orders date desc NULLS LAST +
+  created_at tiebreak (RD-6), transforms guard null dates (undated rows
+  sink; recent-PB cutoff falls back to created_at; date renders empty),
+  fixtures ÷10 with display strings UNCHANGED (the RD-2 proof). BSPC tsc
+  clean.
+- **Coach `times.ts`** (`d6cacfb`): subscribeTimes → swim_results w/
+  realtime parity; timeDisplay derived on read; addTime → ONE plain INSERT
+  (un-PR loop deleted; existingTimes frozen-but-unused); deleteTime → ONE
+  plain DELETE (trigger promotes — BUG #5's no-transient-window guarantee
+  now lives in the database); tests inverted to payload pins.
+- **Coach `analytics.ts`** (`75682ec`): swimmers/swim_results one-shots,
+  chronology-of-entry drop semantics preserved; **the attendance read
+  carries the D-C5 filter (RD-4)** or absences would count as attendance;
+  distinct-date denominator pinned.
+- **Coach `meetResultsImport.ts` times-half** (`48ed2e0`): chunked-400
+  plain inserts, un-PR loop deleted, `result.prs` recounted from
+  post-insert is_personal_best truth (RD-9); meets/{id}/entries sync stays
+  Firestore until H; import_jobs stays (the ratified csvImport split).
+- **Functions `parentPortal` times payload** (`a7d57ef`): swim_results via
+  service role, FROZEN 8-field shape, timeDisplay derived functions-side
+  (RD-12), meetDate stays the same calendar string; sanitizer drop-proof
+  fixtures. The last Firestore read in that callable is gone.
+- **`migration/times/README.md`** (`671cb1b`): run order + THE UNIT RULE
+  (RD-5 — Coach values insert verbatim; no ÷10 code may exist outside
+  00005); no transform scaffolding needed (no dedup question — repeat swims
+  are legitimate; trigger owns PR state during backfill).
+
+**New green bar: BSPC jest 835 (TZ=UTC) + pgTAP 106 · Coach 987 · Functions
+119.** Coach jest is net −4 vs the 991 baseline: −11 deleted client-side
+PR-math tests (their subject moved into the database; pgTAP 008's trigger
+proofs carry that math for real now — RC-7) + 7 new swap/pin tests.
+
+Convergence checklist: item 9 added (the three Phase D family arms).
+Welded to later phases, unchanged from 08 §7: onTimesWritten +
+prsByEvent/activity recompute → J (D-D1); meets/{id}/entries sync +
+import_jobs → H/their phases; TEXT CHECK→enums + created_by semantics →
+OD-1; parent-facing views (created_by P2) → parent-views work; RUNNING the
+times backfill → cutover staging (HARD STOP rules).
+Next per 04: **Phase E**.
