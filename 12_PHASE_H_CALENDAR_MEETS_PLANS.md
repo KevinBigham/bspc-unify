@@ -4,6 +4,10 @@
 This document ends in [DECIDE] blocks for Kevin (§7). Nothing in §5 executes
 until those are ratified.**
 
+**UPDATE 2026-06-10: D-H1–D-H8 are all RATIFIED (NOTES log). The RH-8 gate
+(§8) fired — cross-visibility is a widening — so execution now blocks on
+[DECIDE] D-H9 (§8) alone.**
+
 Inputs read end to end before writing this: 04 §H + the client-services and
 backfill tables; 00_TERRAIN §3.5/§3.6 + the Coach/BSPC inventories; canonical
 01 (schedule/calendar/meets/meet_entries L233–379, plans L553–606, import_jobs
@@ -626,3 +630,78 @@ these are called)
 8. **D-H8** — import_jobs (rows + service + both writer-halves) is IN
    Phase H. **Recommend yes.**
 9. **FYI bundle** (§4 end) — accept as named.
+
+---
+
+## §8 ADDENDUM (2026-06-10) — the RH-8 gate fired: cross-visibility IS a widening → [DECIDE] D-H9
+
+**Context.** With D-H1–D-H8 ratified, Kevin accepted the FYI bundle "with
+one gate": print RH-8 verbatim and answer — *does any principal gain read
+access to any row or field, at the database layer, that it could not read
+before the merge?* If yes, standing doctrine makes it a tripwire.
+
+**Gate verdict: YES — widening.** Measured the way no-widening measures
+(§1b: today's live walls), against the Coach-app meets objects:
+
+| Principal | Coach meets today (firestore.rules `isCoach()`) | Merged table (01 L1110 `is_active_account()`) | Delta |
+|---|---|---|---|
+| Staff | read | read (staff_all / active) | none |
+| Active parent | **no read** | read | **GAIN** |
+| Pending parent | **no read** | read (P1-8: pending may read) | **GAIN** |
+| Deactivated / anon | no read | no read (D-H7) | none (BSPC side narrows) |
+
+The gain is real in both object dimensions: **rows** — a Coach-origin meet
+with no BSPC counterpart becomes a parent-readable row at the §5.11
+backfill — and **fields** — the superset-fill merge writes the
+Coach-authored course/status/events/groups/sanction_number/host_team onto
+matched rows parents already see. Carve-outs, named: `meet_entries` does
+NOT widen under any option (canonical 01 L1112 keeps entries strictly
+staff-only — swimmer race data never reaches parents); the staff direction
+does not widen (staff read everything on both sides today); the BSPC-origin
+surface only NARROWS (D-H7, ratified). RH-8 as drafted analyzed UI
+null-safety and mis-filed a wall question as an FYI — this is tripwire
+ground (3)'s exact shape (canonical active-read vs live `isCoach()`), on
+meets instead of calendar. The gate caught what the plan should have.
+
+**D-H9 — the merged meets table's read wall (the cross-visibility
+decision).**
+(a) **Accept the named widening** — one parent-readable meets table, walls
+exactly as already ratified (D-H7): SELECT `is_active_account()`, manage
+`is_staff()`, entries staff-only. The case: unlike D-H5's calendar (no
+parent UI anywhere), the parent-facing meets feature EXISTS and ships —
+BSPC `features/meets` renders this table to families today; meets are the
+club's public schedule, the same P1-8 team-wide content class as
+schedule_events and announcements, which pending parents already read by
+ratified law; and a parent meets list that silently omitted Coach-authored
+meets would show families a false schedule. Kevin's own D-H5(b) principle
+— capability follows product — PASSES here because the product is real.
+Recorded as a ratified, named widening; 012 proves the wall (parent reads
+a Coach-origin row; deactivated zero; entries zero for parents).
+(b) **Visibility split on the one table** — add a publish discriminator
+(e.g. `visibility staff|team`); SELECT becomes `is_staff() OR
+(is_active_account() AND visibility = 'team')`; Coach-origin backfill
+lands 'staff'. Preserves no-widening literally. Honest costs: it invents a
+publish workflow neither app has (product surface the data-layer-only
+freeze forbids this phase); no BSPC writer exists (meets are hand-entered),
+so every existing and future BSPC row must carry the bit or parents LOSE
+meets they read today — the F-lesson do-nothing-default audit cuts against
+every default value; and both frozen readers must learn a column no
+current code understands.
+(c) **Defer the merge** — Coach meets land in a staff-only sibling table;
+the canonical superset merge banks to a post-cutover convergence. Preserves
+walls exactly. Honest costs: forks the ratified one-table canonical model,
+kills the §5.11 name+start_date reconcile (the same physical meet lives
+twice with no join), re-points §5 commits 4/5/8 at the sibling, and the
+convergence later re-raises this identical question with live data — it
+postpones the decision without shrinking it.
+**Recommend (a)** — access follows feature, and the feature exists; (b)
+and (c) spend real machinery to avoid naming a widening whose content
+class ratified law already shows parents and pending parents. Kevin's
+call; no §5 code until it lands.
+
+**Bookkeeping.** This addendum supersedes RH-8's FYI disposition wherever
+it appears (§2 RH-8's "FYI-bundle" tail, the §4 bundle list item, the §6
+RH-8 row, and §7 item 9's RH-8 item). The other ten bundle items are
+accepted as named (NOTES 2026-06-10). §5 executes the moment D-H9
+resolves; if (b) or (c) is chosen, commit 2's meets walls and the §5.11
+meets manifest lines re-derive from the chosen option first.

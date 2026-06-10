@@ -1247,3 +1247,85 @@ with the Phase H execution session — 12 + this entry are authoritative
 until then. Records-and-readback session only: UNIFY is the sole repo
 touched; BSPC and Coach unchanged; bar untouched
 (835 TZ=UTC + 209 / 1034 / 125).
+
+---
+
+## 2026-06-10 — Phase H ratifications COMPLETE (D-H2a/D-H3/D-H4/D-H6/D-H7 + FYI 10/11) · the RH-8 gate FIRED → [DECIDE] D-H9 (12 §8) · NO H code
+
+Kevin resolved every remaining 12 §7 block this session, gated on one
+check: print RH-8 verbatim and answer whether any principal gains
+database-layer read access it lacks today. **The gate returned YES —
+widening — so per Kevin's own wiring this is a tripwire: D-H9 is written
+in 12 §8, no §5 code executed, and execution now blocks on D-H9 alone.**
+Each ratification below was checked against its block as written before
+recording; all five match; nothing force-fit.
+
+- **D-H2(a) RATIFIED — the practice-plans file tier lands as drafted.**
+  Private `practice-plans` bucket; today's caps mirrored exactly (25MB,
+  application/pdf); storage walls `is_staff() AND owner-path-segment`;
+  uploads via the F-phase mediaUpload helper; reads via signed URLs; the
+  copy-manifest line rewrites the owner segment through the identity map
+  at cutover. The single named stricter bit — the RH-14 parent-segment
+  hole-closing — is accepted as hole-closing narrowing. **Binding rider
+  (Kevin, verbatim substance): the "exactly one named divergence" claim
+  is binding — any second behavioral difference between today's storage
+  rule and the new wall discovered during execution is a tripwire, not a
+  judgment call.**
+- **D-H3 RATIFIED — calendar_events hosts the iCal sync.** Columns added:
+  `source TEXT`, `ical_uid TEXT UNIQUE`, `raw_rrule TEXT`, `synced_at
+  TIMESTAMPTZ`; `coach_id` relaxes NOT NULL → NULLABLE with ON DELETE SET
+  NULL. Synced rows carry coach_id NULL with provenance in `source`; the
+  foreign key keeps fake owners unrepresentable forever (every non-NULL
+  coach_id must still reference a real profiles row — the 'ical_sync'
+  string sentinel can never exist). syncCalendar becomes one upsert
+  `onConflict('ical_uid')` with clobber semantics preserved; the
+  created_at churn heals as a named invisible fix; the sync-table
+  alternative is rejected as a join tax for zero wall benefit.
+- **D-H4 RATIFIED — RSVP becomes the canonical upsert** on
+  UNIQUE(event_id, swimmer_id): one row per swimmer per event, re-RSVPs
+  refresh status/parent_name/note + updated_at — the strictly-better
+  atomic class. The backfill collapse rule (keep latest updatedAt, REPORT
+  every collapse) lands in the manifest only and runs behind the HARD
+  STOP at cutover staging.
+- **D-H6 RATIFIED — cross-coach rating/tagging stays parity-denied** (the
+  feature never functioned; absence is parity). The `rate_workout`
+  SECURITY DEFINER RPC is banked as a named post-cutover product line
+  item alongside coach push and ai_drafts_ready.
+- **D-H7 RATIFIED — live meets policies align inside 00009 itself.**
+  `meets_select_all USING (TRUE)` narrows to `is_active_account()` (the
+  accepted P1-8 narrowing class, proven: deactivated → 0); the admin
+  inline-EXISTS policy refactors to `is_staff()` as a verified same-set
+  swap (the G jobs-policy pattern). Policy travels in the same migration
+  as the new Coach columns so no intermediate commit exposes the new
+  fields to deactivated accounts. (D-H7 stands regardless of D-H9's
+  outcome: it narrows the existing BSPC-origin surface; D-H9 decides only
+  whether Coach-origin rows join that surface.)
+- **FYI bundle — ten of eleven items accepted as named** (month-window
+  rewrite RH-4; pdf title := filename RH-16; weeks-key 23505 +
+  single-DELETE cascade RH-10; entries display-string/stamp drops; search
+  null-mapping; publication 14→22 RH-12, separately pre-approved; ratings
+  keys stay coach.uid; created_at-churn heal; tagWorkout trigger bump;
+  PDF-exclusion server-side + group filter client-side RH-16). **The
+  eleventh — RH-8 merged-meets cross-visibility — was accepted only via
+  the STEP 0 gate, and the gate returned WIDENING:** at the cutover
+  merge, active (and pending) parent accounts gain SELECT over
+  Coach-origin meet rows — and over the Coach-authored fields the
+  superset-fill merge writes onto matched rows — all of which sit behind
+  `isCoach()` (staff-only) in firestore.rules today; the merged table's
+  `is_active_account()` wall (01 L1110) admits principals today's Coach
+  wall denies. RH-8's FYI disposition is superseded → **[DECIDE] D-H9
+  (12 §8)**: (a) accept the named widening — one parent-readable meets
+  table (recommended: the parent meets feature exists and ships in BSPC,
+  unlike D-H5's absent calendar UI); (b) visibility-split column; (c)
+  staff-only sibling table. meet_entries does not widen under any option
+  (canonical keeps entries strictly staff-only, 01 L1112).
+
+Status after this entry: **D-H1–D-H8 all ratified; the sole open item is
+D-H9.** §5 executes the moment D-H9 lands (if (b)/(c), commit 2's meets
+walls and the §5.11 meets manifest lines re-derive from the chosen option
+first). The A1/A2/A3 paperwork rider extends: the 01/04 text edits for
+D-H2(a)/D-H3 join the earlier D-H1/D-H5/D-H8 set and land with the
+execution session — 12 + NOTES are authoritative until then.
+Records-and-gate session only: UNIFY is the sole repo touched; BSPC and
+Coach unchanged; bar untouched (835 TZ=UTC + 209 / 1034 / 125); zero
+Phase H code.
