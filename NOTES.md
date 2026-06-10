@@ -698,3 +698,66 @@ import_jobs → H/their phases; TEXT CHECK→enums + created_by semantics →
 OD-1; parent-facing views (created_by P2) → parent-views work; RUNNING the
 times backfill → cutover staging (HARD STOP rules).
 Next per 04: **Phase E**.
+
+---
+
+## Phase E (notes + voice notes) CODE-SIDE LANDED — 2026-06-09
+
+**The scoping tripwire did NOT fire** — first phase to execute straight
+through. Why: BSPC has no notes model at all (nothing to disagree with;
+canonical IS the Coach model normalized), the search collectionGroup
+translates to a SIMPLER flat-table read (swimmer_id is a column — the
+parent-path extraction dies), and the one named hazard — the P1-5 two-pass
+source pointers — is structured by canonical itself (FKs added at file end
+for the same create-order cycle) plus 04's per-step line. All deferrals
+extend twice-ratified precedent. Kevin's two phase rules held exactly:
+audio FILES stay on Firebase Storage until F (profilePhoto precedent), and
+the wall did not widen by one field (notes were staff-only in Firestore;
+they are strict staff-only in PG, pgTAP-proven).
+
+- **BSPC `00006_phase_e_notes.sql` + pgTAP 009** (`a46dafd`):
+  swimmer_voice_notes first, then swimmer_notes with `source_voice_note_id`
+  FK (ON DELETE SET NULL) live NOW and `source_audio_draft_id` as a bare
+  UUID until F; one-source CHECK (num_nonnulls ≤ 1); 19-value tag CHECK +
+  4-value source CHECK; coach_id RESTRICT (P1-1); STRICT staff-only RLS on
+  both tables — no parent arm exists, transitional or otherwise. pgTAP 009
+  = 19 proofs: SELECT-contract shapes, the writers' exact payloads, CHECK
+  rejections, SET-NULL orphan safety, **parents/guardians/pending/anon all
+  read ZERO rows (even their own swimmer's)**, coach-delete RESTRICTed.
+- **Coach `notes.ts`** (`fba2ed7`): realtime-parity subscribe w/ coach
+  embed; addNote maps the untyped sourceRefId → typed pointer by source
+  kind; coachName denorm dropped (derived on read); SwimmerNote.source
+  union gains 'voice_inline' (stored data always had it — the type lied).
+- **Coach `swimmerVoiceNotes.ts`** (`87bb9bb`): rows → PG (id DB-owned
+  unless caller supplies one); upload + AsyncStorage queue UNCHANGED on
+  Firebase Storage.
+- **Coach `aiDrafts.ts` note-half** (`bff4957`): approve/approveAll post
+  canonical notes w/ source_audio_draft_id := draft id; the one-batch
+  atomicity splits at the F seam (draft updates commit on Firestore per
+  400-chunk, then the chunk's notes in one insert — the accepted
+  meetResultsImport trade). Draft reads/mutations stay Firestore until F.
+  **BUG #4 media-consent assertions unchanged word-for-word.**
+- **Coach `videoDrafts.ts` note-half** (`f0d2bd9`): video_ai notes carry NO
+  note-side pointer (posted_note_id is draft-side, lands in F).
+- **Coach `search.ts` notes-half** (`f6749ce`): collectionGroup retired;
+  frozen fetch-then-filter semantics (most-recent window, then client-side
+  content/tags match); searchNotes gains its first 5 tests. Meet/calendar
+  searches stay Firestore until H.
+- **`migration/notes/README.md`** (`2bc98f5`): the two-pass rule — pass 1
+  inserts voice notes + notes (audio pointers NULL + transient map), pass 2
+  after F's drafts backfill sets source_audio_draft_id + posted_note_id.
+
+**New green bar: BSPC jest 835 (TZ=UTC) + pgTAP 125 · Coach 998 · Functions
+119.** ZERO test deletions this phase (standing norm: deletions only when
+subject code is deleted — none was; every re-pointed test kept its subject).
+Functions untouched: parentPortal never exposed notes (verified), and the
+notes-reading functions defer whole — **Banked for F:** ADD CONSTRAINT
+fk_notes_source_audio_draft + the two posted_note_id FKs + backfill pass 2;
+aiDrafts/videoDrafts draft-half + audio file storage move. **Banked for
+G/J (extends ratified D-C1(b)/D-D1):** dailyDigest(notes) → G whole;
+onNotesWritten + notes aggregations → J (the fourth aggregation trigger;
+its recompute product retires in J). Cutover-sequencing constraint: the
+notes DATA cutover needs E+G+J reader code landed, or accepts
+digest/dashboard-aggregations dark during the window (same class as the
+attendance D-C1 line).
+Next per 04: **Phase F (media)**.
