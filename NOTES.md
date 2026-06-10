@@ -2156,3 +2156,633 @@ recording; no mismatches, nothing force-fit.
 Phase I is closed end-to-end: scoped, ratified, landed, ratified
 complete. Next per 04: Phase J (aggregations decommission) — scoping
 follows.
+
+---
+
+## 2026-06-10 — PHASE J SCOPE (aggregations decommission) — SCOPE BEFORE CODE; **TRIPWIRE FIRED — D-J1 is presented FIRST**
+
+Scoping only. No migrations, no swaps, no schema changes, no trigger
+code. This entry is the inventory (§1), the banked-trigger map with
+per-trigger parity verdicts (§2), the exact 01/04 law (§3), the
+one-time grant audit (§4), the numbered mini-plan (§5), the red-team
+(§6), and the decision queue (§7). Execution blocks on D-J ratification.
+
+**THE TRIPWIRE, up front:** while inventorying the aggregation READERS,
+the scope sweep found that the Coach app's **UI layer (routed screens,
+hooks, components) still holds ~43 live Firestore call sites in 19
+files**, spanning domains whose services swapped in B/C/D/E/F/H/I —
+including WRITES to write-dead collections — plus one live, routed
+feature (`coach_chat`) that SETTLED #5 recorded as "dead/unimplemented."
+Every phase inventory (04's per-phase "Client:" lists and every landed
+log) was SERVICE-layer scoped; none of these files appears anywhere in
+NOTES before this entry. The terrain disagrees with the docs, so per
+the standing rule this is the first decision: **D-J1**. Two
+corrections-of-record ride with it (§7 D-J1, FYI-4/FYI-5) — recorded
+here, never edited in place.
+
+### §1 Inventory — the two aggregation cloud functions + every consumer
+
+**1a. `scheduled/rebuildAggregations` (functions/src/scheduled/rebuildAggregations.ts)**
+- Trigger condition: `onSchedule('every day 04:00')` — no timeZone set
+  (platform default; FYI-6). **THE ONLY PART OF THE MACHINERY THAT
+  STILL FIRES.**
+- Behavior: enumerates the roster from CANONICAL PG
+  (`swimmers.is_active = true` — re-pointed in Phase B, NOTES:334),
+  then per swimmer awaits `recomputeAttendanceAggregation(id)`,
+  `recomputeSwimmerPRs(id)`, `recomputeNotesAggregation(id)` in chunks
+  of 400, then the two dashboard recomputes once. All five recompute
+  internals READ FIRESTORE collections that have been write-dead since
+  C/D/E/F — so it rewrites stale-by-construction values daily.
+- Writes: every doc listed in 1c, via the recomputes.
+- Tests: `rebuildAggregations.test.ts` — 1 test (dispatch wiring:
+  "recomputes dashboard docs once after per-swimmer rebuilds").
+
+**1b. `triggers/dashboardAggregations` (functions/src/triggers/dashboardAggregations.ts)**
+- NOT a deployed trigger — a recompute MODULE (04:61 calls it a
+  trigger; the terrain nuance is named here, not force-fit). Its two
+  exports are invoked by the four Firestore triggers (§2) and by 1a.
+- `recomputeDashboardAttendanceAggregation()`: reads Firestore
+  `attendance` where `practiceDate >= today−84d`, counts rows per
+  practiceDate → writes `aggregations/dashboard_attendance`
+  `{ countsByDate: Record<dateString, n>, updatedAt }` (merge:true).
+- `recomputeDashboardActivityAggregation()`: reads four sources with
+  per-source limits — attendance ordered createdAt desc LIMIT 8,
+  collectionGroup notes LIMIT 5, collectionGroup times LIMIT 5,
+  video_sessions where status=='review' LIMIT 5 (double-filtered
+  defensively client-side) — maps each to
+  `{ id: 'att-|note-|time-|video-'+docId, type:
+  attendance|note|time|pr|video, text, coach, timestamp }` with text
+  templates: "X checked in", `truncateNote` (60 chars + ellipsis),
+  "EVENT COURSE: TIME — NEW PR!" (type 'pr' iff `isPR`), "VIDEO READY:
+  N swimmer(s) analyzed" (count = taggedSwimmerIds.length), coach
+  fallback 'Coach' / meet fallback 'Manual entry'; sorts desc by
+  timestamp, slices 15 → writes `aggregations/dashboard_activity`
+  `{ items, updatedAt }` (merge:true). Text strings embed denormalized
+  swimmerName/coachName from the source docs.
+- Tests: `dashboardAggregations.test.ts` — 2 tests (84-day exclusion;
+  text formatting + review-only + sorting + top-15 truncation).
+
+**1c. Write targets (Firestore `aggregations` collection) — every computed field**
+- `aggregations/attendance_{swimmerId}` (from
+  `recomputeAttendanceAggregation` in onAttendanceWritten.ts):
+  `totalPractices`, `last30Days`, `last90Days`, `attendancePercent30`
+  (= round(last30/22·100)), `attendancePercent90` (= round(last90/64
+  ·100)) — **denominators HARDCODED** ("Approximate: 5 practices/week →
+  ~22 per 30 days, ~64 per 90 days"), `lastPracticeDate` (max
+  practiceDate string), `updatedAt`. Counts EVERY attendance row —
+  written pre-merge when a Coach row meant "attended."
+- `aggregations/swimmer_{swimmerId}` — ONE doc, TWO writers merging:
+  `recomputeSwimmerPRs` (onTimesWritten.ts) writes `prsByEvent:
+  { "<event>_<course>": { time (min wins), timeDisplay, date
+  (meetDate ?? createdAt) } }` + `updatedAt`;
+  `recomputeNotesAggregation` (onNotesWritten.ts) merges `noteCount`,
+  `lastNoteDate` (max createdAt; field omitted when no notes) +
+  `updatedAt`.
+- `aggregations/dashboard_attendance`, `aggregations/dashboard_activity`
+  — per 1b.
+
+**1d. Every consumer of the computed values — both apps + portal**
+- **Coach `app/(tabs)/roster.tsx`** — INLINE Firestore `onSnapshot` per
+  active swimmer on BOTH per-swimmer docs (lines 73/89 — it bypasses
+  the service and builds 2×N subscriptions with ignore-errors
+  handlers). Renders exactly TWO fields: `attendancePercent30`
+  (line 223, double-rounded — FYI-7) and the PR badge
+  `getPRCount(swimmerAggs[id])` = `Object.keys(prsByEvent).length`
+  (lines 226–229, the one service import it uses).
+- **Coach `src/hooks/useDashboardData.ts`** → dashboard screen: via
+  `services/aggregations.ts` subscribes `dashboard_attendance`
+  (→ `weekAttendance` + `sparkData`; doc holds 84 days, UI renders
+  SPARK_DAY_COUNT=30 — FYI-8) and `dashboard_activity`
+  (→ `recentActivity`). The same hook also queries Firestore
+  `audio_sessions`/`video_sessions` (status=='review') directly for
+  `pendingDrafts` — an F-domain residual read (D-J1).
+- **`src/services/aggregations.ts`** — the 04:54 reader service. Its
+  two DASHBOARD subscriptions are consumed (above); its two PER-SWIMMER
+  subscriptions (`subscribeAttendanceAggregation`,
+  `subscribeSwimmerAggregation`) are DEAD EXPORTS — no importer
+  anywhere except tests (roster inlines its own).
+- **`src/utils/demoReadiness.ts`** — pure builders typed against the
+  aggregation shapes (`buildRosterDemoFacts` consumes
+  attendancePercent30 + prsByEvent count). NO app importer — test-only
+  dead code (D-J6).
+- **Consumed-fields summary:** of everything in 1c, the app renders
+  ONLY `attendancePercent30`, `prsByEvent` (key count), `countsByDate`,
+  and `items`. `totalPractices`/`last30Days`/`last90Days`/
+  `lastPracticeDate`/`noteCount`/`lastNoteDate` are write-only (the
+  profile screen's note count is `notes.length` from a live read, not
+  the aggregate). Absence-is-parity applies (D-J3).
+- **BSPC app: ZERO aggregation consumers** (verified by repo-wide
+  search — only docs/manifest mentions). **Parent portal: ZERO** (the
+  callable reads raw tables, 04:72). `dailyDigest` (G, PG) reads raw
+  tables, not aggregations.
+- **Current test coverage riding the machinery:** Functions 18
+  (rebuild 1 + dashboard 2 + onAttendance 4 + onTimes 4 + onNotes 4 +
+  onVideoSession 3 — per-subject list captured for the §5 deletion
+  plan; all but the 2 dashboard value pins are dispatch-wiring pins).
+  Coach 29 (services/aggregations 18, useDashboardData 8, demoReadiness
+  3). BSPC 0. pgTAP 0 (no aggregations object exists in any migration —
+  verified: `CREATE TABLE aggregations` appears in NO migration file).
+
+### §2 The five banked aggregation triggers — each named, mapped, with its parity question ANSWERED
+
+The banked list reconciles with the terrain EXACTLY — five banked
+items, of which four are literal `onDocumentWritten` triggers and one
+(dashboardAggregations) is the recompute module they share (named
+nuance, §1b). The scheduled rebuild (1a) rides with it as the second of
+"the two aggregation CFs" (04:106). No disagreement between bank and
+terrain on the LIST itself; the tripwire (D-J1) is about the READER
+side, not the trigger side.
+
+The standing parity frame for ALL five: **none of the four Firestore
+triggers has fired since its source collection went write-dead**
+(attendance→C, times→D, notes→E, video_sessions→F). Today's production
+semantics are "frozen snapshots, rewritten daily at 4 AM from dead
+collections." The parity bar is therefore the frozen SHAPE and the
+contractual semantics, not today's (broken) freshness — and the named
+deltas below are corrections in already-ratified directions, never
+silent.
+
+1. **`onAttendanceWritten`** — banked Phase C, D-C1(b) (NOTES:398–403;
+   07 §2:51: "defer whole to J — its product (aggregations) is retired
+   in J; re-pointing it in C builds PG plumbing J deletes (RC-8)").
+   Fires on `attendance/{recordId}`; recomputes the per-swimmer
+   attendance doc + BOTH dashboard docs.
+   **Replacement:** PG recompute over `attendance` (architecture per
+   D-J2). **Values verdict: NOT identical — by ratified design.** The
+   banked law (07 §2:69–71, verbatim): "J's recompute MUST be
+   status-aware (`status IS NULL OR status NOT IN
+   ('absent','excused','sick','injured')` — same set as the parent
+   view) or attendance percentages inflate." Today's CF counts every
+   row; on merged data it would count BSPC absences as attendance.
+   The PG values are the corrected ones; the divergence class is named
+   and was banked in C (RC-4c). Percent denominators stay hardcoded
+   22/64 unless D-J4 says otherwise. **Timing verdict: NOT identical —
+   strictly fresher.** Today: async trigger (dead) + 24h rebuild floor.
+   Replacement: read-time-fresh (D-J2a) or same-transaction (D-J2b).
+2. **`dashboardAggregations`** — banked Phase C, D-C1(b) (NOTES:400;
+   07 §2:52: "defer whole to J (same reason; it spans 4 phases'
+   collections)"). The shared recompute module (§1b).
+   **Replacement:** the two dashboard computations in PG (D-J2 + D-J3
+   shape). **Values verdict: identical EXCEPT four named items:**
+   (i) the attendance arm adopts the status-aware set above;
+   (ii) `type:'pr'` cannot come from an `isPR` column — canonical has
+   NONE (verified: no `is_pr` in any migration; D-D5 made
+   `personal_bests` the single owner of PR truth) — it derives via a
+   personal_bests match, proven in pgTAP; (iii) name strings derive via
+   joins, not stored denorms (D-B7 law) — text templates carry verbatim
+   (FYI-9); (iv) `updatedAt` becomes DB-owned/read-time. **Timing: as
+   #1.**
+3. **`onTimesWritten`** — banked Phase D, D-D1 (NOTES:600–601: "defers
+   whole to Phase J, extending the D-C1(b) precedent" — "the third
+   aggregation trigger"). Fires on `swimmers/{sid}/times/{tid}`;
+   recomputes `prsByEvent` + dashboard activity.
+   **Replacement: ALREADY EXISTS.** `maintain_personal_bests()` (D-D5,
+   landed in Phase D) is the un-bypassable PG owner of PR truth; J only
+   re-points the reader (PR badge = count of personal_bests rows per
+   swimmer). **Values verdict: identical count by construction** (both
+   = distinct event+course bests) **EXCEPT two named items:** the
+   doc's `timeDisplay` is derived-on-read post-D (ratified FYI), and
+   the doc's `date: meetDate ?? createdAt` fallback maps to
+   personal_bests' date semantics — exact column mapping named at
+   execution, never assumed. **Timing verdict: BETTER than today's
+   contract** — the PG trigger recomputes in the writing transaction;
+   no async window at all.
+4. **`onNotesWritten`** — banked Phase E (NOTES:758: "onNotesWritten +
+   notes aggregations → J (the fourth aggregation trigger"). Fires on
+   `swimmers/{sid}/notes/{nid}`; recomputes `noteCount`/`lastNoteDate`
+   + dashboard activity.
+   **Replacement:** count(*)/max(created_at) over `swimmer_notes`.
+   **Values verdict: identical** (same count, same max) — with the
+   absence-is-parity note that NOTHING renders these two fields today
+   (§1d; D-J3 decides whether the shape carries them). The feed arm:
+   note items derive from swimmer_notes (the CF's collectionGroup
+   read never included group_notes — parity = swimmer_notes only,
+   named). **Timing: as #1.**
+5. **`onVideoSessionWritten`** — banked Phase F (NOTES:902–904:
+   "subject collection now write-dead → Phase J (D-C1(b)/D-D1 family,
+   the fifth aggregation trigger)"). Fires on
+   `video_sessions/{sessionId}`; dashboard activity only.
+   **Replacement:** the feed's video arm reads PG `video_sessions`
+   where status='review'; the swimmer count comes from the
+   `video_session_swimmers` junction (F landed it) instead of
+   `taggedSwimmerIds[].length`. **Values verdict: identical** given
+   junction-parity (F's backfill law owns that). **Timing: as #1.**
+
+### §3 What 01 and 04 say Phase J contains — exact quotes
+
+- 04:54 (collection table): "| aggregations | aggregations.ts
+  (read-only) | **DO NOT migrate — recompute in PG** |"
+- 04:106 (phase table): "| **J** | **aggregations decommission** | Do
+  NOT migrate; recompute via PG triggers/jobs; retire/re-point
+  rebuildAggregations + dashboardAggregations. |"
+- 04:156–158 (per-step): "**J — aggregations.** No data migration.
+  Recompute via PG (unbuilt triggers/jobs); point `aggregations.ts`
+  reads at PG-computed views; retire the two aggregation CFs."
+- 04:172 (backfill table): "| Aggregations: recompute in PG (NOT
+  migrated) | **J** |"
+- 01:722–730: "-- AGGREGATIONS — [SCOPE] read-model store; staff read;
+  writes by service role/ triggers only. [P2-5] DO NOT migrate rows;
+  recompute post-migration. CREATE TABLE aggregations ( key TEXT
+  PRIMARY KEY, kind TEXT NOT NULL, payload JSONB NOT NULL, updated_at
+  TIMESTAMPTZ NOT NULL DEFAULT NOW() );" — plus 01:1066 RLS-enable and
+  01:1182 `aggregations_select_staff` (staff SELECT; "writes: service
+  role only").
+- **The docs DISAGREE on the architecture:** 01 pins a materialized
+  JSONB doc-store TABLE; 04 §156 says "point reads at **PG-computed
+  views**." Both are ratified text. Whichever way D-J2 goes, the loser
+  is amended by name (the A3/D-D5 canonical-amendment precedent). No
+  migration ever created the 01 table, so there is no schema to roll
+  back either way.
+- Standing banked constraints that bind J: the D-C1(b) cutover
+  checklist line (NOTES:401–403: attendance data cutover requires
+  C+G+J reader code landed); "Phase J recompute must be status-aware
+  (07 §2)" (NOTES:539); rebuild's roster enumeration already canonical
+  (NOTES:334).
+
+### §4 ONE-TIME GRANT AUDIT (read-only; the D-I2 anon-revoke, generalized)
+
+Method: live query of the running local DB (migrations 00001–00010
+applied) over `pg_proc` — every SECURITY DEFINER function in `public`,
+its full ACL (NULL ACL = Postgres default = PUBLIC EXECUTE), plus
+explicit `has_function_privilege` checks for anon/authenticated.
+17 functions. `=X/postgres` in an ACL is the PUBLIC grant.
+
+**Already narrowed (conform — the ratified pattern):**
+`redeem_parent_invite` (anon=false; the Phase I revoke),
+`approve_session_draft` (anon=false; authenticated+service_role),
+`swim_results_recompute_pb` (service_role ONLY),
+`upsert_rule_notification` (service_role ONLY).
+
+**FINDING GA-1 — `attendance_check_in(p_swimmer_ids uuid[], …)`:
+anon=true via a surviving PUBLIC default.** ACL =
+`=X/postgres ; postgres ; authenticated ; service_role` — the explicit
+grants were added but Postgres's default PUBLIC EXECUTE was never
+revoked, so **anon can EXECUTE a SECURITY DEFINER WRITE RPC**. This
+contradicts canonical intent exactly the way D-I2's default did (D-C2
+ratified an authenticated client RPC; nothing ratified anon
+reachability). Whether its internal guards would stop an anon caller is
+NOT relied on — the ratified posture is grant-level denial. **Proposed
+closure (FYI class, mechanically safe):** `REVOKE EXECUTE … FROM
+PUBLIC, anon;` + a pgTAP anon→42501 proof, landing inside J's
+migration commit. Mechanically safe because every known caller is
+authenticated (both apps) or service_role; the F-lesson class instance
+is named, matching the Phase I post-hoc precedent.
+
+**FINDING GA-2 (inert, hygiene):** the four SECURITY DEFINER
+trigger-functions (`attendance_derive_practice_date`,
+`enforce_profile_self_update`, `handle_new_user`,
+`maintain_personal_bests`) all carry PUBLIC/anon EXECUTE. Inert by
+construction — Postgres refuses direct invocation of
+trigger-returning functions, and trigger firing does not consult the
+caller's EXECUTE — but the uniform house rule ("no PUBLIC EXECUTE on
+any SECURITY DEFINER object") argues for revoking in the same hygiene
+statement. Proposed as part of GA-1's closure block; zero behavior
+change.
+
+**CONFORMING (no action, rationale named):** the helper predicates
+(`auth_profile_id`, `is_active_account`, `is_my_profile`,
+`is_my_swimmer`, `is_staff`, `is_super_admin`, `my_family_ids`,
+`my_swimmer_groups`) are broadly granted INCLUDING explicit anon — and
+that IS canonical intent: they are RLS-policy plumbing that any
+policy-evaluating role must be able to execute, and under an anon
+context they yield NULL/false/empty (no information, no capability
+beyond what RLS already grants). Revoking could break policy
+evaluation; explicitly NOT proposed.
+
+Nothing in the audit is ambiguous enough to need a [DECIDE]; GA-1/GA-2
+ride as FYI items (§7) per the "mechanically safe narrowings" rule.
+
+### §5 The numbered mini-plan (BLOCKS on §7; baseline bar 835 TZ=UTC + 316 / 1081 / 133)
+
+Drafted against the recommended options (D-J2(a) views, D-J3(a) full
+shape, D-J1(a) J/K split); commits renumber mechanically if Kevin picks
+otherwise. All standing norms apply: four bars green at every commit,
+never advance on red; one green commit per logical change; data layer
+only; RC-3; the tripwire stays armed mid-execution.
+
+1. **BSPC `00011_phase_j_aggregations.sql` + pgTAP `014` (one commit,
+   RC-3).** Four staff-gated views (each carries an explicit
+   `is_staff()` arm — the no-widening wall, §6.3): per-swimmer
+   attendance aggregate (status-aware filter VERBATIM from 07 §2;
+   22/64 denominators verbatim per D-J4), per-swimmer PR/notes
+   aggregate (personal_bests + swimmer_notes), dashboard attendance
+   (84-day counts by practice_date), dashboard activity (4-arm UNION
+   with per-arm limits 8/5/5/5, joined name strings, truncateNote-60
+   semantics, personal_bests-derived 'pr' type, review-only video arm
+   + junction count, ORDER BY timestamp DESC LIMIT 15). PLUS the GA-1
+   + GA-2 grant closure block. pgTAP 014 proves: per-view staff values
+   on fixtures (the recompute-truth successors to the retired CF value
+   pins), per-view family/pending/anon ZERO rows, the status-aware
+   proof (absent/excused/sick/injured rows do not count), the
+   'pr'-derivation proof, attendance_check_in anon→42501 (GA-1), and
+   publication membership UNTOUCHED at EXACTLY 23 (views join no
+   publication; if a needed source table proves absent from the
+   publication at execution, the addition is an RH-12 same-commit
+   23→24 pin — named contingency, not expected). **Expected: pgTAP
+   +14-to-22; other bars unchanged.**
+2. **Coach `aggregations.ts` swap + the aggregation readers re-point
+   (one commit).** Service keeps its FROZEN exported signatures/types;
+   house idiom (channel on source tables + full re-fetch — the
+   importJobs pattern; views can't join publications). roster.tsx's
+   2×N inline Firestore subscriptions collapse INTO the service's
+   per-swimmer subscriptions (the dead exports come back to life as
+   the only path — 04:54's "aggregations.ts (read-only)" finally true).
+   useDashboardData re-points its two dashboard subscriptions (already
+   via the service) and its `pendingDrafts` queries onto the EXISTING
+   PG audio.ts/video.ts services (the F-domain catch-up rider, D-J1 —
+   same query shape, no new capability). Test transforms: services 18
+   → house supabase mock (subjects preserved), hook 8 re-pointed,
+   roster tests follow the screen. **Expected: Coach 1081 → 1081±6;
+   others unchanged.**
+3. **Functions retirement (one commit).** Delete the four trigger
+   modules + `scheduled/rebuildAggregations.ts` +
+   `triggers/dashboardAggregations.ts`; index.ts drops the five
+   exports (its Phase F comment block updates — the machinery it
+   pointed at Phase J is now gone). **NAMED TEST DELETIONS,
+   pre-declared per the deletion norm (the Functions bar goes NET
+   NEGATIVE for the first time — flagged here, honestly):** all 18
+   tests in the six files named in §1 retire WITH their subjects; 16
+   are dispatch-wiring pins whose mechanism (CF dispatch) ceases to
+   exist — successor: the pgTAP 014 value proofs own recompute truth;
+   the 2 dashboard value pins re-point BY NAME to pgTAP 014's 84-day
+   window proof and activity-formatting/top-15 proof + the commit-2
+   service mapping tests. **Expected: Functions 133 → ~115; others
+   unchanged.**
+4. **Dead-code sweep (one commit, membership per D-J6):** delete
+   `useSwimmer.ts`, `useMeetDetails.ts`, `demoReadiness.ts` (+ their
+   test files — named deletions: 8 + ~5 + 3 subjects whose features
+   were never mounted; no successors exist or are needed for code with
+   zero importers), the stores' type-only `firebase/firestore`
+   `Unsubscribe` imports → local type. **Expected: Coach net negative
+   by the named amounts.**
+5. **`migration/j/README.md` + NOTES landed log (one commit).**
+   Manifest is INSTRUCTIONS-ONLY behind the standing HARD-STOP header
+   and is mostly a null-manifest: aggregations rows DO NOT MIGRATE
+   (04:172, 01 P2-5 — ratified twice); no rows copied, no backfill
+   exists; first PG read is correct by construction. Cutover lines:
+   the D-C1(b) checklist line ("attendance data cutover requires
+   C+G+J reader code landed") is SATISFIED as of commit 2 — recorded;
+   the stale Firestore `aggregations` docs (and every write-dead
+   collection) die with the Firebase project per the 06 runbook
+   decommission step — deletion is runbook territory, NOTHING here
+   runs; coach_chat's disposition line per D-J7.
+
+Zero test deletions is NOT the posture this phase — the deletion norm's
+named-deletion-with-successors arm is, with every file and count
+pre-declared above. Any deletion NOT named here is a flagged deviation.
+
+### §6 Red-team
+
+- **6.1 Absence-is-parity.** (i) The entire machinery is FROZEN today —
+  the four triggers haven't fired since C/D/E/F; the 4 AM rebuild
+  rewrites yesterday's stale values from dead collections. Nothing
+  Kevin's users have ever relied on breaks; the parity bar is shape +
+  contract, and freshness only improves. (ii) Six of the computed
+  fields are write-only (§1d) — D-J3 decides whether shape parity
+  carries them; nothing renders them either way. (iii) The dead
+  exports, dead hooks (`useSwimmer`, `useMeetDetails` — zero importers)
+  and test-only `demoReadiness` are absence-is-parity deletions
+  (D-J6). (iv) The aggregation that "never actually worked" in the
+  audit sense: dashboard freshness post-C was already 24h-stale by
+  design; no probe asserts freshness, so none is owed.
+- **6.2 The F lesson — every default and do-nothing path, audited.**
+  The triggers' silent `if (!swimmerId) return` and the rebuild's
+  silent daily stale overwrite both LOOK like success while doing
+  nothing real — the retirement (not re-pointing) of all five is the
+  F-lesson answer: no do-nothing path survives to mask a recompute
+  miss. roster.tsx's ignore-errors snapshot handlers silently render
+  empty badges on permission failure — the commit-2 re-point inherits
+  the house idiom's surfaced errors instead. merge:true partial-field
+  writes disappear with the docs (a view cannot half-exist). The
+  jest-mock blindness class (RC-7) is what hid the whole D-J1 terrain:
+  screens mocked Firestore, services mocked PG, and the green bar
+  never crossed the boundary — pgTAP 014 + the swapped service mocks
+  are the structural answer, and D-J1's inventory is the residue made
+  loud. GA-1 is the F-lesson at the grant layer (a platform default
+  silently wider than ratified intent).
+- **6.3 No-widening (D-H9 cited as the precedent gate).** Today's
+  Firestore rule: `aggregations` read=isCoach, write=false (rules:111–
+  114). The PG surface preserves it exactly: every J view carries an
+  explicit `is_staff()` arm, family/pending/anon proven to ZERO rows in
+  pgTAP 014 — security_invoker alone would have WIDENED (a parent
+  computing partial aggregates over their own visible rows is a NEW
+  capability nothing ratified; declined by construction). Parents/
+  portal gain nothing (the portal has never read aggregations and still
+  won't). No new fields; the only widening-shaped idea on the table
+  (real schedule-derived denominators, D-J4(b)) is presented to be
+  DECLINED per the no-widening doctrine unless Kevin rules otherwise —
+  no D-H9-class precedent citation supports it, so per the standing
+  rule it cannot ship this phase. The pendingDrafts rider re-points an
+  EXISTING read through EXISTING services — query shape identical, no
+  capability change.
+- **6.4 Ordering/atomicity vs today's eventual consistency — stated
+  honestly.** TODAY (contractual): async trigger fan-out; two
+  concurrent writes race their full recomputes last-write-wins per
+  doc; the 4 AM rebuild can interleave with triggers; merge:true
+  interleaves per-field; readers can see values from BEFORE their own
+  write (eventual). TODAY (actual): permanently stale, refreshed daily.
+  D-J2(a) VIEWS: no materialization → no write ordering AT ALL to get
+  wrong; every read is one consistent MVCC snapshot; semantics move
+  from eventually-consistent-or-frozen to read-time-fresh. NAMED
+  consequence: a dashboard read mid-bulk-import now sees the half-
+  loaded live state rather than yesterday's snapshot — accepted
+  pre-launch, recorded. D-J2(b) TABLE+TRIGGERS: same-transaction
+  recompute is STRONGER ordering than today, but reintroduces
+  concurrent-recompute racing that needs the D-D5 advisory-lock
+  discipline, plus a staleness class whenever a trigger path is
+  missed — the exact bug family J exists to retire. This asymmetry is
+  why §5 drafts against (a).
+- **6.5 Stale aggregated values sitting in Firestore at cutover —
+  manifest territory, parked.** The `aggregations` docs hold the
+  frozen pre-C/D/E/F numbers forever; they DO NOT MIGRATE (ratified
+  04:172 + 01 P2-5), nothing reads them after commit 2, and they die
+  with the Firebase project at the 06-runbook decommission step. The
+  same fate covers every write-dead collection AND whatever sits in
+  `coach_chat` (D-J7's data-loss line is named there). NOTHING in
+  Phase J copies, deletes, or runs against either store — **behind
+  the HARD STOP, always.**
+- **6.6 COPPA/PII.** Activity-feed text embeds minors' names; the
+  surface stays staff-only (6.3) and the PG derivation removes stored
+  denorm copies. Fixtures stay synthetic (house law). No real data was
+  read for this scope; coach_chat contents were not opened.
+- **6.7 RC-8 echo.** J builds nothing a later phase deletes: the
+  views/grants are end-state; Phase K (if D-J1(a)) deletes only UI
+  residue, never J's work.
+
+### §7 [DECIDE] — Phase J decision queue (awaiting Kevin; compress nothing)
+
+**D-J1 — THE TRIPWIRE (decide first): the UI layer still has a foot in
+Firestore, and the docs say otherwise.** The classified inventory
+(file:line = live Firestore call sites; NONE of these files appears in
+any phase inventory or landed log before this entry):
+- **(i) Aggregation readers — J-proper either way:**
+  services/aggregations.ts (4 subs); roster.tsx:73,89 (inline 2×N) +
+  :223,:226–229 (rendered fields); useDashboardData.ts:62,95 (via
+  service) and :74,:81 (pendingDrafts on audio_sessions/
+  video_sessions — F-domain data inside the J-target hook).
+- **(ii) Write-dead-domain readers/WRITERS missed by the service-
+  scoped sweeps (split-brain live TODAY, hidden by mocks — concrete
+  examples):** app/swimmer/new.tsx:76 **addDoc(swimmers)** — creating
+  a swimmer writes a FIRESTORE doc no PG reader will ever see;
+  app/swimmer/[id].tsx:970 addDoc(times) + :116,:134 deleteDoc(notes/
+  times) while the SAME screen's add-note path writes PG via
+  services/notes.addNote — a coach adds a note (PG write) and the
+  screen's list (Firestore read via useSwimmerData) never shows it;
+  app/swimmer/edit.tsx:69,117 getDoc/updateDoc(swimmers);
+  app/swimmer/standards.tsx:52,59 (swimmers doc + times);
+  app/swimmer/invite-parent.tsx:39 (swimmers doc — one day after
+  Phase I swapped the invites service, the screen's header still
+  subscribes Firestore); app/meet/[id].tsx:38 + useMeetDetails.ts:36
+  (meets — H); app/calendar/event/[id].tsx:35 (calendar_events — H);
+  app/video/[id].tsx:57, SwimmerVideoClips.tsx:33,
+  VideoComparison.tsx:45,61,70 (video_sessions + drafts subcollections
+  — F); SwimmerTimeline.tsx:66,74 (notes + times subcollections — D/E;
+  mounted by the profile screen); useSwimmerData.ts:49,61,77 (swimmers
+  + notes + times); useSwimmer.ts:23 (dead hook).
+- **(iii) `coaches`-collection surfaces — the auth/session family:**
+  AuthContext.tsx:48,74,120 (ALREADY cutover-banked by ratified Option
+  (b)); app/admin.tsx:39,59,73 (approval queue reads/WRITES coaches);
+  app/(tabs)/settings.tsx:46 (updateDoc coaches). admin/settings were
+  never explicitly banked — they ride the same Firebase-auth account
+  store AuthContext owns, so the COHERENT reading is they belong to
+  the same bank; D-J1 makes that explicit instead of implicit.
+- **(iv) `coach_chat`** — D-J7, its own block.
+- **Corrections of record (ride with whatever option is picked):** the
+  Phase I landed-log line "Firestore reads/writes remaining in the
+  Coach app data layer: NONE — parentInvites.ts was the last" was an
+  OVERCLAIM — true for src/services EXCEPT aggregations.ts (which 04
+  banks to J in the same breath), and false for the app at large (this
+  inventory). The session memory file carries the same overclaim and
+  is corrected alongside. Append-only correction; nothing edited in
+  place.
+  **Options:**
+  (a) **[RECOMMEND]** Phase J keeps its 04 charter PLUS the aggregation-
+  adjacent readers in (i) (roster + dashboard surfaces whole, including
+  the pendingDrafts rider — they ARE the aggregation consumers); the
+  rest of (ii) becomes **PHASE K — UI residual sweep**, a NEW NAMED
+  phase with its own scope-before-code round, starting from this
+  file:line list (re-point screens/hooks/components onto the EXISTING
+  swapped services — no new services, no new capability, the
+  no-widening doctrine governing); (iii) is recorded as explicitly
+  banked-with-auth; one-service-at-a-time stays intact.
+  (b) Widen J to swallow all 19 files now (one phase, but it spans
+  seven domains and dwarfs the aggregation work — violates the
+  one-service-at-a-time norm that has held since A).
+  (c) Leave (ii) until cutover and rely on the manifest (NAMED RISK,
+  not recommended: the split-brain writes above are live bugs TODAY —
+  pre-launch and test-data-only, which is why this is survivable, but
+  every day they stand is a day a colleague's manual test writes data
+  into a store that dies at cutover).
+
+**D-J2 — the recompute architecture (01 and 04 disagree; the loser is
+amended by name).**
+  (a) **[RECOMMEND] PG-computed VIEWS, staff-gated, compute-on-read**
+  — 04 §156's own words; the analytics.ts precedent (it already
+  computes attendance percentages from PG with the D-C5 filter);
+  no staleness class, no ordering machinery, no publication change;
+  canonical amendment: 01's unbuilt `aggregations` JSONB table +
+  `aggregations_select_staff` policy are RETIRED from canonical (a
+  narrowing — the table was never created by any migration).
+  (b) Build 01's `aggregations` table (key/kind/payload JSONB) +
+  PG triggers/jobs maintaining it — preserves the materialized
+  read-model and enables realtime-on-the-table, at the cost of trigger
+  machinery + advisory-lock discipline (D-D5 class), a reintroduced
+  staleness/missed-path class, publication 23→24 (RH-12 pin), and a
+  JSONB payload no pgTAP column-proof can pin as tightly; canonical
+  amendment: 04 §156's "views" wording updates.
+
+**D-J3 — view/result shape.**
+  (a) **[RECOMMEND] Full legacy doc shape** — every §1c field computed
+  (including the six write-only ones; each is one cheap aggregate
+  expression), service exported types FROZEN, zero type ripple.
+  (b) Consumed-fields-only (attendancePercent30, PR count, countsByDate,
+  items) — smaller SQL, but the service types narrow and
+  absence-is-parity is being used to change a frozen interface, which
+  the freeze norm exists to prevent.
+
+**D-J4 — the attendance-percent denominators.**
+  (a) **[RECOMMEND] Hardcoded 22/64 VERBATIM** in the view, comment
+  carried ("Approximate: 5 practices/week") — parity; the honest fake
+  stays an honest fake.
+  (b) Derive real denominators from the calendar/schedule — WIDENING
+  (new semantics nothing ratified; no D-H9-class citation exists);
+  presented only to be declined and BANKED as a named post-cutover
+  product item.
+
+**D-J5 — the retirement + named-deletion plan.** Ratify §5 commit 3 as
+written: all five CF modules + the scheduled rebuild retire in one
+commit; the 18 named Functions tests delete WITH their subjects under
+the deletion norm (successors named per file in §5/§1); the Functions
+bar going net-negative (133 → ~115) is accepted as the honest count.
+The alternative — keeping any CF alive against PG — re-creates the
+RC-8 plumbing-J-deletes problem in J itself and is not offered.
+
+**D-J6 — dead-code sweep membership (each item strikeable):**
+useSwimmer.ts + its test file; useMeetDetails.ts + its test file;
+demoReadiness.ts + its 3 tests; the stores' type-only Unsubscribe
+imports. (a) **[RECOMMEND]** all four items land as §5 commit 4 (J is
+already holding the aggregation-reader scalpel; these are its dead
+siblings, all zero-importer-verified). (b) Park them to Phase K's
+list.
+
+**D-J7 — `coach_chat` / app/messages.tsx (SETTLED #5's premise was
+wrong; its intent needs an explicit call).** The record: SETTLED #5
+(NOTES:96–98) dropped coach_chat as "dead/unimplemented… Kevin
+confirmed no near-term plan for messaging"; the H manifest repeats
+"nothing reads them" (migration/h/README:82–83). The terrain:
+app/messages.tsx is a FULL live CRUD screen on `coach_chat` (read/
+send/edit/delete, coach-only rules), routed from the dashboard
+(app/(tabs)/index.tsx:163), and it has existed since 2026-04-02 —
+the premise was wrong WHEN SETTLED, not drifted-wrong since. The
+product INTENT (no messaging investment) was still Kevin's ratified
+call. Options:
+  (a) **[RECOMMEND] Honor SETTLED #5's intent, now with true facts:**
+  the messages screen + its dashboard entry point RETIRE (a Phase K
+  deletion, since it is UI-residue work, not aggregations); coach_chat
+  gets no PG home; whatever test chatter sits in the collection dies
+  with Firestore at cutover (named data loss, pre-launch, zero minors'
+  data expected in a coach-to-coach channel — contents not read this
+  scope). Correction-of-record lands in the K landed log + the 06
+  runbook line.
+  (b) Keep the feature: coach_chat needs a canonical table + RLS + a
+  service + a swap mini-round — this UN-DOES a settled decision and
+  needs its own scope round; nothing about it is Phase J.
+  (c) Leave it live-on-Firestore until cutover and decide in the 05/06
+  auth-cutover planning (it would be the LAST live Firestore write
+  surface standing after K — named).
+
+**FYI bundle (accept-as-named unless struck):**
+1. **GA-1** — attendance_check_in `REVOKE … FROM PUBLIC, anon` +
+   pgTAP anon→42501 proof, inside J commit 1 (the D-I2/F-lesson class,
+   mechanically safe, callers verified authenticated/service-role).
+2. **GA-2** — the four inert PUBLIC grants on SECURITY DEFINER
+   trigger-functions revoke in the same hygiene block (zero behavior
+   change; uniform rule).
+3. **GA-3** — helper-predicate broad grants CONFORM (policy plumbing;
+   anon context yields nothing); no action, rationale recorded in §4.
+4. The Phase I landed-log "NONE" overclaim and 5. the session-memory
+   echo of it: corrected by D-J1's inventory, append-only (no
+   edit-in-place).
+6. rebuild's `every day 04:00` has no timeZone (platform default) —
+   moot at retirement, named for completeness.
+7. roster double-rounds attendancePercent30 (CF rounds, UI rounds) —
+   harmless, carries as-is.
+8. dashboard_attendance holds 84 days, the UI renders 30
+   (SPARK_DAY_COUNT) — the view keeps 84 (shape parity, D-J3(a)).
+9. Activity item id prefixes (`att-`/`note-`/`time-`/`video-`) and the
+   text templates (truncateNote-60, 'Manual entry', 'VIDEO READY: N
+   swimmer(s) analyzed', '— NEW PR!') carry VERBATIM into the PG
+   mapping.
+10. `type:'pr'` derives via personal_bests (no is_pr column exists in
+    canonical — D-D5 owns PR truth); proven in pgTAP 014.
+11. Publication stays EXACTLY 23 (views join no publication); any
+    source-table addition discovered at execution is an RH-12
+    same-commit pin (named contingency, not expected — attendance,
+    swim_results, swimmer_notes, video_sessions, audio_sessions all
+    verified present in 011's membership list).
+12. The D-C1(b) cutover checklist line is SATISFIED at J commit 2;
+    the manifest records it.
+
+**Execution blocks on D-J1–D-J7. No Phase J implementation this
+session; bar untouched (835 TZ=UTC + 316 / 1081 / 133); UNIFY is the
+sole repo touched (ratification entry + this scope).**
