@@ -585,3 +585,36 @@ Headline findings:
    date ordering NULLS-LAST + created_at tiebreak (P0-5); created_by
    parent-visibility stays in the accepted P2 bucket; analytics adopts the
    D-C5 absent-exclusion (RD-4).
+
+---
+
+## Phase D decisions RATIFIED — 2026-06-09 (Kevin)
+
+Plan reviewed and approved ("RD-1 alone justified the tripwire"). Verbatim
+calls:
+
+- **D-D1: YES** — `onTimesWritten` defers whole to Phase J, extending the
+  D-C1(b) precedent.
+- **D-D2: YES** — strict ÷10 conversion behind the hard in-migration audit.
+  If the audit finds ANY value that would lose precision, it aborts and the
+  session STOPS and reports to Kevin — **never override it**.
+- **D-D3: ALL FOUR** time_ms tables convert in the same migration
+  (swim_results, personal_bests, team_records, time_standards + seed). The
+  database never speaks two unit dialects.
+- **D-D4: YES** — course backfill derives from a uniquely-matching result,
+  else defaults 'SCY' with every defaulted row reported to Kevin; ambiguity
+  stops the migration.
+- **D-D5: THE DATABASE TRIGGER** — `maintain_personal_bests()`,
+  advisory-locked, recompute-from-rows, the single un-bypassable owner of
+  PR truth. **Joins canonical** the way the A3 check-in RPC did (canonical
+  amendment ratified).
+- **D-D6: IN D** — the goals/group_notes catch-up DDL + RLS + pgTAP land
+  inside Phase D.
+- **FYI bundle: ACCEPTED in full** — timeDisplay derived-on-read;
+  NULLS-LAST with created_at tiebreak; created_by stays in the P2 bucket;
+  analytics adopts the D-C5 absent-exclusion.
+
+Execution order: 08 §6 exactly, as ratified. The 00005 migration and the
+BSPC unit flip land as the atomic pair (no commit may exist where the
+database and the app disagree on units — RC-3 spirit). Honor RD-1..RD-13
+fixes including analytics D-C5.
