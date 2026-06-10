@@ -794,3 +794,42 @@ pass-2 pointers + draft-halves close IN F; practice-plan PDF + import FILES
 re-banked to **Phase H** with their data (per-coach-private scope preserved
 — RF-6). `onVideoSessionWritten` → J (fifth aggregation trigger, extends
 D-C1(b)/D-D1).
+
+---
+
+## Phase F ratifications — 2026-06-09 (Kevin, verbatim calls)
+
+Plan reviewed and approved ("the auth-cutover coupling alone justified the
+inverted default").
+
+- **D-F1: SUPABASE STORAGE is the file home.** Post-cutover clients
+  authenticate natively; the wall becomes storage.objects RLS with pgTAP
+  proofs — one wall, one rule, extended to files literally. The
+  resumable-upload rework, the transient Google-storage staging step inside
+  the video function, and the cutover file copy (behind the HARD STOP, as
+  always) are accepted costs.
+- **D-F2: CLIENT-INVOKE + SCHEDULED SWEEPER** replaces the Firestore
+  document triggers. No webhook architecture — webhook delivery is
+  untestable on our stack, and we don't trust mocks. Every link provable,
+  the sweeper catches drops.
+- **D-F3: THREE BUCKETS** with today's exact mime/size caps; media
+  staff-only matching today's coaches-only set, not one bit wider; profile
+  photos via long-lived signed capability URLs, shape-identical to today's
+  token URLs — parents keep exactly ONE media affordance. Consent stays at
+  create/approve with BUG #4 verbatim; the file layer neither gains nor
+  loses consent logic.
+- **D-F4: SCOPE** — photos + voice audio move in F as promised by B/E.
+  Practice-plan PDFs and import files RE-BANK to H with their data, because
+  they are per-coach-private today and a staff wall would widen access.
+  **The no-widening doctrine applies within staff too.**
+- **D-F5: RATIFIED** — the draft tables gain `reviewed_at` (the
+  lossless-home precedent).
+- **D-F6: RATIFIED** — the `approve_draft` RPC heals the E seam atomically
+  in the database (the A3/D-D5 precedent); `onDraftReviewed` retires as a
+  true subject-code deletion, its tests named per the standing norm when
+  that lands.
+
+Execution: 10 §3/§5 exactly — the nine green commits. BUG #4 verbatim;
+every storage.objects policy pgTAP-proven like table RLS; no file one bit
+more accessible after the move; the parent surface keeps exactly one
+affordance, proven. No production/live file movement this phase.
