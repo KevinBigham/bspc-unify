@@ -1370,3 +1370,90 @@ widens nothing; the BSPC side only narrows per D-H7.
 With D-H9 in, **every Phase H decision (D-H1–D-H9 + the full FYI bundle)
 is ratified**. The queued 01/04 paperwork lands now, with this execution
 session, per the A1/A2/A3 precedent; then 12 §5 executes in order.
+
+---
+
+## 2026-06-10 — Phase H (calendar + meets + plans + import_jobs) CODE-SIDE COMPLETE — landed per 12 §5, eleven green commits
+
+**Bar: BSPC 835 (TZ=UTC, unchanged as predicted) · pgTAP 209 → 274 (+65) ·
+Coach 1034 → 1077 (+43) · Functions 125 → 128 (+3). All four bars green at
+every commit; never advanced on red. Zero test deletions** — two pin
+TRANSFORMS named per the norm, subjects kept with replacements: (1) the two
+Firestore client-cascade pins on deleteSeasonPlan merged into the one
+canonical single-DELETE pin (RH-10 — the behavior they pinned was replaced
+by ratified design); (2) the three stableId/djb2 pins re-pointed to the
+ical_uid conflict key (D-H3 — same idempotency-key subjects: determinism,
+distinctness, weird-char safety). Test counts only rose.
+
+Paperwork (UNIFY `e71050a`): 01 amended — is_my_profile() helper, D-H1
+per-coach walls, D-H3 calendar_events sync columns + nullable coach_id,
+D-H5(b) [SCOPE-DEFERRED] annotation, D-H9 named-widening note on the meets
+policies; 04 amended — import_jobs into Phase H (D-H8). (01 has no storage
+DDL section; D-H2a's bucket lives in 00009 + 12.)
+
+The eleven commits, landed in order:
+1. **Coach `6745a39`** — seasonPlanning DATA-LAYER pins FIRST (04 §H
+   mandate): all six Firestore data functions pinned before any swap.
+2. **BSPC `cc037d9`** — `00009_phase_h_calendar_meets_plans.sql` + pgTAP
+   012 (65 proofs) + 011's publication proof 14 → 22 SAME commit (RH-12).
+   Eight tables; D-H1 within-staff walls via is_my_profile() — the
+   project's FIRST staff-A/staff-B pgTAP proofs (private invisible, public
+   template readable-not-writable, no reassign, no spoof; imports
+   owner+super_admin, delete admin-only); D-H2a practice-plans bucket
+   (25MB/pdf caps mirrored; is_staff() AND owner-segment — RH-14's
+   parent-segment hole closed, proven as the ONE named stricter bit);
+   D-H3 sync columns + ical_uid UNIQUE + fake-owner-unrepresentable FK
+   proof; D-H4 RSVP key; D-H5(b) staff-only calendar walls; D-H7 meets
+   policy swap in-migration (deactivated → 0 proven; admin-inline →
+   is_staff() same set); D-H9 pins (parent reads coach-origin meets row +
+   its logistics fields; parents AND pending read ZERO meet_entries rows);
+   RH-10 weeks key + single-DELETE cascade; house triggers; rsvps
+   trigger-less (DEFAULT-only updated_at, proven).
+3. **Coach `b605bed`** — calendar.ts swap: RH-4 month rewrite (February +
+   December pinned), D-H4 upsert onConflict(event_id,swimmer_id),
+   denorms derived on read, realtime parity ×2 channels.
+4. **Coach `cb7083b`** — meets.ts swap: Coach slice of the D-H9 superset;
+   BSPC-origin null tolerance pinned (RH-8); entries hundredths verbatim +
+   derived displays (RD-5).
+5. **Coach `8313ca1`** — meetResultsImport meets-half: one meet_entries
+   UPDATE keyed (meet_id, swimmer_id, event_name); display + stamp drops;
+   swallow-and-report verbatim.
+6. **Coach `6b5b34c`** — practicePlans + workoutLibrary pair: D-H1 walls
+   under the reads (RH-2 filter discipline pinned), RH-16 server-side PDF
+   exclusion + title := filename, D-H2a uploads via the F helper +
+   fresh signed URLs, D-H6 parity-deny (rateWorkout read-merge-write;
+   ratings keys stay coach.uid until cutover), tagWorkout trigger-bump
+   named.
+7. **Coach `4b0a002`** — seasonPlanning swap UNDER the commit-1 pins;
+   RH-10 single delete; id-based week upsert 1:1; no-stamp weeks.
+8. **Coach `a6477b2`** — search meets+calendar halves: frozen
+   fetch-then-filter; BSPC-origin NULL course/status → '' (frozen result
+   shape); the halves' FIRST tests.
+9. **Coach `bc7d314`** — importJobs + csvImport/meetResultsImport
+   jobs-halves (D-H8): owner+super_admin walls; vestigial storage_path
+   constants verbatim (RH-13).
+10. **Functions `9c2a247`** — syncCalendar re-point (D-H3): one upsert
+    onConflict('ical_uid'); ownerless rows (coach_id NULL +
+    source='ical_sync'); clobber semantics preserved; created_at churn
+    HEALED (named); env contract unchanged; no Deno changes.
+11. **BSPC migration/h/README.md + this log** — manifests only, HARD STOP:
+    meets reconcile (name+start_date, ambiguity STOPS, superset-fill,
+    D-H9 rows counted by name) → entries (roster map, unresolvable STOPS,
+    hundredths verbatim) → calendar (sentinel → NULL+source) → rsvps
+    (dup collapse keep-latest + REPORT) → plans (ratings-key +
+    templateSourceId remaps; pdf title synthesis) → season plans/weeks
+    (practice_plan_ids remap) → import_jobs (coachId → profiles.id).
+    File copy: owner-segment rewrite via the identity map + the D-H2a
+    one-divergence tripwire restated; `imports/**` verify-empty (non-empty
+    → REPORT, never auto-copy). NO backfill ran; NO file was copied.
+
+**Cutover lines banked:** syncCalendar's first PG run post-backfill must
+verify zero net new rows (same ical_uid keys); D-H5(b) parent arms ship
+only with a parent calendar feature; the D-H9 backfill log counts
+coach-origin meets made parent-readable, by decision name.
+
+**Phases A–H code-side COMPLETE. Next per 04: Phase I (parent_invites +
+parent-portal cutover), then J (aggregations decommission).** Firestore
+reads/writes remaining in the Coach app data layer: NONE in swapped
+services; parentInvites.ts is Phase I's subject. Bar at close: 835 TZ=UTC
++ 274 / 1077 / 128, BSPC tsc clean.
