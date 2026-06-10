@@ -1008,3 +1008,122 @@ unchanged.
 Execution per 11 §5 begins now; standing norms in force (green at every
 commit, RC-3, data layer only, no-widening incl. everything SENT, no Deno
 edits, deletion norm, no force-push/rebase/amend).
+
+---
+
+## 2026-06-10 — PHASE G (notifications) LANDED — code-side complete
+
+Executed per 11 §5 under D-G1..D-G6, one green commit at a time (all four
+bars green at every commit; RC-3 held; no Deno file touched).
+
+- **BSPC `00008_phase_g_notifications.sql` + pgTAP 011, 42 proofs**
+  (`9dcae51`): notification_rules (TEXT-CHECK 6-trigger domain per OD-1,
+  coach_id → profiles RESTRICT, updated_at trigger, staff FOR ALL wall);
+  in_app_notifications + category (6-value)/data/rule_id/swimmer_id/
+  source_eval_date, **[P1-6]** rule FK (SET NULL), **[P2-3]** idempotency
+  as the expression-partial UNIQUE (COALESCE sentinels; NULL-rule digest
+  rows deliberately unconstrained), **[P1-7]** UPDATE policy recreated with
+  explicit WITH CHECK, jobs policy → is_staff() (**verified the SAME
+  principal set** — is_staff() IS role IN (coach_admin, super_admin); pure
+  refactor, not widening); `digest_enabled BOOLEAN NOT NULL DEFAULT TRUE`
+  (D-G3); **`upsert_rule_notification()`** SECURITY DEFINER, service-role
+  only — the FOLLOWUP-#2 upsert lives in SQL because **PostgREST cannot
+  target an expression index's ON CONFLICT** (the D-F6 class); merge
+  semantics match the old set(merge:true) exactly (re-fire = one row,
+  refreshed, unread again, re-dated) — pgTAP proves single-row re-fire,
+  23505 on raw duplicate, sentinel dedup, staff/anon execute-denied;
+  **D-G5 publication**: exactly the 14 subscribed tables added to
+  supabase_realtime in a membership-checked DO block, pgTAP pins the set
+  EXACTLY (results_eq, collate "C" — pg_publication_tables.tablename is a
+  `name`). Walls: rules staff-wide CRUD ✓ / parent zero + 42501 / pending +
+  anon zero-tuples; **in_app own-row holds even for staff** (a coach reads
+  ONLY their own rows); **[P1-7] proof: reassigning your own notification's
+  user_id throws 42501**; mark-own-read lives_ok.
+- **Coach `notificationRules.ts`** (`0699221`): CRUD + realtime-parity
+  subscribe on notification_rules; coach_id per D-B7; timestamps DB-owned
+  (inverted pins); the pure evaluation module untouched (19 tests verbatim);
+  criticalOp re-pointed.
+- **Coach `notifications.ts`** (`779250a`): list/unread/markRead →
+  in_app_notifications with **RLS-as-the-scope** (no client-side user filter
+  exists to get wrong — pinned by asserting the ABSENCE of an eq filter);
+  register/unregister → push_tokens upsert/delete keyed by auth.uid
+  (**D-G2: storage parity only; registration still has no caller — coaches
+  get zero pushes, deliberately, on the record**). manageTopics client half
+  DELETED. **Named test deletions (subject: FCM topic machinery):**
+  "subscribes to group topics + broadcast_all", "continues on individual
+  topic failure", "unsubscribes from group topics + broadcast_all" —
+  replacements: pgTAP 011 walls + the push_tokens storage pins. AuthContext
+  sign-out lost only the dead topics call (its Firestore-guarded cleanup
+  block retires whole with the provider at cutover).
+- **Functions evaluator rebuild** (`5492035`): `evaluateAttendanceRules`
+  HTTPS entry (same x-process-secret gate + env lines as the media
+  pipeline) takes **row ids only** — the core re-derives swimmer/group/
+  marker/date from PG (id-only trust, the processSession precedent);
+  **D-C5 NOT_ABSENT filter on every presence-meaning history read** (pinned);
+  limit-then-unique streak window math verbatim; body fallback strings
+  verbatim; **RG-7 recipient mapping pinned** (rule owner's auth user ≡
+  marked_by, since rules are matched on the marker's profile);
+  writes via the RPC. `sweepAttendanceEvaluations` every 5 min over the
+  10-min created_at window (attendance has no updated_at; a lost CHECKOUT
+  kick outside the window is not re-swept — a checkout changes no rule
+  input, noted in 11). **Attendance data-layer kicks** (checkIn /
+  batchCheckIn per committed chunk / checkOut) are fire-and-forget per the
+  RATIFIED D-G1 condition — a kick can never fail or delay a write (pinned:
+  no-kick-on-failed-write; committed-chunk kicks survive batch failures;
+  never-rejects pinned in attendancePipeline's own suite per the
+  jest+Node24 rule). **Retired with subjects:** evaluateNotificationRules
+  (trigger, dark since C), onNotification (FCM sender), manageTopics
+  (callable; no functions test file existed). **Named test deletions:**
+  onNotification.test.ts (6: "should be defined", "should return early if
+  event data is null", "should skip if coach has no FCM tokens", "should
+  send push notification to each token", "should clean up invalid tokens",
+  "should not clean up tokens on other errors") — transport deleted under
+  D-G2; replacements: the writers' in_app pins + pgTAP walls; token
+  staleness is BSPC cleanup-tokens' canonical job.
+  evaluateNotificationRules.test.ts re-pointed wholesale into
+  evaluateAttendanceRules.test.ts — all 5 behavioral subjects kept; the
+  Firestore "after"-snapshot guard lives on as the row-gone/no-marker
+  no-ops.
+- **dailyDigest rewrite** (`ce360e1`): OD-4 RESOLVED — recipients
+  enumerated from the staff ROLE SET (role filter pinned, RG-8), gated by
+  digest_enabled with the **ratified missing-row-means-included flip**
+  (**named deletion:** "should skip coaches without dailyDigest preference"
+  — subject was the Firestore prefs map; replaced by the flip pin);
+  presence count = distinct swimmers under D-C5 + departed_at IS NULL
+  (RC-13 same-meaning); body + pluralization verbatim; ONE batched insert
+  of NULL-rule_id rows (RG-11 faithful). **DIGEST DOCTRINE held provably:
+  content = counts of staff-readable tables; recipients = staff by
+  construction; pgTAP's own-row wall keeps each digest readable only by
+  its recipient.**
+- **`migration/notifications/README.md`** (`5b405de`): rules → notifications
+  → prefs → tokens order; the RG-7 recipient mapping spelled out
+  (coachId → profiles.user_id, the AUTH id); domain-CHECK STOPs;
+  duplicate-triple REPORT+STOP; absent pref map = no row; fcmTokens
+  expected EMPTY (non-empty REPORTED, never auto-copied). Behind the HARD
+  STOP.
+
+**New green bar: BSPC jest 835 (TZ=UTC) + pgTAP 209 · Coach client 1034 ·
+Functions 125 · BSPC tsc clean.** Deletions per the standing norm all named
+above (3 Coach topic tests + 6 Functions onNotification + 1 digest
+missing-pref pin = 10); every other test kept its subject.
+
+**Banked/open after G:** `ai_drafts_ready` = **named post-cutover product
+line item** (D-G4: category domain landed, no producer — wiring is a
+one-line writer + tests when product says go); **coach push delivery** =
+named post-cutover product line item (D-G2; the D-G6 runbook line already
+names the skip_in_app dedup mechanism it must use if it rides the jobs
+queue). **Cutover checklist additions:** schedule send-notification +
+cleanup-tokens (Supabase cron) at cutover staging with the end-to-end
+drain verification proving no duplicate in-app rows (D-G6, mechanism named
+in the ratification entry above); the evaluateAttendanceRules endpoint
+rides the SAME `PROCESS_SHARED_SECRET` + `EXPO_PUBLIC_PROCESS_*` env lines
+already banked at F (no new secrets). **Flagged (no trusted mocks):** the
+client kick's fetch and the functions' supabase-js calls are jest-mocked as
+transport (same accepted class as F); everything provable locally IS proven
+— the upsert's merge semantics, the walls, the publication set, and the
+policy refactor are pgTAP-proven against the real database.
+
+Next per 04: **Phase H (calendar + meets + plans)** — calendar.ts, meets.ts,
+meetResultsImport meets-half, practicePlans+workoutLibrary as a pair,
+seasonPlanning (data-layer tests FIRST), syncCalendar; plus the re-banked
+practice-plan PDF + import FILES from D-F4.
