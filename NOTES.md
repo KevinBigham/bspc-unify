@@ -761,3 +761,36 @@ notes DATA cutover needs E+G+J reader code landed, or accepts
 digest/dashboard-aggregations dark during the window (same class as the
 attendance D-C1 line).
 Next per 04: **Phase F (media)**.
+
+---
+
+## Phase F (media) MINI-PLAN WRITTEN — TRIPWIRE FIRED — 2026-06-09
+
+Kevin set an INVERTED DEFAULT for F (presumed mini-plan territory); the
+investigation confirmed it. **`UNIFY/10_PHASE_F_MEDIA.md`** is the mini-plan
++ red-team, ending in [DECIDE] D-F1..D-F6. No Phase F code written.
+
+Why it fired (full register RF-1..RF-14 in 10): the file tier is pinned
+NOWHERE — 04's storage guidance is one word, canonical is host-agnostic,
+"Supabase Storage" appears in no UNIFY doc — and two hard couplings
+surfaced: **post-auth-cutover clients hold no Firebase token, so today's
+auth-gated Storage rules cannot authenticate them at all** (RF-4), and
+**Vertex AI requires `gs://` URIs for >20MB video analysis** (RF-3), so the
+file home and the AI pipeline are coupled. Independently of the file
+decision, all four media Cloud Functions are FIRESTORE document triggers
+whose subject docs move to PG in F — the trigger mechanism dies and 04
+names no replacement (RF-2 → D-F2).
+
+**Cutover-checklist line (RF-4, holds under EVERY D-F1 outcome):** the
+Firebase `storage.rules` wall is `isCoach()` = a Firestore `coaches/{uid}`
+doc-existence check. At identity cutover those docs stop being maintained
+and the wall fails closed; at auth cutover clients cannot pass ANY
+auth-gated Firebase rule. Resolved by D-F1(a) (rules retire with the move)
+or by a rules rewrite under D-F1(b) — either way this line stays open until
+one lands.
+
+Banked-from-E obligations all accounted for in 10 §1f/§5: FK closures +
+pass-2 pointers + draft-halves close IN F; practice-plan PDF + import FILES
+re-banked to **Phase H** with their data (per-coach-private scope preserved
+— RF-6). `onVideoSessionWritten` → J (fifth aggregation trigger, extends
+D-C1(b)/D-D1).
