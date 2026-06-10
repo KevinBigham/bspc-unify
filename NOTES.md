@@ -833,3 +833,98 @@ Execution: 10 §3/§5 exactly — the nine green commits. BUG #4 verbatim;
 every storage.objects policy pgTAP-proven like table RLS; no file one bit
 more accessible after the move; the parent surface keeps exactly one
 affordance, proven. No production/live file movement this phase.
+
+---
+
+## Phase F (media) CODE-SIDE LANDED — 2026-06-09
+
+Executed per 10 §3/§5 exactly as ratified, same session as the
+ratifications. One green commit each; full bar re-run at every step.
+
+- **BSPC `00007_phase_f_media.sql` + pgTAP 010, 42 proofs** (`a881ff4`):
+  six tables (house TEXT CHECK), P1-4 junctions (video `kind`
+  tagged|selected — tagged is the consent-bearing set, FK-guaranteed
+  stale-id-free), D-F5 `reviewed_at` on both draft tables; **the
+  banked-from-E FK closure** (`fk_notes_source_audio_draft` + both
+  `posted_note_id` FKs) in the same migration that creates their targets
+  (RC-3); **`approve_session_draft()` RPC** (D-F6) — note insert + draft
+  review-stamp + back-pointer in ONE transaction, idempotent double-tap,
+  staff-gated inside SECURITY DEFINER; **the file tier**: 3 PRIVATE buckets
+  with today's exact size/mime caps + storage.objects staff-only policies.
+  pgTAP proves: shapes, CHECK domains, the P1-5 cycle closed BOTH
+  directions, SET-NULL orphan safety, cascade, **RPC atomicity (a bad-tag
+  approve leaves the draft byte-for-byte untouched — the E seam heal
+  demonstrated in the database)**, idempotency, **the wall on tables AND
+  storage.objects for every parent principal + anon (all ZERO)**, and the
+  bucket caps. pgTAP 009 fixture consequence: the audio_ai payload test
+  points at a real draft now that the FK exists (assertions unchanged).
+- **Coach `audio.ts`** (`2ab855c`): sessions + junction to PG;
+  coachName/selectedSwimmerIds derived on read; uploads via the shared
+  `mediaUpload` helper (signed upload URL + XHR PUT — the
+  uploadBytesResumable onProgress percent contract survives);
+  **D-F2 kick lives in the data layer**: updateAudioSession fires the HTTPS
+  pipeline on the flip to 'uploaded' (fire-and-forget; sweeper owns
+  retries); config in `src/config/functions.ts`, no hardcoded secrets.
+- **Coach `video.ts`** (`e2b7326`): same + BOTH junction kinds; BUG #4
+  consent assertions at create UNCHANGED; drafts read off the
+  subcollection onto video_session_drafts w/ swimmerName via embed.
+- **Coach `aiDrafts.ts` draft-half** (`4886bc7`): subscribePendingDrafts'
+  Firestore N+1 collapses to ONE joined read (drafts `approved IS NULL` +
+  `audio_sessions!inner` status=review); approve/approveAll through the
+  atomic RPC; checkAndCompleteSession → PG and becomes THE completion
+  owner. **Named test deletions (subject code deleted):** the E-seam
+  mechanics pins — "commits the draft-update batch on Firestore; the notes
+  go to swimmer_notes (F seam)", "4 drafts — one draft-update batch commit
+  + one canonical notes insert", "401 drafts chunk into two commits + two
+  note inserts at the 400-item limit". Replacement proofs: pgTAP 010's RPC
+  atomicity/idempotency/cycle tests + the per-draft RPC loop pins.
+- **Coach `videoDrafts.ts` draft-half** (`35c85cd`): atomic RPC
+  (kind=video); BUG #4 verbatim; zero deletions.
+- **Coach file-halves** (`a1fc53e`): voice-note uploads → media-audio
+  (path layout UNCHANGED, AsyncStorage queue untouched); recorder playback
+  derives fresh signed URLs; **profile_photo_url now persists a ~10y
+  signed capability URL** — the parents' ONE media affordance,
+  shape-identical to the Firebase token URL it replaces (D-F3).
+- **Functions** (`b2dd10b`): `processAudioSession`/`processVideoSession`
+  (onRequest, shared-secret, 401/400 pinned) wrap idempotent cores gated
+  on status='uploaded'; **RF-10 CLOSED** (video swimmer names from
+  canonical via the junction); **the ≥20MB Vertex path streams a TRANSIENT
+  gs:// staging copy, deleted after analysis** (code-side only);
+  extractObservations drafts → ONE canonical insert (firebase-admin gone
+  from the module); `sweepStuckSessions` every 5 min with per-session
+  error isolation. **Retired with subjects: onAudioUploaded.ts,
+  onVideoUploaded.ts, onDraftReviewed.ts. Named test deletions:
+  onDraftReviewed.test.ts (5 tests) — completion now owned by
+  checkAndCompleteSession (pinned client-side) + the RPC's pgTAP proofs;
+  plus the Firestore event-snapshot mechanics pins in the two rewritten
+  pipeline suites ("should return early if event data is missing",
+  "should skip if status did not change") whose successor is the pinned
+  idempotency gate.** onVideoSessionWritten stays exported, subject
+  collection now write-dead → **Phase J** (D-C1(b)/D-D1 family, the fifth
+  aggregation trigger).
+- **`migration/media/README.md`** (`22f3d25`): row→junction→draft order,
+  identity/roster map resolution with STOP-on-unresolvable, **pass 2
+  pointer closure (banked ③ from E)**, and the path-preserving file-copy
+  manifest (audio/**→media-audio incl. voice notes, video/**→media-video,
+  profiles/**→profile-photos; practice_plans/** + imports/** RE-BANKED to
+  H with their data, per-coach-private scope — D-F4) + the
+  profile_photo_url rewrite pass. Runs at cutover staging behind the HARD
+  STOP.
+
+**New green bar: BSPC jest 835 (TZ=UTC) + pgTAP 167 · Coach client 1022 ·
+Functions 118 · BSPC tsc clean.** Deletions per the standing norm all named
+above (3 Coach + 7 Functions); every other test kept its subject.
+
+**Banked/open after F:** notification-routing for media (`ai_drafts_ready`
+category) is G's whole; dashboard aggregations incl. onVideoSessionWritten
+→ J; statuses/practice_group TEXT→enum at OD-1; **cutover checklist
+additions:** set `PROCESS_SHARED_SECRET` (functions env) +
+`EXPO_PUBLIC_PROCESS_FUNCTIONS_BASE_URL`/`EXPO_PUBLIC_PROCESS_SHARED_SECRET`
+(app env) before the media pipeline goes live; confirm hosted storage tier
+covers the 500MB video cap before the file copy; the old Firebase
+`storage.rules` retire WITH the file copy (RF-4 closes under D-F1(a)).
+**Flagged risks (no trusted mocks):** Vertex calls and the GCS staging
+stream remain jest-mocked only — first real exercise happens at staging;
+webhook-free design means the only delivery untestable locally is nothing —
+the kick + sweeper are both fully unit-tested.
+Next per 04: **Phase G (notifications)**.
