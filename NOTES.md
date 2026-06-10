@@ -960,3 +960,51 @@ config that exists nowhere in code.
 enumeration+pref, ai_drafts_ready, publication-as-code, pipeline
 scheduling), each with a recommendation. No Phase G code written; bar
 unchanged.
+
+---
+
+## 2026-06-10 — Phase G ratifications (Kevin, verbatim intent recorded)
+
+- **D-G1 RATIFIED — kick + sweep, the D-F2 pattern extended to attendance.**
+  The attendance data layer kicks the evaluator with **row ids only**; the
+  server re-derives swimmer/group/marker/practice_date from PG; a five-minute
+  sweeper catches missed kicks. **Condition:** the kick must never make an
+  attendance write fail or wait — fire-and-forget, internal catch; if the
+  evaluator is unavailable, attendance still saves and the sweeper covers it.
+- **D-G2 RATIFIED — coach notifications are in-app only for Phase G.** The
+  dormant Deno sender is not touched, not scheduled, not extended. **On the
+  record: coaches receive zero pushes today and will receive zero after
+  Phase G, deliberately — parity with a feature that never functioned is that
+  feature's absence.** Push delivery is a named post-cutover product line item.
+- **D-G3 RATIFIED — digest enumerates staff by role from canonical tables;
+  the preference becomes `notification_preferences.digest_enabled BOOLEAN NOT
+  NULL DEFAULT TRUE`.** The edge-case flip is **explicitly ratified**:
+  missing-preference formerly meant skip; the canonical default means
+  included. Reasoning: signup always wrote default-true, "missing" only
+  described accounts that bypassed signup, and we are pre-launch with zero
+  real users. The Firestore home (`coaches.notificationPrefs`, AuthContext
+  writer) retires at cutover. **Standing rule restated: no digest may carry a
+  field its recipient couldn't read directly.**
+- **D-G4 RATIFIED — `ai_drafts_ready` re-banked as post-cutover product
+  work** (named in the bank below). No producer has ever existed; wiring one
+  mid-migration is new behavior, not parity. G lands only the category domain.
+- **D-G5 RATIFIED — 00008 adds all fourteen tables to the supabase_realtime
+  publication** (the twelve from B–F + G's two), pgTAP proving **exact**
+  membership. Codification of hosted behavior, not widening — delivery still
+  rides the same RLS walls; the proofs pin the set exactly.
+- **D-G6 RATIFIED — no Deno changes, no cron now.** Cutover-runbook line
+  (behind the HARD STOP): schedule `send-notification` + `cleanup-tokens`
+  (Supabase cron) at cutover staging with an end-to-end drain verification.
+  **Required reconciliation mechanism, named now:** rule-engine and digest
+  writers NEVER enqueue `notification_jobs` — they own their idempotent
+  `in_app_notifications` rows directly, so the sender's unconditional in-app
+  insert can never duplicate them while the queue carries only BSPC-side
+  announcements. If coach push later rides the jobs queue (the D-G2 product
+  line), `notification_jobs` first gains a `skip_in_app BOOLEAN` the sender
+  honors. **The drain verification must prove it:** enqueue one ordinary job
+  AND one rule-mirroring flagged job; assert exactly one in-app row per
+  recipient for each (the writer-owned row, never a sender duplicate).
+
+Execution per 11 §5 begins now; standing norms in force (green at every
+commit, RC-3, data layer only, no-widening incl. everything SENT, no Deno
+edits, deletion norm, no force-push/rebase/amend).
