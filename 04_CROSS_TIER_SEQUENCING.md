@@ -50,7 +50,7 @@ independently of which backend the *other* side talks to. Consequences:
 | notification_rules | notificationRules.ts | sole client writer |
 | notifications | notifications.ts | + coaches/fcmTokens array |
 | parent_invites | parentInvites.ts | redeemed by a function |
-| import_jobs | importJobs.ts, csvImport.ts, meetResultsImport.ts | shared |
+| import_jobs | importJobs.ts, csvImport.ts, meetResultsImport.ts | shared — **Phase H** [D-H8] |
 | aggregations | aggregations.ts (read-only) | **DO NOT migrate — recompute in PG** |
 
 ### Cloud Functions → collections (R=read, W=write, T=fires on)
@@ -101,7 +101,7 @@ changes.
 | **E** | **notes + voice_notes** | FK swimmers; notes has 4 writers + search collectionGroup; two-pass source pointers. |
 | **F** | **media** (audio/video sessions + drafts + junctions) | FK swimmers; storage + UUID[]→junction tables + note↔draft cross-pointers. |
 | **G** | **notifications + rules** | evaluator READS attendance → must follow C; idempotency UNIQUE + upsert; FCM→Expo tokens. |
-| **H** | **calendar + meets + plans** | Lower fan-in; can come late. season_plans needs tests written first. |
+| **H** | **calendar + meets + plans + import_jobs** [D-H8] | Lower fan-in; can come late. season_plans needs tests written first. |
 | **I** | **parent_invites + parent-portal cutover** | redeemInvite creates guardianships; portal callable now reads migrated A/B(+C/D). Parent-facing cutover. |
 | **J** | **aggregations decommission** | Do NOT migrate; recompute via PG triggers/jobs; retire/re-point rebuildAggregations + dashboardAggregations. |
 
@@ -144,11 +144,12 @@ changes.
   `onNotification`, `dailyDigest`(notifications). Adapter: notification writer
   upsert `ON CONFLICT (rule_id, swimmer_id, source_eval_date)` (decision #2).
   Tokens: FCM→Expo (`push_tokens`, decision #7).
-- **H — calendar + meets + plans.** Client: calendar.ts, meets.ts,
-  meetResultsImport.ts, practicePlans.ts + workoutLibrary.ts (shared
-  practice_plans — migrate as a pair), seasonPlanning.ts (**write data-layer
-  tests FIRST**). Functions: `syncCalendar`. Backfill: remap id arrays/JSONB
-  (`practice_plan_ids`, ratings keys, `meets.events`).
+- **H — calendar + meets + plans + import_jobs [D-H8].** Client: calendar.ts,
+  meets.ts, meetResultsImport.ts (meets-half + jobs-half), practicePlans.ts +
+  workoutLibrary.ts (shared practice_plans — migrate as a pair),
+  seasonPlanning.ts (**write data-layer tests FIRST**), importJobs.ts +
+  csvImport.ts jobs-half. Functions: `syncCalendar`. Backfill: remap id
+  arrays/JSONB (`practice_plan_ids`, ratings keys, `meets.events`).
 - **I — parent_invites + portal.** Client: parentInvites.ts. Functions:
   `redeemInvite` (guardianship creation), `parentPortal` (now reads migrated
   data). Depends on A+B. Guardrails: functions suite + parent-portal build.

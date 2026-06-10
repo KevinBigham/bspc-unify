@@ -1329,3 +1329,44 @@ execution session — 12 + NOTES are authoritative until then.
 Records-and-gate session only: UNIFY is the sole repo touched; BSPC and
 Coach unchanged; bar untouched (835 TZ=UTC + 209 / 1034 / 125); zero
 Phase H code.
+
+---
+
+## 2026-06-10 — D-H9 RATIFIED (Kevin, verbatim intent recorded) — the DECIDE queue is EMPTY; Phase H executes
+
+Checked against 12 §8's block as written: matches option (a) exactly,
+with three condition riders that strengthen the block without contradicting
+it. Nothing force-fit.
+
+**D-H9 RATIFIED — one parent-readable meets table; the widening is
+accepted and signed as a NAMED widening, the first on the books.**
+Reasoning on the record: the no-widening doctrine stops *accidental*
+access expansion; it does not freeze the unified product at the most
+restrictive of two legacy apps. The D-H5 test — capability follows
+product — passes here because the parent-facing meets feature exists and
+ships: BSPC's meets screens render this very table to families today,
+and a meet schedule is the same team-wide logistics class as
+schedule_events and announcements that pending parents already read by
+ratified law. A parent schedule silently omitting coach-entered meets
+would show families a false schedule — worse than the widening it avoids.
+Sized precisely: parents gain the existence of coach-origin meets and
+their logistics fields; meet_entries — children's race data — stays
+strictly staff-only and does not widen one bit; the staff direction
+widens nothing; the BSPC side only narrows per D-H7.
+
+**Conditions, binding:**
+1. **The precedent is narrow** — a named widening requires an existing,
+   shipping parent surface and an explicit signature; widenings never
+   happen by drift.
+2. **pgTAP must pin the exact post-merge principal set per D-H7 AND
+   prove that parent and pending principals read zero meet_entries
+   rows.** (Lands in 012, §5 commit 2.)
+3. **Rejected on the record:** the publish-column option invents a
+   product workflow the data-layer freeze forbids and fails the F-lesson
+   do-nothing audit in both default directions; the sibling-table option
+   forks the one-table model, duplicates physical meets, and re-raises
+   this identical question at convergence with live data.
+
+With D-H9 in, **every Phase H decision (D-H1–D-H9 + the full FYI bundle)
+is ratified**. The queued 01/04 paperwork lands now, with this execution
+session, per the A1/A2/A3 precedent; then 12 §5 executes in order.

@@ -290,6 +290,10 @@ CREATE TABLE schedule_change_log (
 );
 
 -- [AR-2] coach-authored calendar (kept separate from the scrape pipeline).
+-- [D-H3, ratified 2026-06-10] hosts the iCal sync: + source/ical_uid/raw_rrule/
+-- synced_at; coach_id relaxed to NULLABLE + SET NULL (synced rows carry
+-- coach_id NULL + source='ical_sync'; the FK keeps fake owners unrepresentable
+-- — a string sentinel can never exist). Upsert key = the plain ical_uid UNIQUE.
 CREATE TABLE calendar_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
@@ -302,7 +306,11 @@ CREATE TABLE calendar_events (
   location TEXT,
   groups practice_group[] NOT NULL DEFAULT '{}',
   recurring JSONB,
-  coach_id UUID NOT NULL REFERENCES profiles(id) ON DELETE RESTRICT,  -- [P1-1]
+  coach_id UUID REFERENCES profiles(id) ON DELETE SET NULL,  -- [P1-1 spirit; D-H3 nullable]
+  source TEXT,                                     -- [D-H3] provenance ('ical_sync')
+  ical_uid TEXT UNIQUE,                            -- [D-H3] the sync upsert key
+  raw_rrule TEXT,                                  -- [D-H3]
+  synced_at TIMESTAMPTZ,                           -- [D-H3]
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -835,6 +843,14 @@ RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS
   );
 $$;
 
+-- [D-H1, ratified 2026-06-10] within-staff ownership: does this coach_id
+-- reference the CALLER's profile row? Powers the per-coach walls on
+-- practice_plans + import_jobs (the D-F4 within-staff no-widening doctrine).
+CREATE OR REPLACE FUNCTION is_my_profile(p uuid)
+RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+  SELECT EXISTS (SELECT 1 FROM profiles WHERE id = p AND user_id = auth.uid());
+$$;
+
 -- [P1-10] the caller's household ids (for families_select_own).
 CREATE OR REPLACE FUNCTION my_family_ids()
 RETURNS SETOF uuid LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
@@ -1093,10 +1109,16 @@ CREATE POLICY imported_events_staff  ON imported_schedule_events FOR ALL TO auth
 CREATE POLICY overrides_staff        ON schedule_overrides       FOR ALL TO authenticated USING (is_staff()) WITH CHECK (is_staff());
 CREATE POLICY change_log_staff       ON schedule_change_log      FOR SELECT TO authenticated USING (is_staff());  -- [P1-9]
 
+-- [SCOPE-DEFERRED / D-H5(b), ratified 2026-06-10] The active-read + family-RSVP
+-- arms below remain ratified canonical law but are DEFERRED: no parent calendar
+-- UI exists in either app, so live migrations land BOTH tables STAFF-ONLY until
+-- a parent calendar feature ships (the arms then land as a one-line policy swap
+-- + proofs — a named post-cutover product line item, never drift).
 CREATE POLICY calendar_select_active ON calendar_events FOR SELECT TO authenticated USING (is_active_account());
 CREATE POLICY calendar_staff_all     ON calendar_events FOR ALL    TO authenticated USING (is_staff()) WITH CHECK (is_staff());
 
 -- [P0-2] RSVPs scoped to own swimmer or staff; families may write their own RSVP.
+-- ([SCOPE-DEFERRED / D-H5(b)] — see the calendar annotation above.)
 CREATE POLICY rsvps_select_own       ON calendar_event_rsvps FOR SELECT TO authenticated USING (is_my_swimmer(swimmer_id) OR is_staff());
 CREATE POLICY rsvps_family_write     ON calendar_event_rsvps FOR ALL    TO authenticated USING (is_my_swimmer(swimmer_id)) WITH CHECK (is_my_swimmer(swimmer_id));
 CREATE POLICY rsvps_staff_all        ON calendar_event_rsvps FOR ALL    TO authenticated USING (is_staff()) WITH CHECK (is_staff());
@@ -1106,7 +1128,11 @@ CREATE POLICY announcements_select   ON announcements FOR SELECT TO authenticate
   USING (is_active_account() AND (target_group IS NULL OR target_group IN (SELECT my_swimmer_groups())));
 CREATE POLICY announcements_staff_all ON announcements FOR ALL TO authenticated USING (is_staff()) WITH CHECK (is_staff());
 
--- ---- Meets ----
+-- ---- Meets ([D-H9, ratified 2026-06-10] NAMED WIDENING — the first on the
+-- books: coach-app meets were staff-only in Firestore; the merged table is
+-- parent-readable because the parent-facing meets feature exists and ships in
+-- BSPC (capability follows product). meet_entries — children's race data —
+-- stays strictly staff-only and does not widen one bit.) ----
 CREATE POLICY meets_select_active    ON meets        FOR SELECT TO authenticated USING (is_active_account());
 CREATE POLICY meets_staff_all        ON meets        FOR ALL    TO authenticated USING (is_staff()) WITH CHECK (is_staff());
 CREATE POLICY meet_entries_staff     ON meet_entries FOR ALL    TO authenticated USING (is_staff()) WITH CHECK (is_staff());
@@ -1129,10 +1155,29 @@ CREATE POLICY audio_drafts_staff     ON audio_session_drafts FOR ALL TO authenti
 CREATE POLICY video_sessions_staff   ON video_sessions       FOR ALL TO authenticated USING (is_staff()) WITH CHECK (is_staff());
 CREATE POLICY video_sess_sw_staff    ON video_session_swimmers FOR ALL TO authenticated USING (is_staff()) WITH CHECK (is_staff());
 CREATE POLICY video_drafts_staff     ON video_session_drafts FOR ALL TO authenticated USING (is_staff()) WITH CHECK (is_staff());
-CREATE POLICY practice_plans_staff   ON practice_plans       FOR ALL TO authenticated USING (is_staff()) WITH CHECK (is_staff());
+-- [D-H1, ratified 2026-06-10] WITHIN-STAFF walls (the D-F4 doctrine): practice
+-- plans are owner-private with the deliberate public-share arm; import jobs are
+-- owner + super_admin. Verbatim mirror of today's Firestore rules — the drafted
+-- staff-wide policies were a drafting error against standing law. season_plans
+-- stays staff-shared: that IS today's wall; the asymmetry is real and preserved.
+CREATE POLICY plans_select_own_or_public ON practice_plans FOR SELECT TO authenticated
+  USING (is_staff() AND (is_my_profile(coach_id) OR is_public));
+CREATE POLICY plans_insert_own       ON practice_plans FOR INSERT TO authenticated
+  WITH CHECK (is_staff() AND is_my_profile(coach_id));
+CREATE POLICY plans_update_own       ON practice_plans FOR UPDATE TO authenticated
+  USING (is_staff() AND is_my_profile(coach_id)) WITH CHECK (is_staff() AND is_my_profile(coach_id));
+CREATE POLICY plans_delete_own       ON practice_plans FOR DELETE TO authenticated
+  USING (is_staff() AND is_my_profile(coach_id));
 CREATE POLICY season_plans_staff     ON season_plans         FOR ALL TO authenticated USING (is_staff()) WITH CHECK (is_staff());
 CREATE POLICY season_weeks_staff     ON season_plan_weeks    FOR ALL TO authenticated USING (is_staff()) WITH CHECK (is_staff());
-CREATE POLICY import_jobs_staff      ON import_jobs          FOR ALL TO authenticated USING (is_staff()) WITH CHECK (is_staff());
+CREATE POLICY import_jobs_select_own_or_admin ON import_jobs FOR SELECT TO authenticated
+  USING (is_super_admin() OR (is_staff() AND is_my_profile(coach_id)));
+CREATE POLICY import_jobs_insert_own ON import_jobs FOR INSERT TO authenticated
+  WITH CHECK (is_staff() AND is_my_profile(coach_id));
+CREATE POLICY import_jobs_update_own ON import_jobs FOR UPDATE TO authenticated
+  USING (is_staff() AND is_my_profile(coach_id)) WITH CHECK (is_staff() AND is_my_profile(coach_id));
+CREATE POLICY import_jobs_delete_admin ON import_jobs FOR DELETE TO authenticated
+  USING (is_super_admin());
 CREATE POLICY notification_rules_staff ON notification_rules FOR ALL TO authenticated USING (is_staff()) WITH CHECK (is_staff());
 CREATE POLICY aggregations_select_staff ON aggregations      FOR SELECT TO authenticated USING (is_staff());  -- writes: service role only
 
