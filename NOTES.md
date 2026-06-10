@@ -417,3 +417,81 @@ as amended here:
 - **Bundled FYIs accepted as noted:** D-C6 status value map, D-C7 marked_by
   stays on its current auth.users FK until convergence, RC-10
   CASCADE→RESTRICT behavior change.
+
+---
+
+## Phase C (attendance) CODE-SIDE LANDED — 2026-06-09 (same session as the ratifications)
+
+Executed exactly per `07_PHASE_C_ATTENDANCE.md` §6, one green commit per
+step. Every suite green throughout; no force-push/rebase/amend.
+
+**Schema (BSPC commit `d0a1c63`):** `00004_phase_c_attendance.sql` — enum
+widened to the canonical 6; `practice_date` added, backfilled from each
+event's start in **explicit America/Chicago** (RC-5), then NOT NULL;
+`practice_group`/`arrived_at`/`departed_at`/`note` added; `status` and
+`schedule_event_id` now nullable; event FK CASCADE→**RESTRICT** (RC-10);
+live `UNIQUE(swimmer_id, schedule_event_id)` KEPT as a real constraint
+(RC-2b/A2) + `attendance_day_key` partial unique added; `attendance_check_in`
+SECURITY DEFINER RPC (D-C2/A3) with `is_staff()` gate, `marked_by :=
+auth.uid()`, per-swimmer `(swimmer_id, attendance_id, created)` return;
+`attendance_parent_view` with the canonical present/absent collapse + the
+**transitional family_id OR-arm** (RC-1, approved accounts only — the live
+policy's pending-parent hole closes here); `attendance_select_own` DROPPED in
+the SAME migration (RC-3 — no exposed commit exists). pgTAP 007 = **29
+COPPA-wall proofs** (45→74): full column/enum/key shape, view column shape,
+both view arms, the collapse cases, pending=0, cross-family=0, family
+table-read=0/INSERT throws/UPDATE touches 0, RPC create + double-tap +
+staff-only + anon revoked, event-upsert inference, RESTRICT.
+
+- **[EXECUTION DETAIL — TR-1 transitional trigger]** 07 §3 sets
+  `practice_date NOT NULL` while §5a freezes the BSPC mark/upsert payloads,
+  which don't send it. The two are only simultaneously true with a derive
+  step: a BEFORE INSERT trigger fills `practice_date` from the event (same
+  America/Chicago rule as the backfill) when an event-keyed insert omits it.
+  pgTAP-proven with the app's exact payload. Dropped at OD-1 convergence
+  when the canonical app sends practice_date natively.
+
+**BSPC parent read (commit `c0f086d`):** `fetchSwimmerAttendance` →
+`attendance_parent_view` ordered by practice_date; admin event reads + both
+mark upserts stay on the table unchanged (their UNIQUE inference is
+pgTAP-proven). `AttendanceRecord` type gains merged-model honesty. 811→813.
+
+**Coach client (commit `a601e01`):** `attendance.ts` → supabase. Realtime
+parity per playbook on both subscribes; **reads exclude `status='absent'`
+and keep checked-in NULLs (D-C5)** via `or(status.is.null,status.neq.absent)`;
+swimmerName from the `swimmer:swimmers(...)` embed, coachName via a second
+`profiles.in('user_id', …)` query (D-C7: no FK path yet); `checkIn`/
+`batchCheckIn` → the RPC in chunks of 400 with `BatchPartialFailureError`
+semantics preserved (double-tap dedup is now ATOMIC — strictly better than
+Firestore, RC-12); `checkOut` → row update with the D-C6 write map
+('normal'→'present'); practice_date stays a calendar string end-to-end.
+Critical-ops name-snapshot assertions INVERTED (derive-on-read). 983→991.
+
+**Functions (commit `67fbb30`):** `parentPortal` attendance payload →
+canonical `select('id, practice_date, status')`, newest-first, cap 30,
+authorization = linked-swimmer gate; sanitizer adopts the view's collapse
+(**D-C4: one wall, one rule**) and is proven to surface exactly
+id/practiceDate/status — coach notes and marker identity never leave the
+staff side. All prior COPPA assertions verbatim. times stays Firestore until
+D. 114→117.
+
+**Backfill scaffolding (BSPC commit `f5936c8`):** `migration/attendance/` —
+pure fns; `dedupeSameDay` three-bucket rule (RC-6: exact dups collapse
+keeping earliest + lone note carried; time-disjoint same-day rows →
+`needsEventAssignment` for human two-a-day event assignment; contradictions →
+`conflicts`; runner STOPS on non-empty buckets); `coachAttendanceToRows`
+(null/'normal'→'present', string-date passthrough, denorms dropped,
+unresolvables reported); `auditAttendanceRows` (day key + enum pre-insert).
+No transient map table needed. 813→831.
+
+**New green bar: BSPC 831 (TZ=UTC) + pgTAP 74 · Coach 991 · functions 117.**
+
+Remaining for Phase C at cutover (not code): run the dedup/backfill per the
+README run order (after identity + roster maps); human review of the
+two-a-day/conflict buckets. Welded to later phases, unchanged from 07 §7:
+evaluator+digest→G, both aggregation CFs + status-aware recompute→J,
+guardianship backfill + family-arm drop + TR-1 trigger drop + marked_by
+remap→OD-1 convergence. **Cutover checklist line (D-C1): the attendance DATA
+cutover requires C+G+J reader code landed, or accepts
+digest/notification-rules/dashboard-aggregations dark during the window.**
+Next per 04: **Phase D (times/PRs/meet results)**.
