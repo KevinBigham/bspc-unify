@@ -1457,3 +1457,35 @@ parent-portal cutover), then J (aggregations decommission).** Firestore
 reads/writes remaining in the Coach app data layer: NONE in swapped
 services; parentInvites.ts is Phase I's subject. Bar at close: 835 TZ=UTC
 + 274 / 1077 / 128, BSPC tsc clean.
+
+---
+
+## 2026-06-10 — Phase H RATIFIED (Kevin, verbatim intent recorded) + one decision + one banked item
+
+Checked against the landed log above as written — every claim matches the
+record; nothing force-fit.
+
+**Phase H is ratified complete code-side.** Eleven green commits verified;
+all four bars green throughout; final counts BSPC 835 / pgTAP 274 / Coach
+1077 / Functions 128; zero test deletions. **The two named test transforms
+are ACCEPTED as conforming to the deletion norm:** (1) the cascade-delete
+pin merge — subject preserved, behavior replaced by ratified schema
+(RH-10); (2) the three doc-id-hashing pins re-pointed to the upsert key —
+same subjects: determinism, distinctness, special characters (D-H3).
+Verified on the record: **RC-3 held in 00009**; the **publication proof
+sits at 22 in the same commit** that grew the set; **D-H2's single named
+divergence (RH-14, a narrowing)** verified — no second divergence found in
+execution; **D-H9's pins** verified — a parent reads coach-origin meets,
+parent and pending principals read zero meet_entries rows, a deactivated
+account reads zero meets.
+
+**DECISION (Kevin, in words): the cutover-manifests folder remains
+`migration/h/`** as the plan doc named it — this phase's manifests span
+meets, files, and imports, so the phase letter is the honest umbrella. No
+rename.
+
+**BANKED (paperwork): UNIFY/01 gains a storage appendix** cataloging every
+bucket, its limits, and its walls in words — **due no later than the
+convergence sweep.** Joins the banked list alongside the existing items
+(coach push delivery, `ai_drafts_ready` wiring, `rate_workout` RPC, the
+D-H5(b) calendar parent arms, and the convergence-sweep obligations).
