@@ -533,3 +533,55 @@ post-hoc by Kevin 2026-06-09.)
 Cutover-sequencing constraints (not removals): the D-C1 line above
 (attendance data cutover needs C+G+J readers, or accepts those functions
 dark during the window); Phase J recompute must be status-aware (07 §2).
+
+---
+
+## Phase D mini-plan WRITTEN + red-teamed — 2026-06-09 (planning only; no code — the scoping tripwire FIRED)
+
+Kevin's tripwire: "if the two apps disagree on the model itself, STOP and
+write a mini-plan." They do — on the PR model. `08_PHASE_D_TIMES.md` is the
+full plan (three-shapes table, D-D1 function scoping, 00005 spec with the
+unit cut + PB key + PR-maintenance trigger, the ownership wall + pgTAP 008
+list, swap specs 5a–5e, commit sequence, RD-1..RD-13 red-team register).
+Headline findings:
+- **RD-1 GHOST TABLES (worst):** the pre-A swapped `goals.ts`/`groupNotes.ts`,
+  the Phase B `goals(event_name)` embeds, and parentPortal's detail read all
+  query `goals`/`group_notes` — which NO migration creates (verified absent
+  on the running local DB). Invisible to jest (mocks) and pgTAP (no tests) —
+  guaranteed 404s at first real run. Plan: catch-up DDL + RLS + pgTAP land
+  in Phase D (D-D6).
+- **PR truth lives in 3 places** (Coach isPR flag w/ client un-PR/promote +
+  trigger-recomputed prsByEvent; BSPC separate personal_bests table keyed
+  WITHOUT course; canonical both, course NOT NULL) and **nothing writes
+  personal_bests today** → one owner proposed: a `maintain_personal_bests()`
+  DB trigger, advisory-locked, impossible to bypass (D-D5).
+- **Unit divergence:** BSPC live stores real MILLISECONDS (`÷1000`
+  formatter), Coach + canonical hundredths → in-place ÷10 cut behind a
+  hard in-migration audit abort; schema commit + BSPC app flip are an
+  atomic same-session pair (RD-2/RD-3); recommend converting all four
+  time_ms tables at once (D-D3).
+- **Analytics would count absences as attendance** post-merge (client twin
+  of the banked J bug) → D-C5 filter applied to its attendance read (RD-4).
+
+### [DECIDE] Phase D decisions awaiting Kevin (details in 08 §2/§3/§9)
+1. **D-D1:** `onTimesWritten` defers whole to J (extends ratified D-C1(b)
+   to the third aggregation trigger). **Recommend yes.**
+2. **D-D2:** strict ÷10 unit conversion behind the audit abort (no
+   rounding path). **Recommend yes.**
+3. **D-D3:** unit cut covers ALL FOUR time_ms tables + seed in one
+   migration (swim_results, personal_bests, team_records, time_standards),
+   vs only D's two. **Recommend all four.**
+4. **D-D4:** personal_bests.course backfill = derive from uniquely-matching
+   swim_results, else 'SCY' default with per-row report; ambiguity STOPS.
+   **Recommend.**
+5. **D-D5 (the model decision):** PR maintenance owner = (b) the
+   `maintain_personal_bests()` trigger (advisory-locked recompute; covers
+   app writes, imports, AND the cutover backfill), vs (a) RPC pair, vs (c)
+   client logic. **Recommend (b)**; on ratification it joins canonical the
+   way A3 did.
+6. **D-D6:** goals + group_notes catch-up DDL (+pgTAP) lands inside Phase
+   D, vs its own micro-phase. **Recommend in D.**
+7. Bundled FYIs to accept: timeDisplay derived-on-read everywhere;
+   date ordering NULLS-LAST + created_at tiebreak (P0-5); created_by
+   parent-visibility stays in the accepted P2 bucket; analytics adopts the
+   D-C5 absent-exclusion (RD-4).
