@@ -1996,3 +1996,116 @@ the RPC, the walls, pgTAP 013, and the 011 publication pin 22→23
 together; ZERO test deletions pre-declared; the tripwire stays armed
 mid-execution; no backfill runs, no file copies — commit 5's manifest is
 instructions-only behind its HARD-STOP header.
+
+---
+
+## 2026-06-10 — Phase I (parent_invites + identity gate) CODE-SIDE COMPLETE — landed per §5, five green commits
+
+**Bar: BSPC 835 (TZ=UTC, unchanged as predicted) + tsc clean · pgTAP
+274 → 316 (+42 — ABOVE the predicted +25-to-35 band: more proofs than
+promised, none fewer) · Coach 1077 → 1081 (+4) · Functions 128 → 133
+(+5). All four bars green at every commit; never advanced on red. ZERO
+test deletions** — two subjects RE-POINTED with the mechanism they pin
+(named per the H precedent, counts only rose): the redeemInvite
+create-new-parent and arrayUnion subjects now pin the same first-time /
+second-swimmer redemptions through the RPC path, with an explicit
+`from('parents')`-never-called assertion (the parents collection left
+the function entirely).
+
+The five commits, landed in order (plus the ratification paperwork
+UNIFY `c791466`):
+1. **BSPC `23fb17e`** — `00010_phase_i_parent_invites.sql` + pgTAP
+   `013` (42 proofs) + 011's publication pin 22 → 23 SAME commit
+   (RH-12/RC-3). Table verbatim-from-canonical (code UNIQUE, coach
+   RESTRICT, redeemer SET NULL, swimmer CASCADE, both indexes); staff
+   wall = today's isCoach() set; `redeem_parent_invite()` per D-I2 with
+   the grant hygiene the spoof-proof clause requires (EXECUTE revoked
+   from PUBLIC/anon — anon also has auth.uid() NULL and could otherwise
+   reach the param path; granted to authenticated + service_role;
+   anon → 42501 proven). New pin classes, by name: **the OD-3
+   COMPOSITION proof** (a pending redeemer's link lands; is_my_swimmer
+   stays FALSE; the swimmer row reads ZERO rows; account_status
+   untouched by redemption), **the D-A SIDE-DOOR proof** (family
+   self-insert into guardianships still 42501 WITH the RPC installed),
+   **the ATOMIC RE-REDEEM proof** (the one-statement claim consumes the
+   code; a second redemption gets the same signal as an unknown code),
+   the SPOOF-PROOF pair (end-user param ignored; link lands on the
+   caller), the SERVICE-ROLE param path, already-linked-never-consumes,
+   expired-vs-unknown distinct signals, case-insensitive entry, and the
+   D-I1 precisification pin (the pending redeemer READS their own link
+   row — the count probe runs AS that principal under
+   guardianships_select_own, accepted state on the record).
+2. **Coach `5421dfd`** — parentInvites.ts swap (the LAST Firestore
+   reads/writes in the Coach data layer are gone): house idiom, frozen
+   signature with the two name params dead (denorms derive via embeds),
+   client code-gen + UNIQUE collision surfaced, client 7-day expiry
+   verbatim, filtered channel on swimmer_id, single-UPDATE revoke
+   (`redeemed := true`, no redeemer). Both test files re-pointed —
+   services 7 → 10, critical-ops 5 → 5 (subjects verbatim; fixture
+   contract untouched).
+3. **Coach `fed26e3`** — redeemInvite callable internals → ONE
+   `supabase.rpc('redeem_parent_invite')` call behind the FROZEN
+   contract: same arg validation, same HttpsError codes + message
+   strings (INV01 → not-found "Invalid or already redeemed invite
+   code"; INV02 → failed-precondition "This invite code has expired";
+   INV03 → already-exists "This swimmer is already linked to your
+   account"), same return shape (swimmerName derived via join). **The
+   create-arm retirement, named with its §6.1 reference:** account
+   creation has been handle_new_user()'s job since Phase A; the NM-4
+   dirty-data source (`email.split('@')[0]`) retires with it, and a
+   caller with NO profiles row now fails LOUDLY (failed-precondition
+   "No parent profile for this account" — the F-lesson direction: a
+   provisioning miss never masquerades as a bad code; the §6.1 probe
+   verifies the same thing fleet-wide at cutover). Tests 10 → 13.
+4. **Coach `dd81a97`** — the D-I3 gate: resolveParentIdentity + portal
+   profile.ts filter the LINK derivation to `account_status =
+   'approved'`. Placement precisified on the record: the filter sits on
+   the guardianship DERIVATION (the is_my_swimmer mirror) — the profile
+   identity row still resolves (profiles_select_own parity), so a
+   pending parent keeps their name/email and gets ZERO swimmers: one
+   wall, one rule in BOTH directions (the gate is neither looser nor
+   stricter than the wall). parent-portal typecheck clean (the 04
+   guardrail). Mid-execution red, fixed before landing: the gate broke
+   two portal-auth fixtures that predate account_status — fixtures
+   updated + a D-I3 pending pin added in test/parentPortal-auth.test.ts
+   (it lives under Coach test/ because jest ignores parent-portal/
+   paths) and two D-I3 pins added in parentPortal.test.ts
+   (pending dashboard = profile + zero swimmers; pending-but-linked
+   detail = permission-denied).
+5. **BSPC migration/i/README.md + this log.** Manifest only, HARD STOP:
+   code/timestamps/redeemed verbatim; swimmerId via the roster map
+   (unresolvable STOPS); coachId via the identity map (missing author
+   STOPS — RESTRICT forbids orphans); redeemed_by via the identity map
+   (unmapped → REPORT, land NULL); duplicate source codes REPORT AND
+   STOP; the linkedSwimmerIds→guardianships work stays in A's identity
+   manifest (cross-referenced, with an agreement audit line); cutover
+   lines = the §6.1 probe (banked by reference), the portal data-path
+   mini-plan pointer, the D-I4/OD-1 convergence ordering. NO backfill
+   ran; NO file copied; NO Deno touched.
+
+**Mid-execution flags (tripwire armed, none fired):** (1) pgTAP 013's
+first run aborted on a nested data-modifying CTE — rewritten to the
+house top-level-WITH-inside-results_eq idiom before anything landed;
+(2) the drafted plan(43) counted the link-creation proof and the
+precisification pin separately, but one test proves both (the count
+probe runs AS the pending principal) — plan corrected to 42, no subject
+dropped; (3) the pgTAP delta (+42) exceeds the §5 prediction (+25-35)
+in the MORE-proofs direction.
+
+**Cutover lines banked:** the §6.1 provisioning probe (every Firestore
+parents-doc uid must resolve a NON-empty profile; zero-resolve = STOP);
+the portal post-cutover data path is designed in the 05 §6 auth-cutover
+mini-plan; the OD-1 convergence ordering restated (backfill
+guardianships → switch BSPC reads/RLS → drop family_id); post-backfill
+invite/guardianship agreement audit.
+
+**Phases A–I code-side COMPLETE. Firestore reads/writes remaining in
+the Coach app data layer: NONE** — parentInvites.ts was the last; what
+remains on Firebase in the clients is the auth/session layer
+(AuthContext + the portal's session provider, both cutover-banked by
+ratified Option (b)) and Firebase Storage file serving until the
+cutover copy. **Next per 04: Phase J (aggregations decommission — do
+NOT migrate; recompute in PG; retire/re-point rebuildAggregations +
+dashboardAggregations + onNotesWritten/onVideoSessionWritten readers).**
+Bar at close: 835 TZ=UTC + 316 / 1081 / 133, BSPC tsc clean, portal
+tsc clean.
