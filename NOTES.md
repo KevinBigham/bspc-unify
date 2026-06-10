@@ -278,3 +278,76 @@ Kevin ratified: proceed **code-first into Phase B (swimmers roster)** per
 `04_CROSS_TIER_SEQUENCING.md`. The identity-cutover mini-plan is staged
 **later**, at the point 04 calls for it — consistent with the code-first,
 cutover-last model (no dual-write bridges needed pre-launch).
+
+---
+
+## Phase B (swimmers roster) — code-side LANDED 2026-06-09 (same session)
+
+All of 04's Phase B scope committed, every suite green at every commit.
+(Also landed: `06_FIREBASE_RUNBOOK.md` — the standalone go-live checklist.)
+
+**Schema (BSPC `00003_phase_b_swimmers.sql` + pgTAP `006`, commit `c4bfe1c`):**
+additive/widening only. swimmers gains the Coach-app columns (display_name,
+gender TEXT CHECK, usa_swimming_id, profile_photo_url, do_not_photograph,
+the five media_consent_* columns, created_by); `family_id` relaxed to
+NULLABLE (canonical decision #4 — coach roster exists before parents; NULL
+never matches family RLS); practice_group CHECKs (swimmers + coach_groups)
+widened to the ratified 8 (+ 'Masters'); staff-only `swimmer_coach_profile`
+companion (strengths/weaknesses/technique_focus_areas/meet_schedule/
+parent_contacts JSONB) with is_staff() RLS + updated_at trigger; canonical
+indexes. pgTAP 31→45 (14 new: shape, NULL-family visibility wall, scp
+staff-only wall, gender CHECK, consent defaults).
+
+- **[FYI] `media_consent_granted_by_name TEXT` is an addition over canonical**
+  (PROPOSED canonical amendment): the Coach App records the consenting
+  guardian as a free-text NAME; canonical's `media_consent_granted_by` is a
+  profiles FK, which cannot hold that pre-cutover. Live carries BOTH columns
+  (FK stays NULL until guardians are profiles). Canonical 01 should gain the
+  same column at the next schema ratification.
+- **[FYI] Parents can technically SELECT the new consent/created_by columns
+  on their own swimmer's row** (RLS is row-level; this is exactly deferred
+  P2-1/P2-2 — resolve via parent-facing views in the APP migration).
+
+**Coach client (commits `725cc2b`, `224165d`, `3a340e9`):** swimmers.ts,
+profilePhoto.ts (row-write only; storage binaries stay Firebase until F),
+csvImport.ts (swimmer creation; import_jobs bookkeeping stays Firestore until
+its phase). Frozen interfaces; realtime parity watches BOTH swimmers and
+swimmer_coach_profile (coach-eyes edits used to live on the same doc).
+A 4th test dependent surfaced and was re-pointed: `test/critical-ops/
+roster.criticalOp.test.ts` (its two "payload includes timestamps" assertions
+inverted per playbook — DB owns created_at/updated_at). Client 973→983.
+
+- **[FYI] Legacy `Swimmer.goals: string[]` is now DERIVED ON READ** from the
+  goals table (`goals(event_name)` embed) and never written — canonical has
+  no swimmer.goals storage. Doc/DOCX export keeps a goals section (now fed by
+  live goals rows instead of the stale denormalized strings). The backfill
+  inverse is `legacyGoalsToGoalRows`.
+- **[FYI] `created_by` is written from `coach.uid` (still the Firebase UID
+  under Option (b))** — value semantics flip to profiles.id at the identity
+  cutover; pre-launch there are no real rows to remap.
+
+**Functions (commits `86c9e24`, `19b866c`, `8f6f2f7`):** parentPortal swimmer
+reads (summaries via one `in()` preserving linked order; detail embeds
+staff-only strengths + derives portal goals strings; all four COPPA
+sanitization assertions verbatim; times/attendance stay Firestore until C/D),
+extractObservations roster reads (drafts write stays until F),
+rebuildAggregations roster enumeration (recompute internals stay until
+C/D/E/J). Functions 109→114.
+
+**Backfill scaffolding (BSPC commit `0821a0c`):** `migration/roster/` —
+transient `migration_swimmer_map` DDL (NOT in supabase/migrations),
+`reconcileRoster` (ratified order: usa_swimming_id exact → name+DOB;
+ambiguous STOPS the runner; same-name-unconfirmed-by-DOB creates new but is
+reported as a collision for human review), fill-NULLs-only merge patch
+(**BSPC row wins every conflict; Coach consent/photo-block always carries**),
+legacy-goals→goals rows, swimmer-map audit (no doc mapped twice, no two docs
+collapsed onto one swimmer). The completed map is the NM-6 swimmer resolver
+for guardianship building. BSPC jest 792→811 (+19).
+
+**New green bar: BSPC 811 (TZ=UTC) + pgTAP 45 · Coach 983 · functions 114.**
+
+Remaining for Phase B at cutover (not code): run the reconciliation/backfill,
+and the OD-1 convergence items unchanged (family_id drop, last_name NOT NULL
+relax, TEXT→enum) stay convergence-step work. Next per 04: **Phase C
+(attendance) — flagged the single riskiest step; treat as its own mini-plan
+with a red-team pass.**
