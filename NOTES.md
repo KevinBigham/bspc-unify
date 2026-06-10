@@ -928,3 +928,35 @@ stream remain jest-mocked only — first real exercise happens at staging;
 webhook-free design means the only delivery untestable locally is nothing —
 the kick + sweeper are both fully unit-tested.
 Next per 04: **Phase G (notifications)**.
+
+---
+
+## 2026-06-10 — Phase G scoping tripwire: FIRED → 11_PHASE_G_NOTIFICATIONS.md
+
+Baseline confirmed green at session start (BSPC 835 TZ=UTC + pgTAP 167 ·
+Coach 1022 · Functions 118; all repos clean/synced). Full notification
+surface read end to end (Coach: notifications.ts, notificationRules.ts,
+evaluateNotificationRules, onNotification, manageTopics, dailyDigest, the
+shared pure evaluation module; BSPC: push.ts, notifications api,
+send-notification + cleanup-tokens Edge Functions, pgTAP 003; canonical 01
+delta vs landed 00001).
+
+**Fired because the delivery architecture is mostly unpinned do-nothing
+defaults:** evaluator's firing mechanism post-Firestore (D-F2 was ratified
+for media, not attendance); coach push transport — today's effective coach
+push delivery is ZERO (registerForPushNotifications has no call site;
+Expo-format tokens were fed to an FCM sender) and the canonical Deno sender
+unconditionally inserts in-app rows (double-notification seam) while having
+zero tests; OD-4 (digest enumeration, deferred whole from A) + the digest
+pref has no canonical home (notification_preferences lacks it; only writer
+is AuthContext, itself cutover-banked); ai_drafts_ready = wire-or-re-bank;
+nothing anywhere schedules send-notification/cleanup-tokens (the whole BSPC
+notification feature is dormant pending an invoker). **Cross-phase finding
+RG-6:** no migration ever added tables to the supabase_realtime publication
+— all 12 Coach-subscribed tables from B–F (+2 from G) depend on hosted
+config that exists nowhere in code.
+
+11 ends with **[DECIDE] D-G1..D-G6** (invocation, push transport, digest
+enumeration+pref, ai_drafts_ready, publication-as-code, pipeline
+scheduling), each with a recommendation. No Phase G code written; bar
+unchanged.
