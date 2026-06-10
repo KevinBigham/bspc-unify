@@ -2109,3 +2109,50 @@ NOT migrate; recompute in PG; retire/re-point rebuildAggregations +
 dashboardAggregations + onNotesWritten/onVideoSessionWritten readers).**
 Bar at close: 835 TZ=UTC + 316 / 1081 / 133, BSPC tsc clean, portal
 tsc clean.
+
+---
+
+## 2026-06-10 — Phase I RATIFIED complete code-side (Kevin, in words) + two post-hoc ratifications
+
+Each item was checked against the landed log (previous entry) before
+recording; no mismatches, nothing force-fit.
+
+1. **Kevin ratifies Phase I COMPLETE code-side.** Five green commits
+   verified (BSPC `23fb17e`; Coach `5421dfd`, `fed26e3`, `dd81a97`;
+   BSPC `064aa3f` + UNIFY `68ecfe3` paperwork); final bars BSPC 835 /
+   pgTAP 316 / Coach 1081 / Functions 133; RC-3 held in 00010 (table +
+   RPC + walls + pgTAP 013 + publication pin 22→23 landed together, no
+   exposed intermediate); publication proven at EXACTLY 23; ZERO test
+   deletions, with the two named re-points accepted (the redeemInvite
+   first-time and second-swimmer subjects preserved through the RPC
+   path, plus the NEW never-touches-`parents` assertion); the pgTAP
+   overshoot (+42 against the predicted +25-to-35 band) ACCEPTED as a
+   more-proofs deviation, honestly flagged at landing.
+2. **POST-HOC RATIFICATION — the anon EXECUTE revoke on
+   `redeem_parent_invite` is accepted as conforming to D-I2's intent.**
+   Postgres grants EXECUTE to PUBLIC by default, which contradicted the
+   ratified grant list (authenticated + service_role); the revoke is a
+   NARROWING to the ratified surface, proven with its own test
+   (anon → 42501 in 013). Recorded as a named instance of the F-lesson
+   class: a platform default that silently widens beyond ratified
+   intent gets corrected in the same commit and proven, never left
+   implicit. (Check note: the landed log derived the same revoke from
+   the spoof-proof clause — anon also carries auth.uid() NULL and could
+   otherwise reach the param path — the identical finding from the
+   other direction; no mismatch.) The one-time grant audit that
+   GENERALIZES this instance is commissioned in the Phase J scope
+   (next entry).
+3. **POST-HOC RATIFICATION — account-less callers failing LOUDLY is
+   accepted as the ratified create-arm retirement landing correctly.**
+   The failed-precondition signal rides the frozen HttpsError
+   vocabulary (the CODE already exists in the frozen map — expired uses
+   it; the MESSAGE "No parent profile for this account" is new only
+   because the PATH is new: the legacy create-arm silently absorbed
+   account-less callers, and that arm is what retired). Account
+   creation remains handle_new_user()'s job per Phase A; the banked
+   §6.1 provisioning probe verifies the same invariant fleet-wide at
+   cutover.
+
+Phase I is closed end-to-end: scoped, ratified, landed, ratified
+complete. Next per 04: Phase J (aggregations decommission) — scoping
+follows.
