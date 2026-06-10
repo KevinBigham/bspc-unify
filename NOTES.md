@@ -1127,3 +1127,15 @@ Next per 04: **Phase H (calendar + meets + plans)** — calendar.ts, meets.ts,
 meetResultsImport meets-half, practicePlans+workoutLibrary as a pair,
 seasonPlanning (data-layer tests FIRST), syncCalendar; plus the re-banked
 practice-plan PDF + import FILES from D-F4.
+
+---
+
+## 2026-06-10 — pgTAP count reconciliation (Kevin's ITEM 0)
+
+Drafting typo, not a deletion: the in-session "43" was a miscount in 011's
+`plan()` line only (the first run reported "planned 43 ran 40" — wrong plan
+number, plus a collation error aborting the publication test; both fixed
+before anything was committed). The landed 011 declares `plan(42)` and
+contains exactly 42 test calls — re-verified today by direct count
+(167 + 42 = the green 209); no pgTAP proof was ever deleted or merged, so
+the deletion norm never engaged.
