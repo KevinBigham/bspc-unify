@@ -1213,3 +1213,54 @@ CREATE POLICY feedback_select_staff  ON feedback FOR SELECT TO authenticated USI
 -- ============================================================================
 -- END — review against UNIFY/02_SCHEMA_REDTEAM.md + UNIFY/NOTES.md.
 -- ============================================================================
+
+-- ============================================================================
+-- APPENDIX A — STORAGE: every bucket, its limits, and its walls, in words.
+-- [APPENDED IN PLACE 2026-06-11 per D-CUT9 (CUT-3 rider commit, e71050a
+-- annotation precedent). This closes the Phase-H bank: "UNIFY/01 gains a
+-- storage appendix cataloging every bucket, its limits, and its walls in
+-- words — due no later than the convergence sweep." Source of truth for the
+-- DDL: BSPC migrations 00007 (Phase F) and 00009 (Phase H §9).]
+-- ============================================================================
+--
+-- FOUR canonical buckets exist. All four are PRIVATE (public = false);
+-- nothing is ever served unauthenticated. There is NO imports bucket and
+-- never will be (D-H2b: no import file was ever uploaded; absence is
+-- parity).
+--
+--   1. media-audio    — 100MB cap (104857600), MIME audio/*.
+--      Wall: STAFF-ONLY, all operations (media_audio_staff: is_staff() on
+--      USING and WITH CHECK). Holds practice/voice audio, including the
+--      legacy audio/swimmers/... voice-note keys (copied 1:1 at the 06 §B1
+--      file-copy step).
+--   2. media-video    — 500MB cap (524288000), MIME video/*.
+--      Wall: STAFF-ONLY, all operations (media_video_staff). The 500MB cap
+--      is the F-bank pre-check at the file-copy step: confirm the hosted
+--      storage tier covers it BEFORE copying.
+--   3. profile-photos — 5MB cap (5242880), MIME image/*.
+--      Wall: STAFF-ONLY, all operations (profile_photos_staff). Parents'
+--      ONE affordance is the signed capability URL stored in
+--      swimmers.profile_photo_url, issued staff-side at upload — parents
+--      never touch the bucket itself.
+--   4. practice-plans — 25MB cap (26214400), MIME application/pdf.
+--      Wall: is_staff() AND owner path segment
+--      ((storage.foldername(name))[1] = auth.uid()) on USING and WITH
+--      CHECK (practice_plans_files_owner) — a coach reads/writes only
+--      their own folder. The is_staff() arm is the ONE named divergence
+--      from the legacy Firebase rule (RH-14 hole-closing, ratified at H);
+--      any second behavioral divergence is a tripwire. At the 06 §B1 copy,
+--      legacy /practice_plans/{firebaseUid}/** keys remap to
+--      practice-plans/{auth.users.id}/... via migration_identity_map AND
+--      the practice_plans rows' storage-path values are rewritten — both
+--      halves together close the D-K2 pre-H 404 caveat.
+--
+-- Legacy Firebase path map (the 06 PART B §B1 copy table, restated):
+--   /audio/**           -> media-audio     (keys 1:1, no row rewrites)
+--   /video/**           -> media-video     (keys 1:1, no row rewrites)
+--   /profiles/**        -> profile-photos  (keys 1:1, no row rewrites)
+--   /practice_plans/**  -> practice-plans  (owner-folder remap + row
+--                                           rewrite, above)
+--   /imports/**         -> NO DESTINATION  (D-H2b; verify-EMPTY named
+--                                           no-op)
+-- The legacy storage.rules retire WITH the copy (RF-4 under D-F1(a)).
+-- ============================================================================
