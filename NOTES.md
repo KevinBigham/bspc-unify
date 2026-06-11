@@ -3886,3 +3886,502 @@ Functions 115.** Deletion norm: the four named K5 rows + the four
 named FYI-1 mock blocks — nothing else. Phases A–K code-side
 COMPLETE. **Next: the 05/06 cutover planning (auth cutover, file
 copy, backfills behind the HARD STOP, decommission).**
+
+---
+
+## 2026-06-11 — CUTOVER STAGING SCOPE (05/06) — docs-only round: fresh death-inventory + landing-zone derivation; 05 auth-cutover and 06 decommission plan OUTLINES; D-CUT1–D-CUT9 decision queue + FYI A–G; numbered round plan
+
+**PART 0 — gate + doctrine.** Heads at start: UNIFY `e8fb7f7`, BSPC
+`9e68c17`, Coach `707439c`, all trees clean, all synced. Four bars
+re-verified on these exact trees before this entry: **BSPC 835 (TZ=UTC)
++ pgTAP 335 (Files=14, Result: PASS) / Coach 1080 / Functions 115.**
+HARD-STOP doctrine, restated and absolute for this entire stage: the
+production auth cutover, and the RUNNING of any backfill or file
+migration, execute only in a future round with Kevin's explicit
+approval. This round and the doc rounds that follow are documentation
+ONLY; every operational sequence written into 05/06 sits under an
+explicit HARD-STOP header as instructions-only. Nothing in this round
+ran against any database except the local test stack for the bars.
+
+### PART 1a — UNIFY doc census (what exists, what is stub, what 05/06 must become)
+
+- **00_TERRAIN.md** (371 ln) — final reconciliation map; §0 census (23
+  Coach Firestore collection paths) is the death-list source used in
+  PART 3. No changes owed.
+- **01_CANONICAL_SCHEMA.sql** (64.7 KB) — law. OWES the banked storage
+  appendix ("cataloging every bucket, its limits, and its walls in
+  words — due no later than the convergence sweep"). Slotted by D-CUT9.
+- **02_SCHEMA_REDTEAM.md** — historical record; no changes owed.
+- **03_MIGRATION_PLAYBOOK.md** — the service-swap playbook; cutover
+  rounds add nothing to it (its job ended with Phase K).
+- **04_CROSS_TIER_SEQUENCING.md** — the backbone; gains pointer
+  annotations to the landed 05 §6 / 06 PART B when those land
+  (in-place, the e71050a/D-J2 annotation precedent). Nothing binding.
+- **05_PHASE_A_IDENTITY.md** — the Phase A plan. Its §6 ("SINGLE
+  riskiest sub-step — the auth-credential / account cutover") is a
+  PLACEHOLDER that prescribes its own successor: "treat the auth
+  cutover as its own mini-plan with its own red-team pass." That
+  mini-plan was never written; every later phase banked cutover lines
+  pointing at "05 §6." All §8 open decisions are since ratified (OD-1
+  transitional; OD-2 redeemInvite in I; OD-3 gated provisioning wins;
+  OD-4 digest deferred whole to G; NM-1/NM-5 rulings; OD-6 SETTLED
+  2026-06-09: NO password-hash import). **05 must become:** §6 expanded
+  in place into the full auth-cutover mini-plan (PART 2 outline).
+- **06_FIREBASE_RUNBOOK.md** (169 ln) — currently a beginner GO-LIVE
+  guide (create the Firebase project, enable services, deploy rules +
+  functions, seed). §7 sketches only the post-cutover env additions and
+  carries the load-bearing banked sentence: "the **Cloud Functions stay
+  hosted on Firebase** (they just read Postgres). Re-homing them off
+  Firebase is a separate, optional, post-Phase-J decision." It is now
+  post-Phase-J: that decision is D-CUT5. **06 must become:** the
+  DECOMMISSION RUNBOOK (PART 3 outline) — file copy, backfill manifests
+  behind HARD-STOP, cron, env, ordered project death, named losses.
+- **07/08/10/11/12** — landed phase mini-plans; historical; no changes.
+- **NOTES.md** — carries the CONSOLIDATED CONVERGENCE / CUTOVER REMOVAL
+  CHECKLIST (9 items, 2026-06-09) and the banked cutover lines. 06
+  RESTATES what it executes; the checklist remains authoritative for
+  the convergence sweep.
+
+### PART 1b — the Firebase death inventory (fresh, trust-nothing)
+
+**(i) Coach app live bank — re-proven this round, exactly five files**
+(fresh import grep on app/ + src/, tests excluded): AuthContext.tsx ·
+app/admin.tsx · app/(tabs)/settings.tsx · app/forgot-password.tsx ·
+src/config/firebase.ts. Per-file surface, re-read in full this round:
+- `src/contexts/AuthContext.tsx` — firebase/auth session
+  (onAuthStateChanged, signInWithEmailAndPassword, signOut) +
+  `coaches/{uid}` getDoc/setDoc. Carries the ratified-dead NM-5
+  auto-admin-on-first-login branch (:57–:85) — DELETED at the swap, not
+  ported. signOut (:117–:139) reads the coaches doc's `fcmTokens` to
+  decide push cleanup — successor reads push_tokens via the existing
+  notifications service (the suite's one pinned assertion, cleanup-
+  before-signout, is preserved).
+- `app/admin.tsx` — onSnapshot on the WHOLE `coaches` collection (:39);
+  role toggle admin↔coach (:59) and groups toggle (:73) via updateDoc.
+  Successor surface does not exist yet → D-CUT8.
+- `app/(tabs)/settings.tsx` — notificationPrefs toggles updateDoc the
+  coaches doc (:46). **Named split-brain inside the bank:** since Phase
+  G the functions read `notification_preferences` (PG); this write has
+  had NO reader — a dead-end write that was accepted as part of the
+  coherent-reading bank and closes at the swap → D-CUT7.
+- `app/forgot-password.tsx` — sendPasswordResetEmail (:31) →
+  supabase.auth.resetPasswordForEmail (redirect/template are cloud
+  console staging lines in 06).
+- `src/config/firebase.ts` — initializeApp + db/auth/storage/functions
+  exports. Post-K the `storage` and `functions` exports have ZERO live
+  importers (FYI-G); the whole file dies with the bank.
+
+**(ii) Parent-portal residue — OUTSIDE the app-side bank claim (the K
+sentence stands as scoped to app/ + src/), four files, named now:**
+- `parent-portal/src/lib/firebase.ts` — full client ("Same Firebase
+  project as the coach app"), NEXT_PUBLIC_FIREBASE_* env.
+- `parent-portal/src/lib/auth.ts` — HYBRID by Phase A design: profile
+  READ is Supabase since A; the session half (sign-in/out via
+  firebase/auth, :7–:11, :28) is still Firebase. Swaps at 05 with the
+  bank (same supabase.auth idiom as the portal already uses for reads).
+- `parent-portal/src/app/dashboard/page.tsx` — firebase/auth `User`
+  type import (:14); dies with the auth.ts swap.
+- `parent-portal/src/lib/parentPortal.ts` — httpsCallable transport to
+  the two portal callables. Post-cutover the caller is a SUPABASE
+  session; the Firebase callable sees no request.auth → the portal data
+  path MUST change (this is exactly the banked "the portal post-cutover
+  data path is designed in the 05 §6 auth-cutover mini-plan") → D-CUT6.
+
+**(iii) functions/ workspace — live plumbing until decommission.** 19
+src files; 10 deployed exports (processAudioSession, processVideoSession,
+sweepStuckSessions, evaluateAttendanceRules, sweepAttendanceEvaluations,
+dailyDigest, redeemInvite, getParentPortalDashboard,
+getParentSwimmerPortalData, syncCalendar); deps firebase-admin +
+firebase-functions + supabase-js + vertexai; manual mock
+`functions/src/__mocks__/firebaseAdmin.ts`. **The Functions jest bar
+(12 suites / 115 tests) DIES WITH THE WORKSPACE — pre-declared NOW as a
+deliberate future test-count event** (per-step declines as functions
+retire under D-CUT5; the bar fully RETIRES at workspace death; the 06
+doc must carry this pre-declaration verbatim).
+
+**(iv) Root config artifacts** (die at the 06 config step):
+firebase.json · .firebaserc (project `bspc-coach`; storage target
+`bspc-coach.firebasestorage.app`) · firestore.rules (190 ln) ·
+storage.rules (50 ln; paths /audio/**, /video/**, /profiles/**,
+/imports/**, /practice_plans/{coachId}/**) · firestore.indexes.json
+(315 ln). The F bank already pins: "the old Firebase `storage.rules`
+retire WITH the file copy (RF-4 closes under D-F1(a))."
+
+**(v) scripts/** — firebase-admin seed tooling: create-coach.ts,
+seed-demo-data.ts, seed-calendar.ts, seed-meets.ts, seed-roster.ts
+(stale-by-migration, K classification stands). **LOUD finding:**
+`scripts/__tests__/seed-demo-data.test.ts` (4 tests) is INSIDE the
+Coach 1080 (root jest testMatch covers scripts/__tests__; verified via
+--listTests) → **the scripts deletion is a pre-declared Coach −4
+event** at the 06 scripts step. check-*.sh/.mjs +
+sync-functions-shared.js are repo tooling, NOT firebase — they survive.
+
+**(vi) The live-project side** (Firebase Auth user store, Firestore
+collections, Storage objects): the repo CANNOT prove a live project
+exists or holds data — env files are unreadable by standing security
+rule, 06 §§1–3 is a create-from-scratch guide, and OD-6 recorded "Both
+apps are pre-launch with **zero real users**." Resolved by probe, not
+assumption → D-CUT3. Collection-by-collection dispositions in PART 3.
+
+**(vii) BSPC repo** — fresh grep: the string "firebase" appears ONLY in
+the two migration mapping test files (identity-mapping,
+roster-reconciliation), which are successor machinery (they test the
+firebase_uid→profiles mapping), not residue; they retire WITH the map
+tables at convergence checklist item 8. Zero firebase imports anywhere.
+
+### PART 1c — the Supabase landing zone
+
+- **Auth:** the BSPC Supabase project (local mirror project_id
+  `bspc-swim-app`); email/password is the native provider (BSPC parents
+  already use it; local config.toml is db-only/minimal — no repo-side
+  auth config owed). Coach app ALREADY holds the env-driven supabase
+  client (`src/config/supabase.ts`) — the swap adds no new client.
+  **Design pin for the 05 doc:** supabase-js session persistence in RN
+  (AsyncStorage storage adapter + autoRefreshToken) must be configured
+  at the swap — today's client is data-only; cold-start session restore
+  is exactly the 05 §6.4 named risk. **Identity pin (derived, not open):
+  post-swap `Coach.uid` := `auth.users.id`** — forced by the D-C7
+  transitional `attendance.marked_by → auth.users` FK; legacy Firebase
+  uids embedded in rows remap at convergence (checklist item 5) via
+  migration_identity_map.
+- **Storage:** four canonical buckets live since F/H: media-audio
+  (100MB, audio/*) · media-video (500MB, video/*) · profile-photos
+  (5MB, image/*) · practice-plans (25MB, application/pdf). Walls:
+  staff-only on media-*, signed-URL capability for parents
+  (profile_photo_url), owner-folder on practice-plans
+  (foldername[1] = auth.uid). This derivation IS the storage-appendix
+  material (D-CUT9).
+- **Backfill-receiving tables:** per-collection map in PART 3; the
+  staged scaffolding lives in `BSPC/ACTIVE/migration/` — TEN dirs:
+  identity, roster, attendance, times, notes, media, notifications, h,
+  i, j(null) — plus `__tests__/migration/` mapping tests. The identity
+  README's staged run order (steps 1–8, OD-6-settled, runner for step 3
+  "not yet written") is the provisioning manifest 06 incorporates.
+
+### PART 1d — Coach test-side bank shadows (exact, fresh)
+
+- **Live shadow:** `src/contexts/__tests__/AuthContext.test.tsx` —
+  exactly **1 test** ("cleans up push subscriptions before sign out")
+  behind 3 firebase-targeting jest.mock blocks (config/firebase,
+  firebase/auth, firebase/firestore). At 05 it TRANSFORMS in place
+  (assertion preserved; mocks re-pointed to the supabase idiom) + new
+  pins per §6.4 — never deleted.
+- **The shared manual mock** `src/__mocks__/firebase.ts` — retires WITH
+  the bank, but only after the next item is swept:
+- **LOUD fresh-sweep finding (the expectation did not predict this):
+  TWELVE more test files carry DEAD `jest.mock('../../config/firebase',
+  …)` lines** — 8 routing through the shared mock (GoalCard, docExport,
+  attendanceStore, calendarStore, meetStore, practiceStore,
+  swimmersStore, videoStore) + 4 with inline factories (csvImport,
+  docxExport, export, hy3Import). Same class as the four FYI-1 removals
+  K6 executed: their subjects' module graphs no longer reach
+  config/firebase (the five-file live grep proves it), so the mocks are
+  no-ops. They sweep at the 05 code round with per-file
+  verify-at-deletion evidence, ZERO test-count impact (K6 precedent:
+  1080 exact) — FYI-A. Eight other files (seasonStore, search,
+  meetResultsImport, VideoCompareScreen, useTimes, useGoals,
+  useSwimmerAttendance, sdifImport) mention firebase in COMMENTS only —
+  no action.
+- **Functions-side:** `functions/src/__mocks__/firebaseAdmin.ts` + all
+  12 suites die with the workspace (the (iii) pre-declaration).
+- **scripts-side:** seed-demo-data.test.ts = the −4 event ((v) above).
+
+### PART 2 — 05 AUTH CUTOVER mini-plan (outline; the doc lands post-ratification)
+
+Lands as the in-place expansion of 05 §6 (D-CUT1). Sections:
+
+- **§6.0 Precondition line (opens the doc, quoted from the K landed
+  log at e8fb7f7):** "after Phase K, the Coach app's ENTIRE live
+  firebase surface is EXACTLY the five-artifact auth bank — …— re-proven
+  by a fresh import grep on the final tree." Plus the portal residue
+  inventory (PART 1b(ii)) as the second, portal-half precondition.
+- **§6.1 Provisioning (the BINDING GATE, banked text quoted):** OD-6
+  settled ("accounts are provisioned with fresh Supabase credentials…
+  never touches password material"); the identity README staged order
+  1–8; **THE PROBE, verbatim from the bank: "after provisioning, every
+  Firestore parents-doc uid must resolve a NON-empty profile via the
+  map; zero-resolves = STOP. The mask is removed by verification, not
+  by code (data-layer freeze)."** Plus the banked post-backfill
+  invite/guardianship agreement audit, and the NM-1 step: "the live
+  list must be pulled from the `coaches` collection at backfill time
+  for Kevin to confirm; not derivable from code" (Kevin = super_admin;
+  remaining Coach "admins" → coach_admin).
+- **§6.2 The swap design (all five die together; one logical change per
+  commit):** AuthContext → supabase.auth (onAuthStateChange +
+  getSession; RN persistence pin; signInWithPassword behind the frozen
+  error-message map; coach resolution = profiles(user_id) +
+  coach_groups [+ notification_preferences per D-CUT7] mapped into the
+  frozen `Coach` type, super_admin→'admin' / coach_admin→'coach', uid
+  := auth.users.id; NM-5 branch deleted; push cleanup via push_tokens).
+  forgot-password → resetPasswordForEmail. settings → useAuth coach +
+  D-CUT7 prefs surface. admin → D-CUT8 staff surface. config/firebase.ts
+  + src/__mocks__/firebase.ts deleted (after FYI-A sweep). Portal half:
+  lib/auth.ts session → supabase.auth; dashboard User type → supabase
+  Session/User; lib/firebase.ts dies UNLESS D-CUT6 keeps the callable
+  transport temporarily (then it survives functions-scoped until the
+  D-CUT5 step that retires the callables).
+- **§6.3 What cutover MUST NOT change (D-I1 interplay, quoted):**
+  redemption stays staff-authorized LINK creation; approval stays
+  ACCOUNT activation; **"'dark until approval' means ZERO rows from
+  every swimmer-keyed table, proven in pgTAP"** — unchanged, including
+  the explicitly-accepted pending-redeemer guardianships-row read; OD-3
+  gated provisioning governs all new accounts (no auto-approve
+  anywhere; NM-5's removal composes); parent_invites + the redeem RPC
+  are already PG (Phase I) — the cutover changes WHO the caller is
+  (native supabase uid), and nothing else about invites.
+- **§6.4 Swap test plan (pre-declared):** Coach 1080 → **+10 to +18,
+  ZERO deletions** (provisional band, K-precedent — fixed per-export in
+  the 05 doc): AuthContext suite transforms 1→1 + new mapping/role/
+  session pins; D-CUT8 staff surface ≥2 pins per export; D-CUT7 prefs
+  surface ≥2 pins per export; portal-auth additions land in root
+  `test/` (the Phase A +5 precedent — parent-portal/ itself is outside
+  the bar). FYI-A dead-mock sweep + shared-mock deletion = ZERO count
+  change with per-file verify-at-deletion evidence. BSPC 835 + pgTAP
+  335 + Functions 115 EXACT-unchanged through every 05 commit.
+- **§6.5 Rollback + smoke:** pre-launch rollback = env flip back +
+  revert commit; smoke checklist (coach login, role render, admin list,
+  prefs toggle persists to PG, reset email round-trip, portal login).
+
+### PART 3 — 06 DECOMMISSION RUNBOOK (outline; PART B of 06 per D-CUT2)
+
+Every operational sequence below sits under its own HARD-STOP header in
+the doc; nothing runs in any docs round.
+
+- **§B0 Live-project inventory probe (D-CUT3, FIRST):** per-collection
+  doc counts + storage prefix counts + auth user count from the
+  console/CLI; output feeds the D-CUT4 keep/drop sheet. EMPTY project →
+  every data manifest is a named no-op (the probe output is the record).
+- **§B1 FILE COPY — owns object existence; closes the D-K2 caveat
+  (quoted: "any pre-H row carrying a legacy Firebase path 404s against
+  a signed Supabase URL until the 06-runbook file-copy step, which owns
+  object existence").** Map: /audio/** → media-audio · /video/** →
+  media-video · /profiles/** → profile-photos ·
+  /practice_plans/{firebaseUid}/** → practice-plans/{auth.users.id}/
+  (folder remap via migration_identity_map) **+ rewrite the
+  practice-plan rows' storagePath values to the new keys** (without the
+  rewrite, getSignedFileUrl still 404s — the caveat closes only when
+  both halves land) · /imports/** → NO destination (D-H2b: no import
+  file was ever uploaded; absence is parity — named no-op).
+  Verification: per-bucket object counts + a spot signed-URL resolve;
+  the dashboard todayPlan render is the named acceptance check. F-bank
+  lines carried: confirm hosted storage tier covers the 500MB cap
+  BEFORE the copy; storage.rules retire WITH the copy.
+- **§B2 BACKFILL MANIFESTS (one per collection → table, each with its
+  verification query, quoted from its migration/ README):** coaches →
+  profiles + coach_groups (identity) · parents → profiles +
+  guardianships (identity) · swimmers → swimmers (roster,
+  migration_swimmer_map) · attendance → attendance (three-bucket dedup)
+  · times → swim_results (personal_bests via the D-D5 trigger, never
+  hand-written) · notes → swimmer_notes · voice_notes rows →
+  swimmer_voice_notes (files ride §B1) · audio/video sessions + drafts
+  → their F tables (media) · notification_rules → notification_rules ·
+  notifications (CF-write) → per the notifications README disposition,
+  quoted verbatim in the doc · meets/calendar_events+rsvps/
+  practice_plans/season_plans+weeks/import_jobs → their H tables (h) ·
+  parent_invites → parent_invites (i) · aggregations → NULL-MANIFEST
+  (j; nothing to copy, ratified twice). **LOUD gap, named: `goals` and
+  `group_notes` have NO migration/ scaffolding dir** (they migrated
+  pre-UNIFY-discipline, 2026-05-31) — the 06 doc round WRITES those two
+  manifests fresh. Never-implemented paths (medical, meets/relays,
+  live_events, splits, workout_library) = named no-ops. **Named
+  pre-launch data losses, coach_chat FIRST (D-J7 as corrected, quoted:
+  "whatever test chatter sits in the collection dies with Firestore at
+  the 06-runbook decommission step (named pre-launch data loss)");**
+  then any keep/drop-sheet drops Kevin signs under D-CUT4.
+- **§B3 CRON (D-G6, quoted verbatim in the doc):** "schedule
+  `send-notification` + `cleanup-tokens` (Supabase cron) at cutover
+  staging with an end-to-end drain verification… enqueue one ordinary
+  job AND one rule-mirroring flagged job; assert exactly one in-app row
+  per recipient for each (the writer-owned row, never a sender
+  duplicate)" — with the skip_in_app mechanism sentence carried.
+- **§B4 ENV (F/G banks, quoted):** set `PROCESS_SHARED_SECRET`
+  (functions env) + `EXPO_PUBLIC_PROCESS_FUNCTIONS_BASE_URL` /
+  `EXPO_PUBLIC_PROCESS_SHARED_SECRET` (app env) before the media
+  pipeline goes live; "the evaluateAttendanceRules endpoint rides the
+  SAME `PROCESS_SHARED_SECRET` + `EXPO_PUBLIC_PROCESS_*` env lines
+  already banked at F (no new secrets)"; SUPABASE_URL +
+  SUPABASE_SERVICE_ROLE_KEY via functions:secrets:set; portal
+  NEXT_PUBLIC_SUPABASE_* (06 §7 existing lines, carried into PART B).
+- **§B5 OD-1 CONVERGENCE ORDERING — restated VERBATIM in the manifests,
+  executes at the convergence sweep, NOT in 06:** "backfill
+  guardianships → switch BSPC reads/RLS → drop family_id" — the
+  consolidated 9-item checklist incorporated by reference with items
+  1/2/6 quoted in full; map-table drop (item 8) sequenced AFTER the
+  convergence sweep (the maps are the remap inputs: cutover →
+  convergence sweep → drop maps).
+- **§B6 FIREBASE PROJECT DEATH, ordered:** (1) Email/Password sign-in
+  disabled only after 05 is verified live (the existing §7 HARD-STOP
+  sentence); (2) Firestore rules → deny-all; data per the keep/drop
+  sheet; (3) **functions/ workspace retirement per D-CUT5 — LAST
+  compute standing; carries the pre-declared Functions-bar event (115 →
+  per-step declines → bar RETIRES; firebaseAdmin mock + 12 suites with
+  it)**; (4) repo config deletions (firestore.rules, storage.rules,
+  firestore.indexes.json, firebase.json, .firebaserc) — one named
+  commit; (5) scripts/ firebase seeds deletion WITH
+  scripts/__tests__/seed-demo-data.test.ts → **Coach −4, pre-declared**;
+  (6) portal lib/firebase.ts + parentPortal.ts transport per
+  D-CUT6/D-CUT5 timing; (7) the Firebase project deleted in the console
+  + Blaze billing closed.
+- **§B7 Named pre-launch data losses, consolidated** (coach_chat first;
+  then the keep/drop-sheet outcomes; each loss named, none silent).
+
+### PART 4 — the banked UNIFY/01 storage appendix
+
+Bank text: "UNIFY/01 gains a storage appendix cataloging every bucket,
+its limits, and its walls in words — due no later than the convergence
+sweep." The material is fully derived in PART 1c. Slot decided by
+D-CUT9 below (recommendation: rider commit in the 06 doc round).
+
+### PART 5 — numbered round plan (post-ratification) + the decision queue
+
+Round plan (one green commit per logical change; all four bars EXACT at
+every commit except the pre-declared events; tripwire stays armed):
+
+1. **CUT-0 (UNIFY, paperwork):** ratification recording for
+   D-CUT1–D-CUT9 + FYI A–G, checked against these blocks verbatim.
+2. **CUT-1 (UNIFY, docs):** 05 §6 in-place expansion lands (PART 2
+   outline → full mini-plan with its own red-team section, per 05's own
+   prescription). Bars untouched.
+3. **CUT-2 (UNIFY, docs):** 06 PART B decommission runbook lands (PART
+   3 outline → full manifests incl. the two fresh goals/group_notes
+   manifests, every sequence behind HARD-STOP). Bars untouched.
+4. **CUT-3 (UNIFY, docs, rider):** the 01 storage appendix (if D-CUT9 =
+   (a)). Bars untouched.
+5. **CUT-4+ (code, Coach + portal-half):** the 05 swap executes under
+   its own pre-declared band (+10..+18, zero deletions) — separate
+   round(s), only after the 05 doc is ratified. BSPC/pgTAP/Functions
+   EXACT-unchanged throughout.
+6. **STAGING/CUTOVER rounds (ALL behind HARD-STOP, Kevin live):**
+   dry-run rehearsal against a throwaway project (the 05 §6 standing
+   recommendation; the provisioning-runner skeleton for identity README
+   step 3 lands here as scaffolding, unit-tested pure parts only); §B0
+   probe + keep/drop sheet; provisioning + the §6.1 probe gate; §B1
+   file copy; §B3 cron + §B4 env; verification. Then the OD-1
+   convergence sweep as its own session (§B5); then §B6 project death
+   with the Functions phase per D-CUT5.
+
+**[DECIDE] D-CUT1 — where the 05 auth-cutover mini-plan lands.**
+(a) In-place expansion of 05 §6 (every banked pointer says "05 §6";
+in-place keeps every pointer true — the e71050a/D-J2 in-place
+precedent). (b) New standalone doc (13_CUTOVER_AUTH.md) with a pointer
+from 05 §6. **Recommendation: (a).**
+
+**[DECIDE] D-CUT2 — where the decommission runbook lands.** (a) Extend
+06 in place: existing go-live content becomes PART A (kept, marked
+historical/optional — it documents the project being killed), new PART
+B = DECOMMISSION RUNBOOK (the K landed log, D-K2 caveat, and D-J7
+correction all name "the 06-runbook … step"; extending 06 keeps those
+pointers true). (b) New standalone doc. **Recommendation: (a).**
+
+**[DECIDE] D-CUT3 — the live-Firebase-project reality gate.** The repo
+cannot prove whether a live project exists or holds data (env unreadable
+by standing security rule; 06 §1 is a create-from-scratch guide; OD-6
+recorded zero real users). (a) Condition-first manifests: §B0 inventory
+probe is STEP 0 of the runbook; every data manifest branches on its
+probe count, EMPTY → named no-op; the probe output becomes the cutover
+record. (b) Kevin states the reality now and the manifests are written
+to that one world. **Recommendation: (a) — the docs stay true in every
+world and the probe doubles as the D-J7 "whatever test chatter" record.**
+
+**[DECIDE] D-CUT4 — which backfills RUN at cutover (pre-launch, zero
+real users).** (a) Identity ALWAYS runs (coach accounts must exist; the
+§6.1 probe demands non-empty resolution for every parents doc that
+exists); every DATA manifest runs only per a keep/drop sheet Kevin
+signs at execution with the §B0 counts in front of him — drops become
+§B7 named losses. (b) Run everything (full-rehearsal value, even for
+test data). (c) Clean-slate: provision staff fresh, skip all data
+manifests, name every collection a loss. **Recommendation: (a) — the
+machinery is still rehearsed by the mandatory dry-run either way.**
+
+**[DECIDE] D-CUT5 — the functions/ workspace fate (the banked
+"separate, optional, post-Phase-J decision", now due).** Full project
+death requires the 10 deployed functions to stop being Firebase-hosted.
+(a) COLLAPSE-FIRST, then re-home the irreducible rest: portal callables
+retire when D-CUT6(a) lands (direct reads); redeemInvite is already a
+thin shell over the PG RPC — its caller can invoke the RPC directly;
+syncCalendar + the sweepers + dailyDigest move to Supabase cron (the
+D-G6 line already moves two jobs); the irreducible server piece is the
+AI pipeline (processSession + Vertex + GCS staging) + evaluateAttendance
+endpoint — re-homed in a dedicated phase (host choice = its own future
+[DECIDE] at that phase; Supabase Edge Functions is the default
+candidate). Functions bar declines per named retirement, RETIRES at
+workspace death; the Firebase project survives functions-only until the
+final re-home. (b) Port the whole workspace in one dedicated phase
+first, then decommission. (c) Keep the functions Firebase-hosted
+indefinitely (the project never fully dies — conflicts with §B6 step 7).
+**Recommendation: (a) — maximum deletion before any porting, and every
+step is a named, bar-tracked event.**
+
+**[DECIDE] D-CUT6 — the portal's post-cutover data path** (the banked
+05 §6 design item). After 05, the portal session is Supabase; the
+Firebase callable sees no request.auth, so the current transport is
+dead the moment auth cuts over. (a) Direct Supabase reads under the
+parent RLS walls (the canonical end-state; attendance_parent_view +
+the family-arm views exist; gap inventory owed: the banked D-H5(b)
+calendar parent arms + any portal-payload field with no parent-readable
+source — the 05 doc round produces this inventory; small gap → build at
+the swap rounds, large gap → re-banked with a due phase, on the
+record). (b) Keep the callables, re-fronted as Supabase-JWT-verified
+HTTPS endpoints on the functions (delays D-CUT5 collapse; new verify
+surface). (c) Portal re-banked dark to a later product round (it is
+pre-launch; the coach app is the live product). **Recommendation: (a)
+as the designed end-state in 05 §6, with the gap inventory deciding
+WHEN it builds; (b) explicitly disrecommended (new auth surface on a
+component slated for collapse).**
+
+**[DECIDE] D-CUT7 — the settings notification-prefs successor.** No
+client surface for `notification_preferences` exists (fresh export
+greps of notifications.ts + notificationRules.ts). (a) The existing
+notifications service gains get/upsert preferences exports (the D-K4
+addition class: named signatures, ≥2 house-mock pins each, landing
+BEFORE the consumer re-point; settings' dead-end doc write dies with
+the bank). (b) Settings prefs go read-only/hidden until a product
+round. **Recommendation: (a) — it is the same narrow-successor shape
+every phase has used; (b) silently drops a shipped affordance.**
+
+**[DECIDE] D-CUT8 — the admin.tsx successor + isAdmin semantics.**
+Surface: (a) a NEW small `staff.ts` service (subscribeStaffProfiles +
+setStaffRole + setStaffGroups; profiles+coach_groups; the K-era
+"no new services" pin was a Phase K pin, not a standing law) or (b)
+additions to an existing service (none owns profiles administration —
+forced fit). Semantics: post-swap `isAdmin` = role==='admin' maps to
+super_admin ONLY (NM-1: Kevin sole super_admin) — admin screen AND the
+settings import buttons become Kevin-only; role changes are
+DB-enforced super_admin-only regardless (enforce_profile_self_update).
+(a-strict) Accept: UI parity with NM-1's deliberate-assignment intent;
+any widening (e.g. imports open to all staff, which the is_staff() DB
+walls would permit) is a future PRODUCT decision, never a migration
+side-effect. (b-split) Introduce an isStaff gate now so coach_admins
+keep the import screens. **Recommendation: surface (a) + semantics
+(a-strict), with (b-split) named as the future product option.**
+
+**[DECIDE] D-CUT9 — the 01 storage-appendix landing slot (PART 4).**
+(a) Rider commit in the 06 doc round (CUT-3): the material is fully
+derived (PART 1c); one paperwork commit closes a bank early. (b)
+Re-bank to the convergence sweep with the due date restated on the
+record. **Recommendation: (a).**
+
+**FYI bundle (accept or strike, none blocks ratification):**
+- **FYI-A** — the 12 dead jest.mock('../../config/firebase') lines
+  (PART 1d list) sweep at the 05 code round with per-file
+  verify-at-deletion evidence; the shared mock deletes after; zero
+  count impact (K6 precedent).
+- **FYI-B** — the portal 4-file firebase residue is OUTSIDE the
+  app-side bank claim; the K residual-set sentence stands as scoped
+  (app/ + src/); this entry is the portal residue's naming of record.
+- **FYI-C** — settings' notificationPrefs doc write has been a dead-end
+  since Phase G (functions read PG); named split-brain inside the
+  accepted bank; closes via D-CUT7.
+- **FYI-D** — legacy /imports/** storage path has no canonical bucket
+  (D-H2b absence-is-parity); the file copy names it a no-op.
+- **FYI-E** — scripts/__tests__/seed-demo-data.test.ts (4 tests) sits
+  inside the Coach 1080; the −4 event rides the 06 scripts step,
+  pre-declared (PART 1b(v)).
+- **FYI-F** — BSPC-side "firebase" mentions = the two mapping-test
+  successors only; they retire with the map tables (checklist item 8).
+- **FYI-G** — config/firebase.ts `storage` + `functions` exports have
+  zero live importers post-K; verified again at deletion.
+
+**Execution blocks on D-CUT1–D-CUT9. No 05/06 document content lands
+this round; no code changes anywhere; the four bars stand exact at
+835 (TZ=UTC) + 335 / 1080 / 115 on heads e8fb7f7 / 9e68c17 / 707439c.**
