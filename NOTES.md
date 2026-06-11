@@ -4385,3 +4385,170 @@ record. **Recommendation: (a).**
 **Execution blocks on D-CUT1–D-CUT9. No 05/06 document content lands
 this round; no code changes anywhere; the four bars stand exact at
 835 (TZ=UTC) + 335 / 1080 / 115 on heads e8fb7f7 / 9e68c17 / 707439c.**
+
+---
+
+## 2026-06-11 — CUTOVER RATIFICATION (CUT-0) — D-CUT1–D-CUT9 ALL RATIFIED (Kevin, in words, checked against the blocks at cdfc8d6); FYI A–G accepted unstruck; PWD-PROOF adopted as standing process; doc rounds CUT-1–CUT-3 unblocked
+
+**Gate:** heads at the start of the doc rounds: UNIFY `cdfc8d6`, BSPC
+`9e68c17`, Coach `707439c`, all trees clean, all synced. Bars pinned
+EXACT at every commit of this round: BSPC 835 (TZ=UTC) + pgTAP 335 /
+Coach 1080 / Functions 115; all commits UNIFY-only, BSPC and Coach
+untouched. HARD-STOP doctrine in force for the whole round:
+documentation only; no command in any manifest executes; nothing runs
+against any database (local test stack for the bars excepted); every
+operational sequence sits under an explicit HARD-STOP header,
+instructions-only.
+
+**Standing process line, adopted this round forward — PWD-PROOF**
+(named after the scope round's catch, where a backgrounded Coach jest
+launched without an explicit cd executed in the WRONG workspace and
+reproduced the BSPC output byte-for-byte): every backgrounded or
+parallel bar run carries an explicit `cd` + `pwd` proof in its output;
+cited numbers come only from proven runs.
+
+**Ratification-check method:** each ruling below was checked
+word-against-block against the [DECIDE] payloads as committed at
+`cdfc8d6`. A ruling MATCHes when it selects an option its block
+offered and any added rationale is consistent with the block; anything
+else would be FLAGGED and recorded half-open, never force-fit.
+**Result: nine MATCHes, zero mismatches, nothing half-open.** Two
+rulings add precedent citations beyond their blocks; both resolve in
+the record and are noted in place.
+
+**D-CUT1 RATIFIED** — The 05 auth-cutover mini-plan expands 05 §6 IN
+PLACE. Every banked pointer in the record reads "05 §6"; in-place
+amendment keeps every pointer true, per the e71050a/D-J2 in-place
+precedent. A standalone doc is declined as pointer-orphaning.
+*Check: MATCH — option (a) as recommended.*
+
+**D-CUT2 RATIFIED** — The decommission runbook lands by extending 06
+IN PLACE: existing go-live content kept as PART A, marked
+historical/optional; new PART B is the DECOMMISSION RUNBOOK. The K
+landed log, the D-K2 caveat, and the D-J7 correction all name "the
+06-runbook step"; extending 06 keeps all three landed pointers true.
+A standalone doc is declined.
+*Check: MATCH — option (a) as recommended.*
+
+**D-CUT3 RATIFIED** — Manifests are written CONDITION-FIRST: the §B0
+inventory probe is STEP 0 of the runbook; every data manifest branches
+on its own probe count, EMPTY resolving to a named no-op; the probe
+output is preserved as the cutover record and doubles as the D-J7
+"whatever test chatter" record. Writing to one asserted world is
+declined — counted facts at execution time outrank anyone's
+recollection of the project's state, the D-J7 lesson applied
+prospectively. Kevin may volunteer what he knows; nothing in the docs
+depends on it.
+*Check: MATCH — option (a) as recommended; the added
+counted-facts-outrank-recollection line applies the D-J7 lesson
+prospectively, consistent with the block's own "doubles as the D-J7
+record" clause.*
+
+**D-CUT4 RATIFIED** — Identity ALWAYS runs: coach accounts must exist,
+and the §6.1 probe demands non-empty resolution for every parents doc
+that exists. Every DATA manifest runs only per a keep/drop sheet Kevin
+signs at execution with the §B0 counts in front of him; every drop
+becomes a §B7 named loss. Run-everything is declined (rehearsal
+without consent pollutes the canonical store with test chatter);
+clean-slate is declined (pre-decides without counts). The machinery is
+rehearsed regardless by the mandatory dry-run.
+*Check: MATCH — option (a) as recommended.*
+
+**D-CUT5 RATIFIED** — COLLAPSE-FIRST, then re-home the irreducible
+rest. The portal callables retire when D-CUT6's direct reads land;
+redeemInvite's caller invokes the PG RPC directly and the shell
+retires; syncCalendar, the sweepers, and dailyDigest move to Supabase
+cron, the banked D-G6 line already carrying two of those jobs; the
+irreducible server piece — the AI pipeline (processSession + Vertex +
+GCS staging) plus the evaluateAttendance endpoint — re-homes in a
+dedicated future phase whose host choice is its own future [DECIDE],
+Supabase Edge Functions the default candidate. The Functions bar
+declines ONLY by named, pre-declared retirements and retires entirely
+at workspace death. The Firebase project survives functions-only until
+the re-home completes; §B6 project deletion is the FINAL act, after
+it. Whole-workspace porting is declined (ports code slated for
+deletion); indefinite Firebase hosting is declined (conflicts with the
+ratified project-death endpoint).
+*Check: MATCH — option (a) as recommended; "project deletion is the
+FINAL act, after the re-home" makes explicit what the block's
+"survives functions-only until the final re-home" already ordered.*
+
+**D-CUT6 RATIFIED** — The portal's canonical post-cutover data path is
+DIRECT SUPABASE READS under the parent RLS walls, designed as the
+end-state in 05 §6. The 05 doc round produces the gap inventory in
+full: the banked D-H5(b) calendar parent arms plus every
+portal-payload field with no parent-readable source. A small gap
+builds at the swap rounds; a large gap re-banks with a named due phase
+on the record — the inventory decides WHEN, the end-state is settled
+NOW. Re-fronting the callables with Supabase-JWT verification is
+declined as a new verification surface on a component slated for
+collapse; re-banking the portal dark is declined as dominated by the
+inventory-gated path.
+*Check: MATCH — option (a) as recommended, (b) declined exactly as
+the block disrecommended.*
+
+**D-CUT7 RATIFIED** — The notifications service gains get-preferences
+and upsert-preferences exports in the D-K4 addition class: named
+signatures bound in the 05 doc, at least two house-mock pins each,
+landing BEFORE the settings consumer re-point
+(successors-precede-consumers). This closes the FYI-C split-brain —
+the dead-end Firestore prefs write dies with the bank — and restores a
+shipped toggle surface silently ineffective since Phase G.
+Read-only/hidden-until-product-round is declined as silently dropping
+a shipped affordance.
+*Check: MATCH — option (a) as recommended.*
+
+**D-CUT8 RATIFIED** — Surface: a NEW small staff.ts service owning
+profiles administration — subscribeStaffProfiles, setStaffRole,
+setStaffGroups over profiles + coach_groups — in the D-K4 addition
+discipline (signatures bound in the 05 doc, ≥2 house-mock pins each,
+landing before the admin.tsx re-point). The Phase-K "no new services"
+pin bound Phase K only and is not standing law; forced-fit additions
+to a service that does not own profiles administration are declined.
+Semantics: A-STRICT — post-swap isAdmin maps to super_admin ONLY, UI
+parity with NM-1's deliberate-assignment intent; the admin screen and
+the settings import buttons become Kevin-only at the swap; role
+changes remain DB-enforced super_admin-only regardless
+(enforce_profile_self_update). Any future opening of the import
+screens to staff — which the is_staff() walls would permit — is a
+NAMED PRODUCT decision in the D-H9 class on a shipping surface, never
+a migration side-effect; (b-split) is recorded as that future option.
+*Check: MATCH — surface (a) + semantics (a-strict) as recommended;
+the added "D-H9 class" citation resolves in the record (D-H9,
+2026-06-10: the ratified named-widening product decision on the meets
+table — exactly the class of deliberate, named widening the ruling
+invokes for any future import-screen opening).*
+
+**D-CUT9 RATIFIED** — The 01 storage appendix lands as the CUT-3 rider
+commit in the 06 doc round, consuming the PART 1c derivation (the four
+buckets with limits and walls), amended into 01 in place with a dated
+annotation per the e71050a precedent. Re-banking to the convergence
+sweep is declined: the material is fully derived, and carrying
+finished work as debt serves nothing.
+*Check: MATCH — option (a) as recommended.*
+
+**FYI A–G: ALL ACCEPTED AS NAMED, none struck** — (A) the 12 dead
+jest.mock lines sweep at the 05 code round with per-file
+verify-at-deletion evidence, the shared mock deleting after, zero
+count impact, K6 precedent; (B) the portal four-file residue is
+outside the app-side bank claim, the K residual-set sentence stands as
+scoped, and the scope entry is the residue's naming of record; (C) the
+settings prefs doc write is a named split-brain inside the accepted
+bank since Phase G, closing via D-CUT7; (D) the legacy /imports/**
+path has no canonical bucket per D-H2b absence-is-parity, and the file
+copy names it a no-op; (E) the 4 seed-script tests inside the Coach
+1080 are a pre-declared −4 event riding the 06 scripts step — **Coach
+1080 → 1076 at that named future commit, exact**; (F) the BSPC-side
+firebase mentions are the two mapping-test successors only, retiring
+with the map tables; (G) config/firebase.ts's storage and functions
+exports have zero live importers post-K, verified again at deletion.
+*Check: consistent with the bundle as committed; FYI-E's added
+arithmetic (1080 → 1076) restates the −4 event exactly.*
+
+**Effect: the cutover DECIDE queue is EMPTY.** CUT-1 (05 §6 in-place
+expansion), CUT-2 (06 PART A/PART B decommission runbook), and CUT-3
+(the 01 storage-appendix rider) execute in this round — one UNIFY
+commit each, bars exact at each. **The swap CODE rounds (CUT-4+) do
+NOT start this round:** they are authorized only after the director
+reviews the bound successor signatures, the pre-declared test events,
+and the gap-inventory verdict in this round's report.
