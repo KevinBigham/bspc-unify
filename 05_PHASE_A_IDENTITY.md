@@ -473,10 +473,20 @@ export async function setStaffGroups(
   table is in the realtime publication today (exactly 23 tables, pgTAP
   011-pinned)** — one BSPC migration grows the publication 23 → 25 with
   pgTAP 011's exact-membership VALUES list updated in the same commit (the
-  RH-12 idiom; that proof is ONE `results_eq` test, so this is a
+  RH-12 idiom; ~~that proof is ONE `results_eq` test~~, so this is a
   CONTENT-ONLY update — **pgTAP stays 335 EXACT, pre-declared**). Event
   delivery rides the existing walls (`profiles_select_admin`,
   `coach_groups_staff`).
+  > **[Corrected 2026-06-11 — CUT-4+ landed log, named correction 1; the
+  > e71050a amend-in-place idiom extended to this plan]** The publication
+  > exact-membership proof is **TWO `results_eq` tests — pgTAP 011 AND
+  > pgTAP 014 test 19** (Phase J's "publication untouched" pin carries a
+  > full second copy of the membership VALUES list) — and **BOTH update
+  > together with any future publication change.** Caught live by the
+  > first SWAP-1 pgTAP run (014:19 failed 23-vs-25); both lists updated
+  > in the same commit; the content-only pre-declaration held (pgTAP 335
+  > exact at SWAP-1, growing only at the §6.6 gap-build per its own
+  > pre-declaration).
 - `subscribeStaffProfiles` filters `role IN ('super_admin','coach_admin')`
   and joins groups; `setStaffGroups` reconciles by delete+insert on
   `coach_groups` for that profile.

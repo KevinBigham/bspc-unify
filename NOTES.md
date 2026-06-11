@@ -4829,3 +4829,143 @@ audit (throwaway dry-run first), the §6.5 go-live + named smoke
 checklist, Firebase Email/Password sign-in disabled only after smoke
 passes, then 06 PART B per the keep/drop sheet — every step with Kevin
 live.**
+
+---
+
+## 2026-06-11 — STAGING-PREP OPEN — CUT-4+ acceptance recorded + the 05 §6.2b correction annotated + THE ROUND PRE-DECLARATION (code-side only; every live op stays HARD-STOP)
+
+**Gate:** UNIFY `848010d` / BSPC `58e7cff` / Coach `c2b0339` — all clean,
+all level with origin (pwd-proven). Baseline bars re-proven FRESH, each
+run carrying its own cd + pwd line: BSPC jest **835** (TZ=UTC, 117
+suites) + pgTAP **343** PASS (Files=15 — the publication pinned at
+exactly 25 in BOTH membership tests, 011 + 014:19) / Coach jest **1097**
+(107 suites) / Functions **115** (12 suites). HARD-STOP restated for the
+whole round: this is a CODE round — the §B0 probe script LANDS but NEVER
+RUNS; nothing executes against any store (not Firestore, not Storage,
+not any Supabase project, not even read-only); no provisioning, no
+backfill, no file copy, no throwaway-project creation; local test stack
+only for the bars. Standing constraints: ZERO test deletions; the
+swap-era BSPC migrations are DONE — any BSPC schema or migration change
+this round = STOP.
+
+### The director's acceptance + rulings (recorded in words)
+
+1. **CUT-4+ ACCEPTED** — eleven commits, every bar exactly on its
+   pre-declared line, audit passed on all ten checklist items.
+2. **Named correction 1 RATIFIED (D-J7 class):** the publication
+   exact-membership proof is TWO `results_eq` tests — pgTAP 011 AND
+   pgTAP 014 test 19 — and BOTH update together with any future
+   publication change. SWAP-1 stands as landed.
+3. The AsyncStorage v3 wiring fix and the three PWD-PROOF catches are
+   **acknowledged as norms held**; no red commit exists.
+4. **The firebase-admin carve-out is ACCEPTED AS NAMED
+   (scripts-class);** FYI-E's pre-declared Coach −4 RE-BASES to
+   1097 → 1093 at the named future 06 scripts step — **the delta is the
+   binding fact.** (See the lifecycle line under the pre-declaration
+   below: this round's probe pins bank onto the SAME named step.)
+5. **The Kevin lever on CALL-2 EXPIRED UNUSED at `000f722`;** toggle
+   returns are product-round items via their named banked paths.
+6. **D-K1's decline EXPIRED as designed at SWAP-5** — forgot-password's
+   successor is the Supabase reset.
+7. **NEW GREEN BASELINE:** UNIFY `848010d`, BSPC `58e7cff`, Coach
+   `c2b0339`; bars 835 / 343 (Files=15) / 1097 / 115.
+8. **06 §B6 C1 and C2 are recorded condition-met and UNBLOCKED;** they
+   execute only at a future 06 round — Functions stays 115 until each
+   pre-declared decline.
+
+### The 05 §6.2b annotation (lands in THIS commit, same repo)
+
+The wrong aside at 05 §6.2b ("that proof is ONE `results_eq` test") is
+amended IN PLACE with a dated annotation — the e71050a amend-in-place
+idiom extended to the cutover plan, named as such. Checked
+word-against-binding vs the landed log's named correction 1 (NOTES
+:4796): the annotation states the proof is TWO `results_eq` tests
+(pgTAP 011 + 014 test 19), both updating together with any future
+publication change, caught live at SWAP-1, content-only held.
+*Check: MATCH — no force-fit.*
+
+### THE ROUND PRE-DECLARATION TABLE (fixed BEFORE any landing; the report opens with this)
+
+| # | Commit | Repo | One-line scope | BSPC jest | pgTAP | Coach jest | Functions |
+|---|---|---|---|---|---|---|---|
+| 0 | STAGE-0 | UNIFY | this entry: acceptance record + this table + the 05 §6.2b dated annotation | 835 (E) | 343 (E) | 1097 (E) | 115 (E) |
+| 1 | STAGE-1 | Coach | §B0 probe scaffolding LANDS, never runs: `scripts/probe-firebase-inventory.ts` (thin I/O shell, HARD-STOP header, read-only by construction, explicitly UNTESTED) + `scripts/probe-firebase-inventory-report.ts` (pure: census table + row status + storage aggregation + report shaping) + **+14 pure-part pins** in `scripts/__tests__/probe-firebase-inventory-report.test.ts` (suites 107 → 108) | 835 (E) | 343 (E) | **1111** | 115 |
+| 2 | STAGE-2 | UNIFY | runbook readiness sweep verdict: READY or the numbered gap list | 835 (E) | 343 (E) | 1111 (E) | 115 (E) |
+
+(E) = untouched-repo endpoint cite, legal only while that repo's head is
+byte-identical to its nearest proven run, named in the scoreboard.
+Functions re-runs FRESH at the Coach commit (its workspace sits inside
+the Coach repo). **The only bar that moves this round is Coach jest,
++14 at STAGE-1, ZERO deletions anywhere; BSPC and pgTAP do not move
+(the swap-era BSPC migrations are DONE).**
+
+**The +14, fixed:** census-table pins ×4 (all 32 enumerated paths, no
+duplicates; the exact seven ⚠ expected-EMPTY set; the two `/drafts`
+subcollections counted PER-PARENT so audio and video drafts never merge
+under one collectionGroup; the five storage prefixes exact) +
+`resolveRowStatus` pins ×4 (the four count×expectation cells, incl. the
+⚠-non-empty REPORT flag) + storage-aggregation pins ×2 (count+bytes
+sum; an empty prefix = a zero row, a counted fact) + report-shaping
+pins ×4 (a row for every census path + the storage table + the auth
+line; the preserve-verbatim-in-NOTES header + the named-no-op footer;
+an UNEXPECTED-NON-EMPTY ⚠ row surfaces rendered; zero auth users
+renders as the counted fact 0).
+
+**Lifecycle, banked + named (pre-declared BEFORE the pins land):** the
+probe pair + its 14 pins are decommission tooling — they retire at
+**06 §B6 step 5 (the scripts/ deletion step), the SAME named step as
+FYI-E.** That step's Coach delta re-bases **−4 → −18** (FYI-E's seeds
+−4 + the probe scaffolding's −14): **1111 → 1093 — the director's
+ruling-4 endpoint (1093) is preserved; the step's delta is the binding
+fact.**
+
+**Derivation facts (named; zero new decisions taken):**
+1. **The census is built on the ENUMERATED list, and the "23" is
+   FLAGGED:** 00_TERRAIN §0's header says "23 collection paths" and 06
+   §B0 echoes "ALL 23 census paths" — but the census block ENUMERATES
+   **32** paths (25 ★ + 7 ⚠), corroborated by the §B2 manifest table,
+   which covers the same 32 paths in exactly **23 ROWS** (parent+child
+   collections share rows; the five never-implemented ⚠ paths share one
+   row — the likely origin of the number). Membership is pinned by name
+   twice; only the cardinal is wrong somewhere. The probe covers the
+   enumerated 32 — a superset can never under-count — and the numeric
+   discrepancy goes to the STAGE-2 gap list as a doc-class decision,
+   NOT silently fixed.
+2. **Home/invocation/auth ride the standing scripts-class idiom §B0
+   itself points at:** home = `scripts/` (the named scripts-class
+   carve-out — the only place firebase-admin is legal); invocation =
+   `npx tsx scripts/<tool>.ts` (the seed tools' Usage idiom); auth =
+   service-account JSON per PART A §6, resolved exactly as
+   `seed-demo-data.ts:386` does (`FIREBASE_ADMIN_KEY_PATH` else
+   `GOOGLE_APPLICATION_CREDENTIALS`; a real secret — never read,
+   printed, or committed; `.gitignore` lines 18/20 already cover it);
+   shell guard = `require.main === module` (the seed shells' guard).
+   Tests live in `scripts/__tests__/` and ride the Coach bar (the
+   FYI-E precedent file sits there today).
+3. **Storage bytes ride along, named:** §B0 demands per-prefix object
+   COUNTS; the report adds a bytes column because the §B1 pre-step
+   (F bank, quoted: "confirm hosted storage tier covers the 500MB video
+   cap before the file copy") needs source sizes and the probe is the
+   only read of the source. Additive, read-only, named here and
+   in-file.
+4. **The default-bucket name is a probe-time counted fact:** Firebase
+   default buckets are `<project>.appspot.com` (older projects) or
+   `<project>.firebasestorage.app` (newer); the shell resolves by
+   read-only `exists()` against the two known shapes (env override
+   `BSPC_FIREBASE_STORAGE_BUCKET` wins) and the report NAMES which
+   bucket it probed. No decision needed before run time.
+
+**Tripwire check (the four material-unpinned candidates):** home
+directory — pinned by the scripts-class carve-out; output format —
+pinned by §B0 ("the probe output table is preserved verbatim in
+UNIFY/NOTES.md", per-path counts + the named-no-op resolution
+sentence); auth mode — pinned by §B0's own cite ("the admin SDK with
+the service-account key (PART A §6 handling rules apply)"); invocation
+shape — pinned by the standing seed-tool Usage idiom. **No tripwire:
+nothing material required a new decision.** The one genuine doc
+discrepancy (the "23") is flagged above and lands in the STAGE-2 gap
+list as a decision for the director.
+
+**Effect:** the acceptance is on the record, the 05 plan no longer
+carries the wrong aside, and the swap rounds' pre-declaration
+discipline now governs this round's three landings.
