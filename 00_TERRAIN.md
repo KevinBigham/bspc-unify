@@ -18,7 +18,16 @@ This is the survey we agree on *before* drafting `UNIFY/01_CANONICAL_SCHEMA.sql`
 
 ## §0 Collection / Table census (at a glance)
 
-**Coach-App Firestore — 23 collection paths** (★ = actively used, ⚠ = declared in rules/types but **no implementation found**):
+**Coach-App Firestore — ~~23~~ 32 collection paths (25 ★ + 7 ⚠)** (★ = actively used, ⚠ = declared in rules/types but **no implementation found**):
+
+> **[Corrected 2026-06-11 — GAP-A ruling, GAP-CLOSURE round; the e71050a
+> amend-in-place idiom]** The census below ENUMERATES **32 paths (25 ★ +
+> 7 ⚠)** — the old "23" was 06 §B2's manifest-table organization leaking
+> into this header (the same 32 paths cover exactly 23 manifest ROWS:
+> parent+child collections share rows, and the five never-implemented ⚠
+> paths share one). The OPERATIVE reading is the enumerated list — the
+> landed §B0 probe is built on these 32 names
+> (`scripts/probe-firebase-inventory-report.ts`, superset-safe).
 
 ```
 coaches ★                              parent_invites ★

@@ -305,10 +305,16 @@ to Supabase; re-enable the trigger; verify both apps. (See §6.)
 - **The staged run order is `BSPC/ACTIVE/migration/identity/README.md`
   steps 1–8** (apply map DDL; disable `on_auth_user_created`; provision per
   Firebase user with fresh credentials — the step-3 runner is "not yet
-  written" and lands as scaffolding in the staging round; build profiles;
+  written" and lands as scaffolding ~~in the staging round~~; build profiles;
   coach_groups; guardianships with dangling-link COPPA repair; audits
   in==out; re-enable trigger; smoke), with its standing dry-run-against-a-
   throwaway-project requirement.
+  > **[Re-dated 2026-06-11 — GAP-C ruling, GAP-CLOSURE round]** The
+  > staging round's bound scope was the §B0 probe only; the step-3 runner
+  > lands as scaffolding in the GAP-CLOSURE round per the GAP-C ruling
+  > (`scripts/provision-identities.ts` + its pure half — plan-only by
+  > default, the zero-resolves gate in the runner, never run before the
+  > Kevin-live session).
 - **THE PROBE, verbatim from the bank — a BINDING gate, not advice:** "after
   provisioning, every Firestore parents-doc uid must resolve a NON-empty
   profile via the map; zero-resolves = STOP. The mask is removed by
@@ -543,12 +549,38 @@ Order at the cutover round (each step gated on the one before):
 1. §6.1 provisioning + THE PROBE (zero-resolves = STOP) + NM-1 confirm +
    agreement audit — on the throwaway project FIRST (mandatory dry-run),
    then live.
+
+   **The mandatory dry-run, SPECIFIED (GAP-B closure, ratified 2026-06-11
+   — the security rule wins):**
+   - **Project:** a FRESH throwaway Supabase project, created for this
+     rehearsal only.
+   - **Schema:** the full migration chain `00001..00013`, applied via the
+     standard tooling against the throwaway.
+   - **Data: SYNTHETIC fixtures ONLY, built from the seed-demo shapes.**
+     PART A's standing rule is RESTATED here and BINDS the dry-run:
+     **"Never put real swimmer/family data in a demo project."** A real
+     Firestore export NEVER feeds the throwaway — **real-export rehearsal
+     is EXPLICITLY OUT.**
+   - **What runs:** the identity README steps 1–8, then the roster README
+     steps 1–7 (the 06 §B2 manifest spine), driven by the landed
+     scripts-class tools.
+   - **Success =** identity + roster audits green (counts in == out, no
+     dangling, no duplicates) **+ the §6.1 probe non-empty on the
+     fixture** + one coach smoke login + one parent portal smoke login.
+   - **Teardown =** the throwaway project DELETED, deletion confirmed and
+     recorded in the cutover record (NOTES).
+   - **When:** the FIRST item of the Kevin-live session, before anything
+     touches a real store.
 2. The swap code (already landed in CUT-4+, dark behind the env) goes live:
    Coach app + portal builds pointed at the Supabase project.
 3. Smoke checklist, named: coach login; role renders (Kevin sees ADMIN,
    a coach_admin does not); admin list live-updates; digest toggle
    round-trips to PG; password-reset email round-trips; portal parent
-   login + dashboard render; cold-start relaunch restores the session.
+   login + dashboard render; **portal invite-code redeem round-trips
+   (code → guardianship → swimmer appears); portal swimmer detail
+   renders the direct-read surfaces (strengths + results + attendance
+   under the 00013 walls) [GAP-D additions, ratified 2026-06-11]**;
+   cold-start relaunch restores the session.
 4. Firebase Email/Password sign-in is disabled ONLY after step 3 passes
    (the 06 §7 standing sentence) — that step lives in 06 PART B §B6.
 **Rollback (pre-launch):** env flip back to Firebase + revert commit; no

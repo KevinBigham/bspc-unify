@@ -208,14 +208,22 @@ Kevin may volunteer what he knows; nothing below depends on it.
 **The probe (read-only; the one sequence that runs BEFORE the keep/drop
 sheet):** using the admin SDK with the service-account key (PART A §6
 handling rules apply), count and record:
-- per-collection document counts for ALL 23 census paths (00_TERRAIN §0),
-  including every ⚠ path (expected EMPTY: `swimmers/{id}/medical`,
-  `meets/{id}/relays`, `meets/{id}/live_events`, `meets/{id}/splits`,
-  `messages`, `coach_chat`, `workout_library`);
+- per-collection document counts for ALL ~~23~~ **32** census paths
+  (00_TERRAIN §0), including every ⚠ path (expected EMPTY:
+  `swimmers/{id}/medical`, `meets/{id}/relays`, `meets/{id}/live_events`,
+  `meets/{id}/splits`, `messages`, `coach_chat`, `workout_library`);
 - per-prefix object counts for the five legacy Storage paths
   (`/audio/**`, `/video/**`, `/profiles/**`, `/imports/**`,
   `/practice_plans/**`);
 - the Firebase Auth user count.
+
+> **[Corrected 2026-06-11 — GAP-A ruling, GAP-CLOSURE round]** "ALL 23" →
+> **ALL 32 census paths (25 ★ + 7 ⚠)**: the enumerated 00_TERRAIN §0 list
+> is the operative census — the old "23" was this document's own §B2
+> manifest-table organization (the same 32 paths in exactly 23 ROWS;
+> parent+child collections share rows, the five never-implemented ⚠ paths
+> share one). The landed probe counts the enumerated 32
+> (`scripts/probe-firebase-inventory-report.ts`).
 
 A small read-only probe script lands as scaffolding in the staging round
 (unit-tested pure parts only); console counts are acceptable for small
@@ -264,7 +272,9 @@ signs at execution with the §B0 counts in front of him; every drop becomes
 a §B7 named loss. **The mandatory dry-run stands regardless:** the whole
 sequence runs against a throwaway Supabase project first (the identity and
 roster READMEs' standing requirement) — the machinery is rehearsed even if
-the sheet drops everything.
+the sheet drops everything. **The dry-run is SPECIFIED at 05 §6.5 step 1
+(GAP-B closure, ratified 2026-06-11): synthetic fixtures ONLY — never real
+swimmer/family data; real-export rehearsal is explicitly OUT.**
 
 | Firestore collection (§B0 count) | → PG table(s) | Manifest + verification |
 |---|---|---|

@@ -5073,3 +5073,186 @@ tested, and waiting for Kevin; the runbook is executable on its spine
 (stops everywhere; the §B0 → keep/drop sheet → manifests wiring
 verified) and NOT READY only at the five named seams above — every seam
 is a decision, none is code this round was allowed to write.
+
+---
+
+## 2026-06-11 — GAP-CLOSURE + RUNNER ROUND, GC-0: STAGING-PREP accepted; the six gap rulings recorded; doc closures executed (the last build round before the Kevin-live session)
+
+**Heads gate at round open:** UNIFY `30dcb19` / BSPC `58e7cff` / Coach
+`c399516`, all clean, all level with origin. Fresh baseline bars, each run
+carrying its own cd + pwd (PWD-PROOF): BSPC jest **835** (TZ=UTC, 117
+suites) at `/Users/kevin/bspc-unify/BSPC/ACTIVE`; pgTAP **343 PASS**
+(Files=15; "Local database is up to date") same pwd; Coach jest **1111**
+(108 suites) at `/Users/kevin/bspc-unify/BSPC-Coach-App`; Functions **115**
+(12 suites) at `/Users/kevin/bspc-unify/BSPC-Coach-App/functions`.
+**HARD-STOP standing for the whole round:** the runner LANDS but NEVER
+RUNS; the §B0 probe stays un-run; nothing executes against any store — no
+Firestore, no Storage, no Supabase project of any kind, no throwaway
+creation; local test stack only. ZERO test deletions. **BSPC is FROZEN —
+no schema, no migrations, no commits; any BSPC change = STOP.**
+
+### The director's acceptance, in words
+
+**STAGING-PREP is ACCEPTED:** three landings (`fb83588` / `c399516` /
+`30dcb19`), every bar exactly on its pre-declared line, zero deletions,
+both closing greps clean. **The four derivation facts are RATIFIED:** the
+probe is built on the ENUMERATED 32-path census (the "23" flagged, now
+ruled below); the scripts-class home/invocation/auth idiom; the storage
+bytes column riding along for the §B1 F-bank pre-step; the
+default-bucket name as a probe-time counted fact.
+
+### The six rulings, in words
+
+1. **GAP-A — RULED: corrected to 32.** Both bound sites — the 00_TERRAIN
+   §0 header and 06 §B0's "ALL 23" — take a D-J7-class dated correction
+   to **"32 paths (25 ★ + 7 ⚠)"**, each annotation naming §B2's
+   23-manifest-ROW organization as the old number's origin and the landed
+   probe's enumerated-32 build as the operative reading.
+2. **GAP-B — RULED: the dry-run spec is RATIFIED, synthetic-data-only,
+   the security rule WINS.** The spec lands in 05 under §6.5 step 1 as
+   its own block: fresh throwaway project; migrations 00001..00013 via
+   standard tooling; SYNTHETIC fixture data ONLY from the seed-demo
+   shapes; PART A's never-real-swimmer/family-data rule RESTATED inside
+   the spec; success = identity + roster audits green + the §6.1 probe
+   non-empty on the fixture + one coach smoke login + one parent portal
+   smoke login; teardown = throwaway project deletion, confirmed and
+   recorded; **real-export rehearsal EXPLICITLY OUT**; the dry-run
+   executes at the Kevin-live session, FIRST item. 06 §B2 gets a one-line
+   pointer to the spec. **README pointers:** the pre-declared conditional
+   covered only the case where the identity/roster READMEs live in the
+   Coach repo — they live in the FROZEN BSPC repo
+   (`BSPC/ACTIVE/migration/{identity,roster}/README.md`), so NO pointer
+   line lands there this round; named for the re-verdict.
+3. **GAP-C — RULED: the §6.1 step-3 provisioning runner is scoped to
+   THIS round**, under binding construction rules (HARD-STOP header;
+   Kevin-live only; NO default target, NO embedded project ref, NO
+   credentials in the repo; plan-only by default with a NAMED no-op line;
+   the §6.1 gate IN the runner — zero-resolves = HARD ABORT before any
+   write path is reachable; pure half pinned, I/O shell untested with no
+   trusted mocks; lifecycle banked at 06 §B6.5; the firebase-admin
+   carve-out grows by exactly the runner shell; tripwire on anything
+   material unpinned) **plus the named 05 §6.1 re-date annotation** (the
+   runner lands this round per this ruling, not the staging round).
+4. **GAP-D — RULED: the two smoke additions are RATIFIED AS WRITTEN**
+   and land in 05 §6.5 step 3: "portal invite-code redeem round-trips
+   (code → guardianship → swimmer appears)" and "portal swimmer detail
+   renders the direct-read surfaces (strengths + results + attendance
+   under the 00013 walls)".
+5. **GAP-E — RULED: the one-line comment fix is RATIFIED** at
+   `parent-portal/src/lib/profile.ts:12` — comment-only, zero behavior,
+   zero test delta, its own pre-declared Coach commit.
+6. **The two broken-dormant client-SDK scripts** (`scripts/create-coach.ts`
+   + `scripts/seed-calendar.ts`, importing the firebase CLIENT SDK that
+   SWAP-8 uninstalled) **are LEFT TO DIE at 06 §B6.5** — named here as
+   ruled — **and the GAP-C runner is the ONLY legitimate provisioning
+   tool** (no resurrection of create-coach, ever).
+
+### ROUND PRE-DECLARATION (fixed BEFORE any landing)
+
+| # | Commit | Repo | One-line scope | BSPC jest | pgTAP | Coach jest | Functions |
+|---|---|---|---|---|---|---|---|
+| 0 | GC-0 | UNIFY | this entry: acceptance + the six rulings + the GAP-A/B/C/D doc closures (TERRAIN §0 + 06 §B0 corrections; 05 §6.5 step-1 dry-run spec + 06 §B2 pointer; 05 §6.1 re-date; 05 §6.5 step-3 two smoke additions) | 835 (E) | 343 (E) | 1111 (E) | 115 (E) |
+| 1 | GC-1 | Coach | the §6.1 step-3 provisioning runner LANDS, never runs: `scripts/provision-identities.ts` (thin I/O shell, HARD-STOP header, no default target, plan-only by default, the §6.1 gate, explicitly UNTESTED) + `scripts/provision-identities-plan.ts` (pure: plan derivation + gate + render) + **+17 pure-part pins** in `scripts/__tests__/provision-identities-plan.test.ts` (suites 108 → 109) | 835 (E) | 343 (E) | **1128** | 115 |
+| 2 | GC-2 | Coach | GAP-E: the one-line comment correction at `parent-portal/src/lib/profile.ts:12` (comment-only, zero behavior, zero test delta) | 835 (E) | 343 (E) | 1128 | 115 |
+| 3 | GC-3 | UNIFY | the re-verdict: the five seams re-run against the landed state — READY or numbered residual decisions | 835 (E) | 343 (E) | 1128 (E) | 115 (E) |
+
+(E) = untouched-repo endpoint cite, legal only while that repo's head is
+byte-identical to its nearest proven run, named in the scoreboard.
+Functions re-runs FRESH at every Coach commit (its workspace sits inside
+the Coach repo); Coach runs FRESH at both Coach commits. **The only bar
+that moves this round is Coach jest, +17 at GC-1, ZERO deletions
+anywhere; BSPC and pgTAP do not move (BSPC is FROZEN).**
+
+**The +17, broken down (pre-declared):** `deriveProvisioningPlan` ×6
+(fresh-map all-create; empty-map-read all-create; partial-map skip set;
+user_id-NULL re-plans as create; duplicate-uid reporting; unmatched-map-row
+reporting), `runZeroResolvesGate` ×3 (zero parents docs → abort; zero
+identities → abort; non-zero → pass with resolve count),
+`renderProvisioningPlan` ×6 (HARD-STOP + header + per-source counts; NM-1
+coach-roster block + confirm-before-roles + sole-super_admin; OD-6 block —
+no password material, no emails dispatched, both credential paths named;
+the §6.1 probe line + plan-only NAMED no-op tail; gate-abort banner;
+duplicate/unmatched WARNING lines), `renderExecutionSummary` ×2
+(created/skipped + map-recording + step-4/step-7 pointers; failures →
+named STOP).
+
+**Lifecycle, banked + named (pre-declared BEFORE the pins land):** the
+runner pair + its 17 pins are decommission tooling — they retire at
+**06 §B6 step 5 (the scripts/ deletion step), the SAME named step as
+FYI-E and the probe pair.** That step's Coach delta re-bases **−18 →
+−35** (seeds −4 + probe −14 + runner −17): **1128 → 1093 — the
+director's ruling-4 endpoint (1093) is preserved; the step's delta is
+the binding fact.**
+
+### Named construction facts for GC-1 (derivations the director can object to)
+
+1. **Names** (the bound text names no filename): `scripts/
+   provision-identities.ts` + `scripts/provision-identities-plan.ts` +
+   `scripts/__tests__/provision-identities-plan.test.ts` — the
+   scripts-class idiom (probe precedent).
+2. **Target env, operator-supplied, NO defaults:**
+   `BSPC_MIGRATION_SUPABASE_URL` + `BSPC_MIGRATION_SUPABASE_SERVICE_ROLE_KEY`
+   — deliberately DISTINCT from the app's `EXPO_PUBLIC_SUPABASE_*` pair,
+   which carries embedded fallback placeholders (`src/config/supabase.ts:7-8`)
+   — exactly what the runner must not inherit. A PARTIAL pair is a named
+   error, not a silent fallback. Firestore side: `FIREBASE_ADMIN_KEY_PATH`
+   else `GOOGLE_APPLICATION_CREDENTIALS` (the seed/probe idiom, PART A §6
+   handling rules).
+3. **Scope = identity README step 3 EXACTLY:** one Supabase auth user per
+   Firestore `coaches`/`parents` doc; record `(firebase_uid, user_id,
+   source)` in `migration_identity_map`; `profile_id` stays NULL (step 4's
+   business). **Roles are NOT written by this runner** — NM-1 gates step 4;
+   the plan PRINTS the live coach roster for Kevin's confirm. `'bspc'`-source
+   map rows are step-6 business, not this runner's.
+4. **OD-6 construction, choice-preserving:** `createUser({ email,
+   email_confirm: true })` — ZERO password material, ZERO emails dispatched
+   by the tool. Both ratified credential paths stay open to Kevin at
+   cutover: the landed forgot-password flow (SWAP-5) and operator-sent
+   dashboard invites. Auto-sending invites would be an unbound
+   outward-facing side effect — the no-email construction is the null
+   action, named so the director can re-rule.
+5. **The cross-repo contract is the DDL, not an import:** the Phase-A
+   pures (`auditIdentityMap`/`auditGuardianships`, `mapping.ts`) live in
+   the FROZEN BSPC repo; a cross-repo import would be fragile and is not
+   attempted. The runner's pure half re-states the map-row type from
+   `migration_identity_map.sql` (provenance-commented) and carries
+   plan-layer audit-class checks (duplicate uids, unmatched map rows)
+   CONSISTENT with the step-7 audits, which remain the BSPC pures,
+   untouched and not duplicated. Idempotency: map rows with `user_id`
+   non-null SKIP; `user_id`-NULL rows re-plan as create; the execute path
+   upserts only `(firebase_uid, user_id, source)` on `firebase_uid` —
+   `profile_id` is never written by step 3. Supabase writes ride
+   `@supabase/supabase-js` (already a Coach dependency — the TARGET
+   stack, not a carve-out).
+
+**Tripwire check (mission: home directory, output format, auth mode,
+invocation shape + anything material):** runner home/name → the
+scripts-class idiom, named (1); target supply → mission-pinned
+(operator env/flags only, no defaults), names derived + named (2); auth
+modes → Firestore side PART-A-§6-pinned, Supabase side the service-role
+key named (2); credential mechanism → OD-6 pins the fresh-credentials
+class, the no-email construction named (4); gate semantics →
+mission-pinned (zero-resolves = HARD ABORT before any write path) with
+the §6.1 probe arithmetic (parents docs × map) as the resolve
+definition, construction named in the pin list; map write shape →
+DDL-pinned (5); invocation → `npx tsx` scripts-class Usage, plan + execute
+forms in the header. **NO TRIPWIRE — five named derivations stand above
+for objection.**
+
+### Doc closures executed in this commit (each checked against the ruling words — all MATCH, none force-fit)
+
+- **GAP-A:** 00_TERRAIN §0 header `~~23~~ → 32 paths (25 ★ + 7 ⚠)` +
+  dated annotation; 06 §B0 `ALL ~~23~~ → ALL 32` + dated annotation —
+  both name the §B2 23-row origin and the enumerated-32 operative
+  reading (the e71050a amend-in-place idiom).
+- **GAP-B:** the ratified dry-run spec lands as its own block under 05
+  §6.5 step 1, every ruled element present (checked word-against-ruling
+  above); 06 §B2 gets the one-line pointer.
+- **GAP-C:** 05 §6.1's "lands as scaffolding in the staging round" takes
+  the dated re-date annotation (this round, per the ruling).
+- **GAP-D:** the two ruled smoke items land in 05 §6.5 step 3, worded
+  exactly as ruled, with the dated marker.
+
+**Effect:** the rulings are on the books; the documents now say what the
+director ruled; the only code this round may write is the GC-1 runner +
+pins and the GC-2 comment line, both pre-declared above.
