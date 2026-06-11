@@ -3192,3 +3192,495 @@ ratification) — nothing else. Phases A–J code-side COMPLETE.
 **Next: PHASE K — UI residual sweep (named at D-J1), scope-before-
 code, from the D-J1 file:line artifact; then the 05/06 cutover
 planning.**
+
+---
+
+## 2026-06-10 — PHASE K SCOPE (UI residual sweep) — scope before code: commit-5 verification + execution-round acceptances; the fresh terrain sweep; per-file scope for all 12 re-points + messages; D-K decision queue + numbered mini-plan
+
+Read-only on code; UNIFY append-only. Heads at scope: UNIFY `b6330bb`,
+BSPC `9e68c17`, Coach `fce4d62` — all clean, matching the standing
+record. Baseline for every pre-declaration below: **BSPC 835 (TZ=UTC)
++ pgTAP 335 / Coach 1067 / Functions 115.**
+
+### PART 0a — commit-5 verification: all five artifacts PRESENT, quoted verbatim
+
+1. **The HARD-STOP header atop `migration/j/README.md`** (lines 1–5):
+
+   > # Phase J — aggregations (NULL-MANIFEST)
+   >
+   > **Nothing in this directory runs against any database.** **Every row
+   > backfill stays behind the HARD STOP, always** — and this phase owns
+   > NONE: there is nothing to copy.
+
+2. **The D-C1(b) checklist line recorded SATISFIED** (README lines 23–27):
+
+   > - **The D-C1(b) checklist line is SATISFIED** as of Phase J commit 2:
+   >   attendance data cutover required C+G+J reader code landed — all
+   >   three now exist (C: `attendance_parent_view` + attendance.ts;
+   >   G: the evaluator + digest; J: the aggregation views + the
+   >   re-pointed roster/dashboard readers).
+
+3. **The coach_chat disposition line** (README lines 32–39):
+
+   > - **coach_chat disposition (D-J7, ratified):** the messages screen
+   >   (`app/messages.tsx`) and its dashboard entry point retire in
+   >   **PHASE K**; `coach_chat` gets no canonical table; whatever test
+   >   chatter sits in the collection dies with Firestore at the
+   >   decommission step — **NAMED pre-launch data loss** (a coach-to-coach
+   >   channel; zero minors' data expected; contents never read during
+   >   scoping or execution). The 06 runbook decommission step carries
+   >   this line.
+
+4. **The landed-log line naming 02:122/162 moot-by-retirement** (this
+   file, lines 3167–3173):
+
+   > Ruled paperwork applied: 04:106
+   > and 04:156 carry one-line dated [D-J2] annotations (original
+   > words visible — annotate-never-rewrite); **02_SCHEMA_REDTEAM.md
+   > stays untouched by ruling, and this log carries the line: 02:122
+   > and 02:162 are MOOT-BY-RETIREMENT** (they describe the drafted
+   > shape of a table D-J2 retired; their don't-migrate/recompute law
+   > halves remain true).
+
+5. **The landed log's final-bars statement** (this file, lines 3188–3191):
+
+   > **Bar at close: BSPC 835 (TZ=UTC) + pgTAP 335 / Coach 1067 /
+   > Functions 115.** Deletion norm: the two named sets (18 Functions
+   > rows bound at `1ce60a1`; 18 Coach tests = 8+7+3 pinned at
+   > ratification) — nothing else. Phases A–J code-side COMPLETE.
+
+No artifact missing; nothing to flag.
+
+### PART 0b — the director's PHASE J EXECUTION-ROUND ACCEPTANCES (recorded)
+
+1. **The cross-repo two-half commit 5 is ruled CONFORMING** — the
+   "one green commit per logical change" norm met by a mechanically
+   forced split (the null-manifest lives in BSPC, the landed log in
+   UNIFY; one logical change, two repos), named at execution
+   (BSPC `9e68c17` + UNIFY `b6330bb`).
+2. **The two legacy date-window quirks are ACCEPTED carried verbatim**
+   (parity doctrine): per-swimmer 30/90 windows STRICT
+   (`practice_date > CURRENT_DATE − N`), dashboard 84-day window
+   INCLUSIVE (`>= CURRENT_DATE − 84`) — both asymmetries preserved
+   and annotated in 00011, by ruling.
+3. **The no-course rendering is ACCEPTED as a NAMED CORRECTION** of a
+   stringified-undefined artifact: canonical NULL-course swim_results
+   rows render the activity time text without the course token —
+   template-preserving for every row the legacy feed could have
+   produced; never the string 'undefined'.
+4. **The whole-calculation status-aware reading is BLESSED as a
+   PRECISIFICATION of the banked law** (coherent-reading class, D-I1
+   family): the 07 §2 status filter governs the WHOLE per-swimmer
+   aggregate row set (including last_practice_date) and both
+   dashboard attendance arms — defines, not alters.
+
+### PART 1 — FRESH TERRAIN SWEEP (trust nothing, re-derived at Coach `fce4d62`)
+
+Method: precise live-usage grep — `from 'firebase…'` /
+`require('firebase…')` / dynamic `import('firebase…')` across `app/`
++ `src/` (tests separated), cross-checked against every importer of
+`src/config/firebase` (the handle module). The two lists reconcile
+one-to-one; comment-only and type-name-only mentions (e.g.
+`firestore.types.ts` legacy-shape interfaces) carry no live firebase
+import and are excluded as usage.
+
+**App-side LIVE firebase: exactly 19 files.**
+
+- **The 12 predicted re-point targets — ALL CONFIRMED live, exactly
+  where the D-J1 inventory pinned them** (minor line drift only,
+  named in PART 2): app/swimmer/new.tsx, app/swimmer/[id].tsx,
+  app/swimmer/edit.tsx, app/swimmer/standards.tsx,
+  app/swimmer/invite-parent.tsx, app/meet/[id].tsx,
+  app/calendar/event/[id].tsx, app/video/[id].tsx,
+  src/components/SwimmerVideoClips.tsx,
+  src/components/VideoComparison.tsx,
+  src/components/SwimmerTimeline.tsx, src/hooks/useSwimmerData.ts.
+- **app/messages.tsx** — confirmed live full-CRUD on coach_chat
+  (import block :14–24; D-J7 retirement, PART 3).
+- **The 3 predicted auth-banked files** — confirmed:
+  src/contexts/AuthContext.tsx:8–10 (firebase/auth + firestore),
+  app/admin.tsx:12–13, app/(tabs)/settings.tsx:5–6.
+- **The Phase J (i) trio holds ZERO live firebase** — confirmed:
+  services/aggregations.ts, app/(tabs)/roster.tsx,
+  src/hooks/useDashboardData.ts are clean at HEAD (the J commit-2
+  claim re-proven by sweep).
+
+**⚠️ TWO LIVE FILES THE EXPECTATION DID NOT PREDICT** (both outside
+the D-J1 inventory's scan radius — that inventory enumerated
+FIRESTORE call sites; these are firebase-AUTH and firebase-STORAGE):
+
+1. **app/forgot-password.tsx:13–14** — `sendPasswordResetEmail` from
+   `firebase/auth` + the `auth` handle. Pure auth-layer surface (a
+   password reset against the Firebase-auth account store). Not a
+   Firestore call site, so D-J1 never listed it; not in the named
+   3-file auth bank either. → D-K1.
+2. **src/components/practice-pdf-uploader.tsx:5–6, :139** —
+   `getDownloadURL(ref(storage, todayPlan.storagePath))` from
+   `firebase/storage`. **A LIVE SPLIT-BRAIN BUG TODAY**: since Phase H
+   the upload arm writes SUPABASE storage
+   (practicePlans.uploadDashboardPracticePlanPdf → practice-plans
+   bucket, D-H2a) and `subscribeTodayPracticePlan` reads PG rows whose
+   `storagePath` is a Supabase path — but the view-PDF arm asks
+   FIREBASE storage for that same path. Every PDF uploaded post-H has
+   a dead VIEW button. The successor ALREADY EXISTS
+   (mediaUpload.getSignedFileUrl — the same helper the upload arm uses
+   for its immediate downloadUrl). → D-K2.
+
+Also named for completeness (no live firestore/auth/storage calls or
+already-classified):
+- **src/config/firebase.ts** — the shared handle module
+  (initializeApp + getFirestore/getAuth/getStorage/getFunctions).
+  Rides the auth bank; dies whole at cutover. Its `fns`
+  (getFunctions) handle has ZERO app-side consumers at HEAD (the F
+  pipeline went HTTPS; I went PG) — named, untouched.
+- **Test-side**: 6 suites mock firebase for LIVE subjects
+  (AuthContext, useSwimmerData, SwimmerTimeline, SwimmerVideoClips,
+  VideoComparison ×2 suites) — they transform with their subjects;
+  **4 suites carry DEAD firebase mocks** whose subjects are already
+  PG (useTimes, useGoals, useSwimmerAttendance, sdifImport tests) —
+  hygiene sweep, K6, verify-at-deletion per file (a dead
+  `jest.mock('../../config/firebase')` is only dead if the subject's
+  import graph no longer reaches the module).
+- **Satellites** (not Coach-app runtime; classified, no K work):
+  `scripts/` (5 dev seed/create tools on firebase + firebase-admin —
+  STALE-BY-MIGRATION: anything they seed is invisible to PG readers;
+  named to the 06-runbook decommission family), `functions/`
+  workspace (Firebase by nature; its remaining members are live
+  plumbing — parentPortal, redeemInvite, digest, evaluator, AI
+  pipeline, syncCalendar, sweeps — dies at decommission per 06),
+  `parent-portal/` workspace (Firebase auth + callables — the Phase A
+  Option (b) banked identity surface; 05/06 territory), root infra
+  (firebase.json, .firebaserc, firestore.rules, firestore.indexes.json,
+  storage.rules — decommission artifacts; the firestore.rules
+  coach_chat block dies there too).
+
+**Sweep verdict on the record:** the D-J1 inventory is CONFIRMED
+complete WITHIN ITS RADIUS (live Firestore call sites) — every (ii)
+file live exactly as pinned, the (i) trio clean, (iii)+(iv) as
+recorded. The residual-set sentence is CORRECTED: the true app-side
+residual is **12 re-points + messages.tsx + an auth bank of FOUR
+files plus the config module (AuthContext, admin, settings,
+forgot-password, config/firebase.ts) + ONE live storage read
+(practice-pdf-uploader.tsx:139, a split-brain bug, not a banked
+surface)**. Storage otherwise: zero live firebase-storage code
+remains (uploads/reads went Supabase in F/H); what stays banked to
+cutover is the historical-object FILE COPY (06 runbook), not code.
+
+### PART 2 — PER-FILE SCOPE: the 12 re-point targets
+
+Format per file: live call sites (verified at HEAD) → owning EXISTING
+service → re-point shape → test surface. "GAP" = data no existing
+export exposes → D-K4.
+
+1. **app/swimmer/new.tsx** — :76 `addDoc(collection(db,'swimmers'))`
+   (+ :71–72 serverTimestamp). → swimmers.addSwimmer (Phase B; maps
+   every written field; the screen's `goals: []` is a no-op — the
+   service derives goals on read and never writes the denormalized
+   field). Re-point: one call swap; addSwimmer returns the new id for
+   `router.replace`. Tests: none exist for the screen; service
+   already pinned. NO gap.
+2. **app/swimmer/edit.tsx** — :69 `getDoc(doc(db,'swimmers',id))`
+   prefill; :117 `updateDoc` full form write. → swimmers.updateSwimmer
+   maps EVERYTHING the form writes (incl. mediaConsent → 5 columns;
+   strengths/techniqueFocusAreas/parentContacts →
+   swimmer_coach_profile upsert) EXCEPT the **goals textarea**:
+   canonical derives `goals` from the goals table on read and NEVER
+   writes the legacy denormalized field (ratified Phase B design) —
+   the textarea's write path is gone BY DESIGN → **D-K3**. Prefill
+   read is a single-swimmer read → **D-K4**. Tests: none for the
+   screen.
+3. **app/swimmer/standards.tsx** — :52 swimmer doc sub (→ D-K4);
+   :59–60 times sub `orderBy('createdAt','desc')` with **NO limit**
+   → times.subscribeTimes(id, cb, max) is the successor (same order:
+   `created_at desc`), but it is max-bounded (default 50) — the
+   legacy read is unbounded. NAMED PARITY DELTA: the re-point passes
+   an explicit high max (1000), named here, never silent (the screen
+   computes best-time-per-event; truncation could change a computed
+   best; pre-launch data sits far below the bound either way). Goals
+   arm already on subscribeGoals ✓. Tests: none for the screen.
+4. **app/swimmer/invite-parent.tsx** — :39 swimmer doc sub, used ONLY
+   to derive the header name when the `name` route param is absent
+   (→ D-K4; one-shot semantics). Invites arm already on
+   parentInvites.subscribeInvitesForSwimmer ✓ (Phase I). Tests: none
+   for the screen.
+5. **app/swimmer/[id].tsx** — :116 `deleteDoc(notes/{noteId})` →
+   notes.deleteNote ✓; :134 `deleteDoc(times/{timeId})` →
+   times.deleteTime ✓ (the D-D5 trigger re-promotes next-fastest in
+   the same transaction — the legacy batch's no-transient-window
+   guarantee, already pinned); :970 `addDoc(times)` →
+   times.addTime ✓ (frozen signature; PR math trigger-owned); the
+   **:965–:999 client-side isPR computation + demotion sweep
+   (getDocs + dynamic `import('firebase/firestore')` updateDoc at
+   :992–:995) RETIRES WITH THE RE-POINT** — its successor is the
+   D-D5 maintain_personal_bests trigger, landed Phase D, proven in
+   pgTAP 008. timeDisplay/isPR render fields come from the service's
+   read mapping. Reads come via useSwimmerData (row 12). Tests: none
+   for the screen (the hook's suite is the surface).
+6. **app/meet/[id].tsx** — :38 single-meet doc sub (→ D-K4; meets.ts
+   exports list subs only: subscribeMeets(max=50)/
+   subscribeUpcomingMeets). Entries arm already on subscribeEntries
+   ✓; delete on deleteMeet ✓. Tests: none for the screen.
+7. **app/calendar/event/[id].tsx** — :35 single-event doc sub
+   (→ D-K4; calendar.ts exports month/range/date list subs only).
+   RSVPs arm already on subscribeRSVPs ✓; delete on deleteEvent ✓.
+   Tests: none for the screen.
+8. **app/video/[id].tsx** — :57 single-session doc sub (→ D-K4;
+   video.subscribeVideoSessions is coach_id-scoped + max 20 — wrong
+   axis for an arbitrary session by id, and the AI pipeline flips
+   this row's status live, so a real subscription is required).
+   Drafts arm already on subscribeVideoDrafts ✓; approve/reject on
+   videoDrafts service ✓; roster context via swimmersStore ✓.
+   Tests: none for the screen.
+9. **src/components/SwimmerVideoClips.tsx** — :32–41 query
+   `video_sessions where taggedSwimmerIds array-contains swimmerId,
+   createdAt desc, limit 10` (inventory said :33 — drift of the
+   import block only). **GAP: no existing export reads sessions by
+   tagged-swimmer axis** (canonical models tags as the
+   video_session_swimmers junction, kind='tagged', P1-4) → D-K4.
+   Tests: 4 (transform with the component).
+10. **src/components/VideoComparison.tsx** — :44–50 same
+    tagged-swimmer query PLUS `where status=='posted'` (inventory
+    :45 ✓); :60–66 + :67–74 left/right drafts subs →
+    subscribeVideoDrafts ✓ (two instances, existing export). The
+    sessions arm → D-K4 (posted-only variant). Tests: 3 + 1
+    (VideoCompareScreen.test.tsx also exercises this component —
+    its firebase mocks are LIVE for this subject; both suites
+    transform together).
+11. **src/components/SwimmerTimeline.tsx** — :64–71 notes sub
+    (createdAt desc, limit 100) → notes.subscribeNotes(id, cb, 100)
+    ✓ EXACT (same order, same bound); :72–81 times sub (same shape)
+    → times.subscribeTimes(id, cb, 100) ✓ EXACT. NO gap — the only
+    target fully covered by existing exports with zero deltas.
+    Tests: 4 (transform).
+12. **src/hooks/useSwimmerData.ts** — :50 swimmer doc sub (→ D-K4);
+    :61–66 notes sub limit 50 → subscribeNotes(id, cb, 50) ✓ EXACT;
+    :77–82 times sub limit 50 → subscribeTimes(id, cb, 50) ✓ EXACT;
+    attendance arm already on subscribeSwimmerAttendance ✓; goals
+    arm already on subscribeGoals ✓; prCount derives from the
+    mapped times' isPR (service read field) ✓. Tests: 8 (transform —
+    the house supabase-mock conversion, J commit-2 class).
+
+**The single-record fact that drives D-K4:** swimmersStore subscribes
+ACTIVE swimmers only (`subscribeSwimmers(true, …)`, app-wide at
+_layout) — and INACTIVE swimmers are REACHABLE: roster.tsx:95–98 has
+a showInactive arm (`subscribeSwimmers(false, …)`) whose rows open
+the same profile/edit/standards screens. The store selector is
+therefore NOT a complete successor for any single-swimmer read.
+
+### PART 3 — MESSAGES RETIREMENT SCOPE (D-J7 execution shape)
+
+The exact deletion set (files, routes, tests — successors or
+retire-with-subject per row):
+
+| # | Deletion | Kind | Successor / rationale |
+|---|----------|------|----------------------|
+| 1 | `app/messages.tsx` (304 lines; full coach_chat CRUD — collection/query/orderBy/onSnapshot/addDoc/updateDoc/deleteDoc/serverTimestamp/limit, import block :14–24) | file = the expo-router route itself | RETIRE-WITH-SUBJECT — D-J7(a) ratified: the feature retires whole; no PG home; contents never read |
+| 2 | `app/(tabs)/index.tsx:161–166` — the CHAT TouchableOpacity block (`router.push('/messages')` at :163) | UI block edit | retire-with-subject (the dashboard entry point named in D-J7) |
+| 3 | `app/_layout.tsx:208–217` — the `<Stack.Screen name="messages" …/>` registration ("COACH CHAT" header) | UI block edit | retire-with-subject (route registration dies with the route) |
+| 4 | `src/types/firestore.types.ts:297` — `export interface Message` | type | SOLE importer is app/messages.tsx (verified at HEAD) — zero-importer at deletion, D-J6 evidence class; re-verify at deletion time |
+
+**Test deletions: EXACTLY ZERO — pre-declared.** No test file exists
+for app/messages.tsx; the only app-route suites at HEAD are
+app/(tabs)/__tests__/roster.test.tsx and
+app/practice/__tests__/browse.test.tsx, and no suite pins the CHAT
+button or the route registration. Coach bar UNCHANGED by this commit
+(exact pin). `coach_chat` contents remain UNREAD (confirmed this
+round: scope derived from code shape only). The correction-of-record
+(SETTLED #5's "dead/unimplemented" premise was wrong-when-settled;
+the intent stands, the facts now true) lands in K's landed log, and
+the 06-runbook decommission step carries the coach_chat
+named-data-loss line (already written into migration/j/README.md —
+quoted in PART 0a).
+
+### PART 4 — THE D-K DECISION QUEUE
+
+**D-K1 — the auth bank has a fourth file and a config module; record
+the membership explicitly.** The sweep found app/forgot-password.tsx
+(firebase/auth sendPasswordResetEmail — :13–14) live outside both the
+D-J1 inventory (Firestore-only radius) and the named 3-file bank.
+src/config/firebase.ts is the bank's shared handle module (its
+getFunctions handle is consumer-less at HEAD — named, untouched).
+  (a) **[RECOMMEND]** Record both as EXPLICIT auth-bank members (the
+  D-J1 (iii) coherent-reading precedent: surfaces that operate on the
+  Firebase-auth account store belong to the bank; a password reset IS
+  the account store). The bank is then FIVE artifacts by name:
+  AuthContext.tsx, app/admin.tsx, app/(tabs)/settings.tsx,
+  app/forgot-password.tsx, src/config/firebase.ts — all die together
+  at the 05 auth cutover. K touches none of them; the K work list is
+  unchanged by this ruling.
+  (b) Pull forgot-password.tsx into K and build a Supabase-auth reset
+  now — premature: auth is banked whole to the 05 cutover by ratified
+  Option (b); a mid-migration mixed-auth surface is the exact class
+  the bank exists to prevent.
+
+**D-K2 — practice-pdf-uploader.tsx:139 joins the K work list (a
+live split-brain read of already-migrated data).** Upload arm:
+Supabase (practicePlans → practice-plans bucket, D-H2a). Row source:
+PG practice_plans. View arm: FIREBASE `getDownloadURL(ref(storage,
+storagePath))` on a Supabase path — dead button for every post-H
+upload; same live-bug class as the D-J1 (ii) split-brain writes.
+  (a) **[RECOMMEND]** Add the file to the K work list (work list
+  becomes 13 re-points + messages). Re-point: replace the
+  getDownloadURL call with mediaUpload.getSignedFileUrl(
+  PRACTICE_PLANS_BUCKET, storagePath, 3600) — the EXISTING export the
+  upload arm already uses — and drop the firebase/storage import.
+  PRACTICE_PLANS_BUCKET is currently a practicePlans-local const: the
+  narrowest conforming shape is exporting that one const (a named
+  one-line contract ADDITION, no behavior), or equivalently passing
+  through a practicePlans wrapper — the const export is recommended.
+  NAMED CAVEAT (not a blocker): any pre-H PG row carrying a legacy
+  Firebase path would 404 against a signed Supabase URL until the 06
+  file-copy step — pre-launch test data; the dashboard reads TODAY's
+  plan only; the 06 runbook owns object existence either way. Tests:
+  the component has NO suite at HEAD; the service addition (if the
+  const export counts) is type-only — zero test-count change,
+  pre-declared.
+  (b) Bank it to cutover as "file storage" — REJECT-RECOMMENDED: it
+  is not a banked legacy surface, it is a broken read of MIGRATED
+  data; every day it stands is a coach-visible dead button.
+
+**D-K3 — the edit screen's goals textarea has no write path BY
+RATIFIED DESIGN; the control's disposition needs a call.**
+app/swimmer/edit.tsx:117 writes `goals: toArray(goals)` to the legacy
+denormalized field. Canonical (Phase B, standing): `goals` is DERIVED
+on read from the goals table (`goals(event_name)`) and NEVER written
+— updateSwimmer carries an explicit comment to that effect. The
+first-class goals feature (subscribeGoals/useGoals/GoalCard, B-era)
+owns goal lifecycle. Even TODAY the screen is split-brain: it
+prefills from the Firestore doc's free-text lines while every PG
+reader derives event names from the goals table.
+  (a) **[RECOMMEND]** RETIRE the textarea (and its prefill) from the
+  edit form — a NAMED UI change, parity-CORRECTING (the legacy write
+  lands in a field no PG reader will ever surface: dead-end data, the
+  D-J1 (ii) split-brain class; the goals feature is the ratified
+  owner). The screen's remaining form fields all map onto
+  updateSwimmer verbatim. No test pins the textarea (the screen has
+  no suite).
+  (b) Diff-map textarea lines onto goals-table rows — WIDENING: new
+  semantics (free text ≠ structured per-event goals), a write shape
+  nothing ratified, fragile line-diffing. Presented to be declined.
+  (c) Render the derived goals read-only in the form — keeps a dead
+  control on screen; declined-recommended.
+
+**D-K4 — the single-record read shape: five narrow service ADDITIONS
+(the J-rider class) vs composition from list reads.** The gap, from
+PART 2: four single-record subscriptions (swimmers ×4 call sites;
+meets ×1; calendar_events ×1; video_sessions ×1) and one
+tagged-swimmer sessions query (×2 call sites, one posted-only) have
+NO existing export. The store covers only active swimmers (PART 2
+closing fact); subscribeVideoSessions is coach-scoped; nothing reads
+the tag axis.
+  (a) **[RECOMMEND]** FIVE named additions to EXISTING services —
+  additions, not changes; every frozen export stays byte-frozen; each
+  is a narrower projection of rows the same role already reads via
+  existing list subs (RLS-identical, zero new capability — the
+  ratified D-J1-rider precedent: audio/video count subscriptions):
+    1. swimmers.subscribeSwimmer(id, cb) — single row, active or
+       inactive; house channel idiom (swimmers table, id-filtered).
+    2. meets.subscribeMeet(id, cb) — single row.
+    3. calendar.subscribeEvent(id, cb) — single row.
+    4. video.subscribeVideoSession(id, cb) — single row (status
+       flips live during AI processing).
+    5. video.subscribeSwimmerVideoSessions(swimmerId, cb, opts?:
+       {postedOnly?: boolean; max?: number /* default 10 */}) —
+       sessions whose video_session_swimmers junction holds
+       (swimmer_id, kind='tagged'), created_at desc (PostgREST
+       inner-join filter); channel on video_sessions +
+       video_session_swimmers with re-fetch (the J idiom — junction
+       writes land in the same transaction as session writes via the
+       F service paths).
+    Each addition lands WITH its own house-mock pins (≥2 per export,
+    exact counts pre-declared at execution) in ONE commit (K1),
+    BEFORE any consumer re-points — successors-precede-consumers, the
+    J commit-order discipline.
+  (b) Compose from existing exports only — FAILS the terrain:
+  swimmers would need both-arms subscription gymnastics
+  (active+inactive) per screen; meets/events would over-fetch lists
+  to find one row (subscribeMeets caps at 50; the range subs need the
+  event's date BEFORE reading it); video/[id] composed from the
+  coach-scoped list REGRESSES (a session opened from another coach's
+  clip list sits outside the subscription's axis); and NOTHING
+  composes the tag-axis query — (b) is partially IMPOSSIBLE, named to
+  show why (a) is the honest floor.
+  (c) Hybrid (store selectors where active-only suffices + additions
+  elsewhere) — two patterns for one problem class, more moving parts,
+  the inactive-reachability hole stays live on three screens.
+
+**FYI bundle (accept-as-named unless struck):**
+1. The 4 dead-mock suites (useTimes/useGoals/useSwimmerAttendance/
+   sdifImport tests) get their dead `jest.mock('firebase/…')` /
+   `jest.mock('../../config/firebase')` blocks removed in K6 with
+   per-file verify-at-deletion (graph must no longer reach
+   config/firebase); ZERO test-count change, pre-declared.
+2. `scripts/` seed/create tooling is STALE-BY-MIGRATION (writes
+   Firestore nobody reads); named to the decommission family; K
+   deletes nothing there (no-widening).
+3. config/firebase.ts's getFunctions handle is consumer-less at HEAD;
+   named; untouched (the module is bank property, D-K1).
+4. firestore.rules' coach_chat block dies with the Firebase project
+   (06 runbook); K touches no rules file.
+5. Inventory line drift observed and absorbed: SwimmerVideoClips
+   :33→:32–41, VideoComparison :45,61,70→:44–50,:60–66,:67–74,
+   SwimmerTimeline :66,74→:64–71,:72–81, useSwimmerData
+   :49,61,77→:50,:61–66,:77–82 — same files, same shapes, no
+   substantive drift.
+6. The standards.tsx unbounded→max(1000) times read is the ONLY
+   parity delta in the 12 re-points (PART 2 #3); every other mapping
+   is exact (order, bound, fields).
+7. VideoCompareScreen.test.tsx's subject is VideoComparison (the
+   compare SCREEN lives in app/ untested) — its 1 test transforms
+   with VideoComparison's 3.
+
+### PART 4b — THE NUMBERED MINI-PLAN (pre-declared bars from 835+335 / 1067 / 115)
+
+Standing for every commit: four bars green before landing; never
+advance on red; one green commit per logical change; tripwire armed —
+anything material unpinned at execution = STOP + report; no
+force-push/rebase/amend; HARD STOPS unchanged (manifests
+instructions-only; nothing runs against any database). RC-3: N/A this
+phase — no schema work, no migrations; BSPC repo UNTOUCHED end to
+end. **BSPC 835 (TZ=UTC) + pgTAP 335 and Functions 115 are EXACT
+UNCHANGED pins for EVERY commit below.**
+
+- **K0 (UNIFY only)** — ratification recording for D-K1..D-K4 + FYI
+  acceptances, this entry's rulings quoted back. Bars untouched.
+- **K1 (Coach)** — the five D-K4(a) service additions + their
+  house-mock pins, no consumer changes. **Coach 1067 → +10-to-+15
+  (declared band: ≥2 pins per addition; cite the exact landed
+  count).** Functions/BSPC pins exact-unchanged.
+- **K2 (Coach)** — swimmer-family re-points: new.tsx, edit.tsx
+  (incl. D-K3 ruling), standards.tsx (named max=1000 delta),
+  invite-parent.tsx, swimmer/[id].tsx writes (PR sweep retires to
+  D-D5), useSwimmerData.ts, SwimmerTimeline.tsx. Test surface:
+  useSwimmerData 8 + SwimmerTimeline 4 TRANSFORM in place (house
+  supabase mock, subjects preserved); screens have no suites.
+  **Coach count UNCHANGED from post-K1 — EXACT pin (transform-only
+  commit).**
+- **K3 (Coach)** — video-family re-points: video/[id].tsx,
+  SwimmerVideoClips.tsx, VideoComparison.tsx. Transforms:
+  SwimmerVideoClips 4 + VideoComparison 3 + VideoCompareScreen 1.
+  **Coach count UNCHANGED — EXACT pin.**
+- **K4 (Coach)** — meet/[id].tsx + calendar/event/[id].tsx re-points
+  + the D-K2 pdf-uploader re-point (+ the one-line
+  PRACTICE_PLANS_BUCKET export if (a)). No test surface exists for
+  any of the three. **Coach count UNCHANGED — EXACT pin.**
+- **K5 (Coach)** — D-J7 messages retirement: the PART 3 table rows
+  1–4, nothing else. **Test deletions ZERO; Coach count UNCHANGED —
+  EXACT pin.** Any deletion beyond the four named rows = flagged
+  deviation, STOP.
+- **K6 (Coach + UNIFY)** — dead-mock hygiene (FYI-1, 4 named files,
+  verify-at-deletion) + K landed log in NOTES (carrying the D-J7
+  correction-of-record line + the residual-set sentence as corrected
+  by PART 1) + memory update. **Coach count UNCHANGED — EXACT pin.**
+  If the mechanically-forced cross-repo split recurs (log in UNIFY),
+  it lands under the PART 0b #1 precedent, named.
+
+**End-of-phase expectation: BSPC 835 (TZ=UTC) + pgTAP 335 / Coach
+1067 + Δ(K1) / Functions 115, where Δ(K1) ∈ [+10, +15] cited exact.**
+After K: the Coach app's live firebase surface is EXACTLY the D-K1
+auth bank (five named artifacts) — the precondition line for the
+05/06 cutover planning.
+
+**Execution blocks on D-K1–D-K4. No Phase K implementation this
+round; bars untouched (835 TZ=UTC + 335 / 1067 / 115); UNIFY is the
+sole repo touched (this entry).**
