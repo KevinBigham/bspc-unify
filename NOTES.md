@@ -3758,3 +3758,131 @@ mini-plan as written at `60abc91`; only K1 moves the Coach bar
 (declared band 1067 → +10-to-+15, cite exact); BSPC 835 (TZ=UTC) +
 pgTAP 335 and Functions 115 are EXACT-unchanged pins for every
 commit; the BSPC repo is untouched end to end.
+
+---
+
+## 2026-06-10 — PHASE K LANDED (code-side COMPLETE): seven green commits; every pin hit exactly; the Coach app's live firebase surface is now EXACTLY the five-artifact auth bank
+
+Baseline re-verified before any code (835 TZ=UTC + 335 / 1067 / 115;
+colima + supabase healthy; heads 60abc91 / 9e68c17 / fce4d62 clean).
+Every pre-declared expectation landed exactly or inside its declared
+band; zero deletions outside the named set; the tripwire never fired.
+The BSPC repo was UNTOUCHED end to end (no schema work — RC-3 n/a);
+BSPC 835 (TZ=UTC) + pgTAP 335 and Functions 115 held EXACT at every
+commit. Per commit:
+
+1. **UNIFY `181c08f` (K0, paperwork)** — D-K1/D-K2/D-K3/D-K4 ratified
+   option (a), FYI 1–7 accepted unstruck; every ruling checked
+   against its block at `60abc91` — no mismatches, nothing half-open
+   (previous entry).
+2. **Coach `da19046` (K1)** — the five D-K4 service ADDITIONS, frozen
+   exports byte-frozen, no consumer changes: swimmers.subscribeSwimmer
+   (id-filtered two-table channel — swimmers + swimmer_coach_profile,
+   the list sub's watch-set narrowed); meets.subscribeMeet;
+   calendar.subscribeEvent (a single row IS a stable row key — the
+   channel filters by id); video.subscribeVideoSession (watches both
+   projection sources: the session row + its swimmer junction,
+   session_id-filtered); video.subscribeSwimmerVideoSessions
+   (postedOnly?/max?=10 — the tag axis via a SECOND `tag_filter`
+   embed of video_session_swimmers used as the PostgREST !inner
+   filter while the UNFILTERED `swimmers` embed keeps the mapper's
+   tagged/selected arrays intact, a named execution detail; channel
+   on video_sessions table-wide + the junction swimmer-filtered).
+   Missing single rows emit null (≙ snap.exists() === false, the
+   house listener-error parity). 13 house-mock pins (3 swimmers /
+   2 meets / 2 calendar / 6 video). **Coach 1067 → 1080 (+13, inside
+   the declared +10-to-+15 band).**
+3. **Coach `b742937` (K2)** — swimmer-family re-points: new.tsx →
+   addSwimmer (data layer owns timestamps/created_by; goals:[] a
+   no-op by design); edit.tsx → subscribeSwimmer one-shot prefill
+   (first-emission fill — a remote change never clobbers an
+   in-progress edit) + updateSwimmer, **with the D-K3 ruling
+   EXECUTED: the goals textarea AND its prefill retired — the
+   phase's only UI change, parity-correcting**; standards.tsx →
+   subscribeSwimmer + subscribeTimes(id, cb, **1000**) — **FYI-6
+   carried: the phase's SINGLE named parity delta (legacy unbounded
+   → max-bounded, conservative)**; invite-parent.tsx →
+   subscribeSwimmer name fallback (+ the dead Firestore-Timestamp
+   instanceof branches left with the import — the service emits real
+   Dates since Phase I); swimmer/[id].tsx writes → deleteNote /
+   deleteTime / addTime — **the client-side isPR computation +
+   demotion sweep (the dynamic-import updateDoc block) RETIRED to
+   the D-D5 maintain_personal_bests trigger**, its standing
+   successor; useSwimmerData.ts + SwimmerTimeline.tsx onto
+   subscribeSwimmer/subscribeNotes/subscribeTimes (same order, same
+   bounds 50/100 — exact mappings). Tests: useSwimmerData 8 +
+   SwimmerTimeline 4 TRANSFORMED in place. **Coach 1080
+   EXACT-unchanged.**
+4. **Coach `d7f9106` (K3)** — video-family re-points: video/[id].tsx
+   → subscribeVideoSession (the AI pipeline's live status flips
+   carry through); SwimmerVideoClips.tsx → subscribeSwimmerVideoSessions
+   (all statuses); VideoComparison.tsx → subscribeSwimmerVideoSessions
+   ({postedOnly: true}) + the left/right drafts arms onto the
+   EXISTING subscribeVideoDrafts. Tests: 4 + 3 + 1 transformed
+   (VideoCompareScreen.test's subject is VideoComparison — FYI-7).
+   **Coach 1080 EXACT-unchanged.**
+5. **Coach `1df983a` (K4)** — meet/[id].tsx → subscribeMeet;
+   calendar/event/[id].tsx → subscribeEvent; **the D-K2 split-brain
+   read CLOSED**: practice-pdf-uploader.tsx's view arm →
+   mediaUpload.getSignedFileUrl(PRACTICE_PLANS_BUCKET, storagePath,
+   3600) — the same store the upload arm writes — with the named
+   one-line PRACTICE_PLANS_BUCKET export added to practicePlans.ts;
+   the firebase/storage import dropped. **The D-K2 pre-H 404 caveat
+   stands as ACCEPTED: any pre-H row carrying a legacy Firebase path
+   404s against a signed Supabase URL until the 06-runbook file-copy
+   step, which owns object existence — pre-launch test data; the
+   dashboard reads today's plan only.** No test surface. **Coach
+   1080 EXACT-unchanged.**
+6. **Coach `19f66ea` (K5, D-J7 executed)** — messages retirement,
+   EXACTLY the four named PART 3 rows: app/messages.tsx deleted (the
+   expo-router route itself, 304→329 lines at deletion incl. the
+   import block); the index.tsx CHAT block; the _layout.tsx
+   "COACH CHAT" Stack.Screen registration; the Message interface
+   (sole importer re-verified at deletion — zero importers).
+   **Test deletions: ZERO, as pre-declared** (no suite ever covered
+   the screen). coach_chat contents were never read.
+   **CORRECTION-OF-RECORD (D-J7): SETTLED #5's "coach_chat
+   dead/unimplemented" premise was wrong WHEN SETTLED — the screen
+   was full live CRUD routed from the dashboard. The ratified
+   no-messaging INTENT is now executed with true facts: the feature
+   is retired, coach_chat gets no canonical home, and whatever test
+   chatter sits in the collection dies with Firestore at the
+   06-runbook decommission step (named pre-launch data loss).**
+   **Coach 1080 EXACT-unchanged.**
+7. **Coach `707439c` + this landed log (K6, cross-repo two-half —
+   the PART 0b #1 CONFORMING precedent, mechanically forced,
+   named)** — FYI-1 hygiene: the dead firebase mock blocks removed
+   from useTimes/useGoals/useSwimmerAttendance/sdifImport tests with
+   per-file verify-at-deletion evidence (useTimes→services/times,
+   useGoals→services/goals, useSwimmerAttendance→services/attendance,
+   sdifImport→utils+meetResultsImport — every graph PG/parser-only;
+   none reaches src/config/firebase). **Coach 1080 EXACT-unchanged.**
+
+Named execution details (none rose to tripwire): (i) commits 1–6
+passed through the house lint-staged pre-commit pass; suites were
+re-verified green against the committed trees (J precedent);
+(ii) the K1 tag-axis read uses the dual-embed shape (filter embed +
+unfiltered mapper embed) so the frozen VideoSessionWithId mapping
+never truncates — pinned in the K1 tests; (iii) BSPC tsc clean by
+construction (repo untouched); Coach tsc keeps its pre-existing
+errors (jest-only bar, standing).
+
+**THE RESIDUAL-SET SENTENCE, CORRECTED ON THE RECORD (supersedes the
+Phase I "NONE" overclaim and the Phase J landed log's framing): after
+Phase K, the Coach app's ENTIRE live firebase surface is EXACTLY the
+five-artifact auth bank — src/contexts/AuthContext.tsx, app/admin.tsx,
+app/(tabs)/settings.tsx, app/forgot-password.tsx,
+src/config/firebase.ts — re-proven by a fresh import grep on the
+final tree (five files, nothing else; test-side, only the shared
+manual mock and the AuthContext suite still reference firebase, both
+bank shadows).** All five die together at the 05 auth cutover.
+Satellites unchanged and classified (functions/ workspace live
+plumbing until decommission; parent-portal/ the Phase A banked
+identity surface; scripts/ stale-by-migration; root rules/config
+files die with the project per 06).
+
+**Bar at close: BSPC 835 (TZ=UTC) + pgTAP 335 / Coach 1080 /
+Functions 115.** Deletion norm: the four named K5 rows + the four
+named FYI-1 mock blocks — nothing else. Phases A–K code-side
+COMPLETE. **Next: the 05/06 cutover planning (auth cutover, file
+copy, backfills behind the HARD STOP, decommission).**
