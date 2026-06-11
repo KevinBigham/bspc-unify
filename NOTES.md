@@ -4969,3 +4969,107 @@ list as a decision for the director.
 **Effect:** the acceptance is on the record, the 05 plan no longer
 carries the wrong aside, and the swap rounds' pre-declaration
 discipline now governs this round's three landings.
+
+---
+
+## 2026-06-11 — STAGING-PREP STAGE-2 — RUNBOOK READINESS SWEEP (fresh-eyes re-read of 06 PART B + 05 §6.1/§6.5 against the landed code; the verdict + the numbered gap list)
+
+**Method:** fresh re-read, re-derived (inventories go stale): 06 PART B
+§B0–§B7 whole; 05 §6.0/§6.1/§6.2b/§6.4/§6.5; the identity README (40
+lines) + the roster README (36 lines) end-to-end; the landed probe pair
++ pins at `c399516`; the re-run closing greps.
+
+**Verified READY (four items):**
+1. **§B0 spec vs the script AS LANDED: MATCH.** Census membership = the
+   enumerated TERRAIN §0 list (32 paths; the 7 ⚠ exactly §B0's
+   parenthetical); the five storage prefixes exact; the auth count;
+   PART A §6 key handling (`FIREBASE_ADMIN_KEY_PATH` else
+   `GOOGLE_APPLICATION_CREDENTIALS`); unit-tested pure parts only (+14;
+   the I/O shell named UNTESTED, no trusted mocks); the output opens
+   with the preserve-verbatim-in-NOTES rule and carries the
+   named-no-op + REPORT-never-auto-copy rules of record; every §B2 row
+   that cites "(§B0 count)" can be filled from the per-path table
+   (parent+child rows get both paths' counts).
+2. **05 §6.1's gate logic is executable as written ONCE GAP-C closes:**
+   probe input source = Firestore `parents` docs ×
+   `migration_identity_map` (both artifacts exist; `auditIdentityMap` /
+   `auditGuardianships` are Phase-A unit-tested pures); zero-resolves =
+   STOP is unambiguous; NM-1 names its source (the live `coaches` list,
+   Kevin confirms before any role writes); the agreement audit is
+   banked and named.
+3. **Stop conditions: PASS.** The PART B governing HARD STOP covers
+   every section; per-step explicit stops verified: identity step 7
+   stop-on-audit-failure; roster step 3 STOP-on-ambiguous + step 6
+   stop-on-failure; §B2.1/§B2.2 CHECK-domain STOPs (course / standard /
+   tag / group / unmapped-coach); §B1 imports non-empty → REPORT, never
+   auto-copy; §B6.1 sign-in disable gated on §6.5 smoke; §6.5 steps
+   each gated on the one before, rollback named. (Note, not a gap:
+   §B1's verification-failure consequence rides the governing HARD STOP
+   rather than a section-local STOP sentence.)
+4. **D-I1 + the frozen surfaces: untouched by this round** (zero
+   behavior changes; the only code that landed is the never-run probe
+   pair + its pins).
+
+**VERDICT: GAP LIST — five numbered gaps. Every one ends as a decision
+for the director; NONE is fixed silently (no pre-ratified cover exists
+this round, so all five wait).**
+
+1. **GAP-A — the census cardinal "23" is wrong in two bound places.**
+   00_TERRAIN §0's header says "23 collection paths" and 06 §B0 echoes
+   "ALL 23 census paths"; the census block ENUMERATES **32** (25 ★ +
+   7 ⚠), corroborated by §B2's manifest table — the same 32 paths in
+   exactly **23 ROWS** (parent+child collections share rows; the five
+   never-implemented ⚠ paths share one row — the likely origin of the
+   number). The probe is built on the enumerated 32 (superset-safe).
+   **Decision: ratify a D-J7-class dated correction of both numbers to
+   "32 paths (25 ★ + 7 ⚠)" (the e71050a idiom), or rule that the
+   header means §B2's 23 manifest rows and annotate it as such.**
+2. **GAP-B — the mandatory throwaway-Supabase dry-run is bound
+   everywhere and specified nowhere.** The identity README (:39), the
+   roster README (:36), 06 §B2, and 05 §6.5 step 1 all REQUIRE it; none
+   specifies project setup (which migrations, applied how), input data,
+   success criteria, or teardown. **And the input-data question
+   collides with a standing security rule:** PART A's standing rules
+   say "Never put real swimmer/family data in a demo project" — a
+   dry-run fed by the REAL Firestore export would put real minors' data
+   in a throwaway project. **Decision: ratify a dry-run spec.
+   Recommended shape: throwaway project + the full migration chain
+   (00001..00013) + a SYNTHETIC fixture export (the seed-demo shapes);
+   success = identity/roster audits green + the §6.1 probe non-empty on
+   the fixture + both smoke logins; teardown = project deletion,
+   confirmed; real-export rehearsal explicitly OUT (the security rule
+   wins).**
+3. **GAP-C — the §6.1 step-3 provisioning runner is still "not yet
+   written."** The identity README says so (:21); 05 §6.1 expects it to
+   land "as scaffolding in the staging round"; THIS staging round's
+   bound scope was the §B0 probe only. **Decision: scope the runner's
+   own scaffolding commit (pure parts + pins pre-declared, lifecycle
+   banked) into the next round, or re-date 05 §6.1's expectation to
+   that round.**
+4. **GAP-D — the §6.5 smoke checklist does not name the portal redeem
+   path or the portal direct-read surfaces.** Named today: "portal
+   parent login + dashboard render" only. Post-SWAP-9, dashboard render
+   exercises ONE direct read; the D-I2 redeem RPC path and the
+   swimmer-detail direct reads (swimmers row + strengths view +
+   goals/results/attendance under the 00013 walls) go un-smoked.
+   **Decision: ratify two named additions to §6.5 step 3 — "portal
+   invite-code redeem round-trips (code → guardianship → swimmer
+   appears)" and "portal swimmer detail renders the direct-read
+   surfaces (strengths + results + attendance under the 00013
+   walls)".**
+5. **GAP-E — one STALE pre-cutover comment in landed portal code.**
+   `parent-portal/src/lib/profile.ts:12` still reads "the session
+   provider in auth.ts stays on Firebase until the coordinated
+   identity-cluster cutover, so this read goes live at that cutover" —
+   false since SWAP-9 (auth.ts rides supabase.auth; the read is live).
+   Surfaced by this round's STRICTER case-insensitive sweep; the
+   as-landed lowercase grep stays CLEAN, and the only other capital-F
+   mention (`parentPortal.ts:73`) is accurate history needing nothing.
+   **Decision: ratify the one-line comment correction (comment-only,
+   zero behavior) for the next round that touches the Coach repo.**
+
+**Effect:** the §B0 probe is real, tested where it can honestly be
+tested, and waiting for Kevin; the runbook is executable on its spine
+(stops everywhere; the §B0 → keep/drop sheet → manifests wiring
+verified) and NOT READY only at the five named seams above — every seam
+is a decision, none is code this round was allowed to write.
