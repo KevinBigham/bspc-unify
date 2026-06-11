@@ -2786,3 +2786,261 @@ call. Options:
 **Execution blocks on D-J1–D-J7. No Phase J implementation this
 session; bar untouched (835 TZ=UTC + 316 / 1081 / 133); UNIFY is the
 sole repo touched (ratification entry + this scope).**
+
+---
+
+## 2026-06-10 — PHASE J RATIFICATION (Kevin, in words) — D-J1/2/3/4/6/7 RATIFIED; D-J5 HELD OPEN ON EVIDENCE (the 18-row successor table, below); FYI 1–12 accepted; the 01 amendment APPLIED
+
+Docs-only round: this entry plus the ratified 01 amendment are the
+only changes anywhere; no application code, no migrations, no test
+changes; bars untouched by construction (835 TZ=UTC + 316 / 1081 /
+133). Each ruling was checked against its [DECIDE] block before
+recording — no ruling mismatches its block. Two precision items
+surfaced and are NAMED in place rather than force-fit: the D-J1 rider
+arithmetic is decomposed (the "19" needs one qualifier), and §5's
+"~5" useMeetDetails estimate was WRONG (actual: 7) — flagged inside
+the D-J6 record.
+
+**D-J1 RATIFIED — option (a), the J/K split.** Phase J keeps its 04
+charter PLUS the aggregation-adjacent readers in (i): the roster and
+dashboard surfaces whole, including the pendingDrafts re-point onto
+the EXISTING PG audio.ts/video.ts services (the F-domain catch-up
+rider — same query shape, no new capability). Everything else in the
+write-dead-domain inventory becomes **PHASE K — UI RESIDUAL SWEEP**,
+a new named phase with its own scope-before-code round, re-pointing
+screens/hooks/components onto the EXISTING swapped services only —
+no new services, no new capability, the no-widening doctrine
+governing. The coaches-collection surfaces (AuthContext.tsx,
+app/admin.tsx, app/(tabs)/settings.tsx) are recorded as EXPLICITLY
+banked with the auth cutover (the ratified Option (b) bank) —
+implicit no longer. The D-J1 file:line inventory (previous entry,
+§7 D-J1) is DESIGNATED the named NOTES artifact Phase K scopes from.
+The corrections of record (the Phase I landed-log "NONE" overclaim
+and its session-memory echo) are ACCEPTED as append-only corrections.
+  **RIDER — the arithmetic, pinned.** Kevin's ruling, verbatim: "the
+  entry enumerates 21 files; the actionable Phase K count is 19
+  because useSwimmer.ts and useMeetDetails.ts are zero-importer dead
+  hooks deleted in J commit 4 under D-J6." Recorded — with the
+  decomposition stated explicitly so the 19 is never conflated with
+  Phase K's own work list: 21 enumerated = 3 J-proper
+  aggregation-reader files in (i) + 14 write-dead-domain files in
+  (ii) + 3 auth-banked files in (iii) + 1 coach_chat file in (iv).
+  The tripwire headline's "19" = 21 minus the two dead hooks (which
+  J deletes, not K). Phase K's own work list as ratified = the 12
+  remaining (ii) files to re-point + the messages.tsx retirement per
+  D-J7 = 13 files; K's scope round starts from the full 21-file
+  artifact regardless, so nothing rides on the label.
+
+**D-J2 RATIFIED — option (a): Postgres-computed VIEWS, staff-gated,
+compute-on-read.** The canonical amendment is RATIFIED AND APPLIED
+this round: 01's unbuilt `aggregations` JSONB table (was 01:725–730),
+its RLS-enable line (was 01:1066), and `aggregations_select_staff`
+(was 01:1182) are RETIRED from canonical — a narrowing; no migration
+ever created any of them (§1d's check: `CREATE TABLE aggregations`
+appears in no migration file). The [P2-5] law (DO NOT migrate rows;
+recompute post-migration) SURVIVES verbatim in the banner — it is
+the law the views implement. 04 §156's "PG-computed views" is now
+the single architecture on the books; the §3 docs-disagreement is
+resolved by name. Amendment mechanics: the e71050a in-repo precedent
+followed exactly — in-place edits with dated [D-J2, ratified
+2026-06-10] bracket annotations at each retired site, landing in the
+SAME commit as this ratification entry (01 has no amendments
+appendix and none was needed).
+
+**D-J3 RATIFIED — option (a): full legacy doc shape.** Every §1c
+field is computed, including the six write-only ones
+(totalPractices, last30Days, last90Days, lastPracticeDate, noteCount,
+lastNoteDate); service exported types stay FROZEN; zero type ripple.
+Absence-is-parity is not a license to narrow a frozen interface.
+
+**D-J4 RATIFIED — option (a): the denominators stay the honest
+fake.** 22 and 64 hardcoded VERBATIM in the view, the "Approximate:
+5 practices/week" comment carried. Option (b) (schedule-derived real
+denominators) is DECLINED as a widening with no D-H9-class citation
+— and BANKED: **real attendance denominators (schedule-derived)**
+joins the named post-cutover product line items (alongside push
+delivery, ai_drafts_ready, and the parent-calendar/RSVP arms).
+
+**D-J5 NOT RATIFIED THIS ROUND — held open deliberately; no mismatch
+with the block.** This would be the FIRST test-count drop in project
+history, and ratification happens only off a literal per-deletion
+successor table. The §5 commit-3 plan is otherwise UNOBJECTED.
+Recorded PENDING-ON-EVIDENCE; the evidence follows immediately
+below, read from the six test files this round. With the counts now
+pinned, commit 3's expectation de-tildes: Functions 133 − 18 = 115
+EXACTLY.
+
+### D-J5 EVIDENCE — the literal successor table (18 rows, one per test; it(...) titles transcribed exactly from the files; nothing paraphrased)
+
+All six files live in BSPC-Coach-App `functions/src/__tests__/`.
+Successor key — names bind execution: **P-ATT / P-PRNOTES /
+P-DASHATT / P-DASHACT** = pgTAP 014's four per-view staff-value
+proofs pre-declared in §5 commit 1 (P-ATT carries the status-aware
+negative proof + the verbatim 22/64 denominators; P-PRNOTES =
+personal_bests + swimmer_notes aggregate values; P-DASHATT = the
+84-day window proof; P-DASHACT = the activity formatting proof —
+text templates verbatim per FYI-9, 'pr' derivation per FYI-10,
+per-arm limits 8/5/5/5, review-only video arm + junction count,
+ORDER BY timestamp DESC LIMIT 15). **SVC-MAP** = J commit 2's
+aggregations.ts mapping tests (subjects preserved through the swap).
+Ordering law (RC-8 echo): the successors land in commits 1–2; the
+deletions land in commit 3 — successor-before-deletion holds by
+commit order.
+
+Row format: file / exact it(...) title / class / named successor.
+
+1. rebuildAggregations.test.ts / 'recomputes dashboard docs once
+   after per-swimmer rebuilds' / dispatch-wiring pin (scheduler
+   fan-out) / retires with the scheduler; recompute truth → P-ATT +
+   P-PRNOTES + P-DASHATT + P-DASHACT (views compute at read time —
+   no dispatch left to prove).
+2. dashboardAggregations.test.ts / 'recomputes dashboard attendance
+   history and excludes records older than 84 days' / VALUE pin /
+   P-DASHATT + SVC-MAP (countsByDate shape).
+3. dashboardAggregations.test.ts / 'recomputes dashboard activity
+   with preserved text formatting, review-only videos, sorting, and
+   top-15 truncation' / VALUE pin / P-DASHACT + SVC-MAP (items
+   shape).
+4. onAttendanceWritten.test.ts / 'dispatches per-swimmer and
+   dashboard recomputes when attendance is created' /
+   dispatch-wiring pin, carries a value fragment (totalPractices,
+   merge:true) / P-ATT (totalPractices computed in the full shape
+   per D-J3(a)); the dispatch mechanism ceases to exist.
+5. onAttendanceWritten.test.ts / 'dispatches using the after swimmer
+   id when attendance is updated' / dispatch-wiring pin (event
+   routing) / P-ATT — the view keys rows by swimmer_id from the
+   table itself; there is no event payload to route.
+6. onAttendanceWritten.test.ts / 'dispatches using the before
+   swimmer id when attendance is deleted' / dispatch-wiring pin
+   (event routing) / P-ATT — a delete is an absent row at read time.
+7. onAttendanceWritten.test.ts / 'does not dispatch when no swimmer
+   id is present' / dispatch-wiring pin (the silent do-nothing guard
+   — the §6.2 F-lesson path) / the guarded path RETIRES with the
+   mechanism; a view has no do-nothing analogue (it computes from
+   rows); recompute truth → P-ATT. Named as the deletion of an
+   F-lesson liability, not a lost proof.
+8. onTimesWritten.test.ts / 'dispatches swimmer PR and activity
+   recomputes when a PR time is created' / dispatch-wiring pin,
+   carries a value fragment (prsByEvent '50 Free_SCY' min-time +
+   timeDisplay) / P-PRNOTES + the STANDING pgTAP 008
+   maintain_personal_bests proofs (D-D5), which have owned min-time
+   truth since Phase D.
+9. onTimesWritten.test.ts / 'dispatches swimmer PR and activity
+   recomputes for a non-PR time as well' / dispatch-wiring pin /
+   P-PRNOTES + P-DASHACT ('pr'-vs-'time' typing derives via
+   personal_bests; no isPR column exists — FYI-10).
+10. onTimesWritten.test.ts / 'dispatches swimmer PR and activity
+    recomputes when a row is updated' / dispatch-wiring pin /
+    P-PRNOTES; write-path recompute owned same-transaction by
+    maintain_personal_bests (D-D5, pgTAP 008).
+11. onTimesWritten.test.ts / 'dispatches swimmer PR and activity
+    recomputes when a row is deleted' / dispatch-wiring pin /
+    P-PRNOTES; as row 10.
+12. onNotesWritten.test.ts / 'dispatches note and dashboard activity
+    recomputes when a note is created' / dispatch-wiring pin,
+    carries a value fragment (noteCount, lastNoteDate) / P-PRNOTES
+    (noteCount = count(*), lastNoteDate = max(created_at) over
+    swimmer_notes — full shape per D-J3(a)).
+13. onNotesWritten.test.ts / 'dispatches recomputes when a note is
+    updated' / dispatch-wiring pin / P-PRNOTES (compute-on-read; no
+    dispatch).
+14. onNotesWritten.test.ts / 'dispatches recomputes when a note is
+    deleted' / dispatch-wiring pin / P-PRNOTES (an absent row at
+    read time).
+15. onNotesWritten.test.ts / 'does not gate dashboard activity on
+    unchanged note fields' / dispatch-wiring pin (no-change-gating
+    semantics) / retires STRUCTURALLY: a view recomputes on every
+    read, so no change-gate exists to get wrong (D-J2(a)); recompute
+    truth → P-PRNOTES + P-DASHACT.
+16. onVideoSessionWritten.test.ts / 'dispatches dashboard activity
+    recompute when a video session is created' / dispatch-wiring pin
+    / P-DASHACT video arm (review-only filter +
+    video_session_swimmers junction count).
+17. onVideoSessionWritten.test.ts / 'dispatches dashboard activity
+    recompute when a video session is updated' / dispatch-wiring pin
+    / P-DASHACT video arm.
+18. onVideoSessionWritten.test.ts / 'dispatches dashboard activity
+    recompute when a video session is deleted' / dispatch-wiring pin
+    / P-DASHACT (a deleted/non-review row contributes nothing at
+    read time).
+
+Tally: 18 rows = 1 + 2 + 4 + 4 + 4 + 3 — matches §1d EXACTLY. Class
+split: 2 VALUE pins (rows 2–3) + 16 dispatch-wiring pins — §1d's
+headline HOLDS, with one refinement named: rows 4, 8, and 12 are
+dispatch pins that ALSO carry a small value fragment
+(totalPractices; a prsByEvent entry; noteCount/lastNoteDate); each
+fragment's successor is named on its row. Functions bar at commit 3:
+133 − 18 = **115 exactly** (§5's "~115" de-tilded). D-J5 ratification
+now waits only on Kevin reading this table.
+
+**D-J6 RATIFIED — all four items land as J commit 4 — and the rider
+is satisfied with exact counts (files read this round; no tildes):**
+- src/hooks/__tests__/useSwimmer.test.ts — **8 tests** (§5 said 8 —
+  confirmed).
+- src/hooks/__tests__/useMeetDetails.test.ts — **7 tests** — **FLAG,
+  LOUD: §5 pre-declared "~5"; the file holds 7.** The tilde estimate
+  was wrong by two; pinned from the file, not silently reconciled.
+  (§1d is not contradicted — its Coach-29 figure counted only the
+  aggregation-riding suites and never claimed these hooks.)
+- src/utils/__tests__/demoReadiness.test.ts — **3 tests** (§1d/§5
+  said 3 — confirmed).
+- The stores' type-only imports: exactly two sites —
+  swimmersStore.ts:5 and attendanceStore.ts:4, each `import type
+  { Unsubscribe } from 'firebase/firestore'` typing an
+  `_unsubscribe` field → replaced with a local
+  `type Unsubscribe = () => void`.
+Commit-4 deletion pre-declaration, exact: **18 Coach tests (8 + 7 +
+3) delete with their three zero-importer subjects** — expected Coach
+bar after commit 4 = (the commit-2 landing count) − 18; with commit
+2 landing inside its 1081±6 band, commit 4 lands at 1063±6.
+**Zero-importer evidence, one line per module (grep-verified this
+round, each module's own test file excluded):** useSwimmer — no
+`hooks/useSwimmer` import anywhere in app/ or src/; useMeetDetails —
+no reference anywhere in app/ or src/ outside the module itself;
+demoReadiness — no reference anywhere in app/ or src/ outside the
+module itself. All three: sole consumers are their test files;
+deleting module + test together orphans nothing.
+
+**D-J7 RATIFIED — option (a): SETTLED #5's intent honored on true
+facts.** The messages screen (app/messages.tsx) and its dashboard
+entry point (app/(tabs)/index.tsx:163) RETIRE in Phase K; coach_chat
+gets NO canonical table; the Firestore contents die at the
+06-runbook decommission step as NAMED pre-launch data loss (a
+coach-to-coach channel; zero minors' data expected; **contents never
+read this scope — recorded**). The correction-of-record lands in the
+K landed log and the 06 runbook line, per the block.
+
+**FYI BUNDLE 1–12 ACCEPTED AS NAMED — none struck.** GA-1's closure
+(`REVOKE EXECUTE ... FROM PUBLIC, anon` on attendance_check_in + the
+pgTAP anon→42501 proof) lands inside J commit 1; GA-2's four inert
+trigger-function PUBLIC grants revoke in the same hygiene block;
+GA-3's helper predicates conform ON PURPOSE (rationale stands in §4;
+no action). Items 4–12 accepted as written — including the
+publication pinned at EXACTLY 23 with the RH-12 same-commit
+contingency named, the D-C1(b) checklist line recorded SATISFIED at
+commit 2, and the id-prefix + text-template verbatim carries.
+
+**§2 PARITY RECORD ACCEPTED.** Every value delta is a named
+correction in an already-ratified direction (status-aware attendance
+per the banked C law, 07 §2; 'pr' derived via personal_bests per
+D-D5; names via joins per D-B7; timeDisplay derived-on-read;
+updatedAt DB-owned); timing is strictly fresher. **The
+onTimesWritten date-column mapping (`meetDate ?? createdAt` onto
+personal_bests' date semantics) carries as a NAMED-AT-EXECUTION
+OBLIGATION: the exact column mapping appears in the execution
+report, never assumed.**
+
+**TOLERANCE BANDS ACCEPTED as pre-declarations:** pgTAP +14-to-22
+(commit 1) and Coach 1081±6 (commit 2). Landing OUTSIDE a declared
+band is a flagged deviation — stop and explain before proceeding.
+(Commit 3 = 115 and commit 4 = −18 are now EXACT pins per the
+evidence above, not bands.)
+
+**Standing after this entry:** D-J1, D-J2 (amendment applied), D-J3,
+D-J4, D-J6, D-J7 ratified; FYI 1–12, the §2 parity record, and the
+bands accepted; PHASE K named and chartered (scope-before-code, from
+the D-J1 artifact). D-J5 PENDING-ON-EVIDENCE with the evidence now
+on the record — J commits 1, 2, 4 are cleared; commit 3 BLOCKS on
+D-J5; commit 5 closes whatever lands. No implementation began this
+round; the only repo touched is UNIFY (this entry + the 01
+amendment).

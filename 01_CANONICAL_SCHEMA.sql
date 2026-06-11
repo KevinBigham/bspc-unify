@@ -721,13 +721,15 @@ CREATE TABLE import_jobs (
 -- ============================================================================
 -- AGGREGATIONS — [SCOPE] read-model store; staff read; writes by service role/
 -- triggers only. [P2-5] DO NOT migrate rows; recompute post-migration.
+-- [D-J2, ratified 2026-06-10] the JSONB doc-store table drafted here is
+-- RETIRED from canonical (a narrowing — no migration ever created it; the
+-- 04 §156 "PG-computed views" wording prevails). Phase J recomputes via
+-- STAFF-GATED, COMPUTE-ON-READ VIEWS, each carrying an explicit is_staff()
+-- arm (the no-widening wall; family/pending/anon prove to zero rows). The
+-- [P2-5] law above survives verbatim — it is the law the views implement;
+-- "writes by service role/triggers" is moot (a view is not written). The
+-- RLS-enable + select policy retired below under the same decision.
 -- ============================================================================
-CREATE TABLE aggregations (
-  key TEXT PRIMARY KEY,
-  kind TEXT NOT NULL,
-  payload JSONB NOT NULL,
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
 
 -- ============================================================================
 -- REFERENCE & MISC — [#1] time_hundredths; [AR-1] standards free text.
@@ -1063,7 +1065,7 @@ ALTER TABLE notification_jobs       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE in_app_notifications    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notification_rules      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE import_jobs             ENABLE ROW LEVEL SECURITY;
-ALTER TABLE aggregations            ENABLE ROW LEVEL SECURITY;
+-- [D-J2, ratified 2026-06-10] aggregations RLS-enable retired with the table.
 ALTER TABLE team_records            ENABLE ROW LEVEL SECURITY;
 ALTER TABLE hall_of_fame            ENABLE ROW LEVEL SECURITY;
 ALTER TABLE glossary_terms          ENABLE ROW LEVEL SECURITY;
@@ -1179,7 +1181,9 @@ CREATE POLICY import_jobs_update_own ON import_jobs FOR UPDATE TO authenticated
 CREATE POLICY import_jobs_delete_admin ON import_jobs FOR DELETE TO authenticated
   USING (is_super_admin());
 CREATE POLICY notification_rules_staff ON notification_rules FOR ALL TO authenticated USING (is_staff()) WITH CHECK (is_staff());
-CREATE POLICY aggregations_select_staff ON aggregations      FOR SELECT TO authenticated USING (is_staff());  -- writes: service role only
+-- [D-J2, ratified 2026-06-10] aggregations_select_staff retired with the
+-- table; the Phase J views carry the is_staff() arm directly (no-widening
+-- preserved; family/pending/anon prove to zero rows in pgTAP 014).
 
 -- ---- Attendance [#5]: base table STAFF-ONLY; parents use attendance_parent_view ----
 CREATE POLICY attendance_staff_all   ON attendance FOR ALL TO authenticated USING (is_staff()) WITH CHECK (is_staff());
