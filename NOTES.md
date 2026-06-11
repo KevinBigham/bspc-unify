@@ -5575,3 +5575,145 @@ OD-6 paths: the landed forgot-password flow or an operator-sent invite)."
 **Effect:** every R-CLOSURE ruling is on the books; the pre-declaration is
 fixed before any landing; RC-1, RC-2, and RC-3 are unblocked, each landing
 only on its declared line.
+
+---
+
+## 2026-06-11 — R-CLOSURE ROUND, RC-3: THE FINAL RE-VERDICT (the five ruled seams + R-1/R-2 re-run against the landed state)
+
+**Method.** Fresh re-run of the readiness sweep against the trees as
+committed this round (UNIFY `e7778db`, BSPC `880aed8`, Coach `156e384`).
+Quote-checks read the LANDED text, not intentions; the closing proofs
+P1–P9 were run against the committed trees and are reproduced in the
+round readback.
+
+**The five ruled GC seams, re-checked — ALL STANDING CLOSED:**
+
+1. **GAP-A — standing.** The TERRAIN §0 and 06 §B0 23→32 corrections are
+   untouched by this round's diffs (RC-0 touched NOTES + the 06 §B6
+   step-1 sentence ONLY; TERRAIN untouched) and stand as ruled.
+2. **GAP-B — standing, and now pointer-complete in all four homes.** The
+   spec block stands at 05 §6.5 step 1; the 06 §B2 pointer stands; and
+   the two README pointer lines landed at RC-1 (quote-checked on the
+   committed BSPC tree: the 06-§B2-idiom sentence verbatim in both, with
+   the dated R-1 marker). The GC-3 residual R-1 closes WITH this seam.
+3. **GAP-C — standing, and now joined.** The step-3 runner stands as
+   landed (GC-1, never run); the 05 §6.1 re-date annotation stands; the
+   R-2 executor now sits beside the runner (verified below).
+4. **GAP-D — standing.** The two smoke items stand verbatim in 05 §6.5
+   step 3 with their dated marker (untouched this round).
+5. **GAP-E — standing.** The faithful SWAP-9 lowercase grep is EMPTY,
+   re-proven this round (P6); the stricter case-insensitive sweep still
+   shows exactly ONE hit in the whole portal — parentPortal.ts:73,
+   accurate history, needing nothing (P6b).
+
+**R-1 — CLOSED as ruled.** The scoped unfreeze produced EXACTLY the
+ruled commit (`880aed8`: 2 files, +18/−7, doc files only): both pointer
+lines landed; the D-J7-class dated annotation corrects the stale step-3
+parenthetical (strikethrough + the landed-runner facts + the
+executor-lands-today fact; the OD-6 sentence carries forward intact).
+BSPC jest **835** (TZ=UTC) + pgTAP **343** (Files=15) EXACT, fresh-run
+on the committed tree with pwd proof — the doc-only commit moved no
+test, and the freeze held in every other clause.
+
+**R-2 — CLOSED as ruled.** The steps-4–6 executor landed at `156e384`
+(3 files, 1378 insertions, ZERO deletions) and was verified against
+EVERY binding construction rule on the COMMITTED tree:
+- HARD-STOP header (Kevin-live only; first live execution = the GAP-B
+  dry-run against the throwaway, synthetic fixtures only).
+- Steps 4–6 EXACTLY: writes NO auth users, runs NO step-7 audits,
+  touches NO swimmers/roster rows, sends NO emails.
+- NO default target: the operator env pair only
+  (BSPC_MIGRATION_SUPABASE_URL + the service-role key var); a partial
+  pair is a named error; zero embedded refs or credentials anywhere.
+- Plan-only by default with the NAMED no-op line; NO no-target plan
+  mode BY CONSTRUCTION — the identity map IS the gate input, so no
+  target = map MISSING = the ruled HARD ABORT (banner names the pair).
+- THE GATE, proven with committed-tree line numbers (proofs P1–P3):
+  runIdentityMapGate computed at main():365; the HARD-ABORT exit
+  (:387–:391) sits physically ABOVE the plan-only return (:393–:396),
+  the NM-1 guard (:398–:404), and the single write call (:407). Write
+  verbs are confined to executeGraph (:246): profiles upsert :268 →
+  map profile_id record :290; coach_groups upsert :312; guardianships
+  upsert :343 — and the shell contains ZERO .insert/.delete/.rpc
+  anywhere (P9).
+- NM-1 implemented per the SETTLED 05 §6.1 rule: Kevin sole
+  super_admin; every remaining coach → coach_admin; the REQUIRED
+  --super-admin-uid execute flag is the confirm; the guard exits above
+  the write path. (Supersedes mapping.ts NOTES-#3, flagged at RC-0.)
+- The COPPA NM-6 dangling repair as written (dropped + REPORTED, never
+  written) and the step-6a DEFER on an unbuilt swimmer map per roster
+  README step 7 — distinct by construction, pinned.
+- Bars: targeted 20/20 FIRST RUN; Coach **1148** EXACT twice (fresh
+  pre-commit + fresh on the committed tree after the formatter restyle;
+  110 suites; `git status --porcelain | wc -l` = 0); Functions **115**
+  fresh; tsc filtered grep: ZERO executor lines (the 104 pre-existing
+  error lines stand — the known jest-only-bar situation).
+- Lifecycle: banked at RC-0 BEFORE the pins landed — §B6.5's delta
+  re-based −35 → −55; 1148 − 55 = **1093**, the ruled endpoint
+  preserved. Carve-out grew by EXACTLY the executor shell: the six
+  pre-declared firebase-admin files, scripts/ only (P7); src/ and app/
+  EMPTY (P5/P8).
+- One construction fact VERIFIED against the committed 00002 DDL (not
+  left to hope): enforce_profile_self_update's guard body sits inside
+  `IF auth.uid() IS NOT NULL` (00002:123) — under the executor's
+  service-role context auth.uid() IS NULL, so the step-4 upserts pass
+  the trigger by construction; the dry-run will demonstrate it, not
+  discover it.
+
+**Rulings 3–6 standing:** manual mode stays rejected (the executor now
+exists); the README annotation landed (ruling 4, RC-1); the comms line
+stands at 06 §B6 step 1 (ruling 5, RC-0); the baseline moved exactly as
+ruled (ruling 6): 835 + 343 / 1148 / 115.
+
+**ONE fresh residual — a decision for the director, not silently
+fixed:**
+
+- **R-3 — the roster-README driver.** Fresh-eyes finding of this sweep,
+  the SAME class R-2 was: roster README steps 2–6 (export Coach swimmer
+  docs; `reconcileRoster` with its bound **"STOP and resolve manually if
+  ambiguous is non-empty"** + the nameOnlyCollisions human review;
+  `coachFieldsPatch` fill-NULLs-only for matched; create-new inserts
+  incl. `swimmer_coach_profile` + `legacyGoalsToGoalRows`;
+  `auditSwimmerMap`) have ratified, unit-tested PURES (reconcile.ts) but
+  NO named executor — proven on the landed trees: `reconcileRoster` is
+  referenced ONLY by the pures + their tests, and scripts/ carries no
+  roster runner (`seed-roster.ts` is a Firestore SEED, not the
+  backfill). The GAP-B dry-run runs "the roster README steps 1–7";
+  without a driver, its roster half has nothing to drive — and identity
+  step 6a DEFERS until that half builds the swimmer map. Invisible to
+  the GC-3 sweep (bounded to the five ruled seams; R-2 surfaced from
+  the identity half). THE BOUNDARY, named: the §B2 DATA manifests
+  (notes/times/goals/...) are NOT this class — they run per the
+  keep/drop sheet Kevin signs and sit OUTSIDE the dry-run's bound
+  success spec; the roster half sits INSIDE it.
+- **Decision:** scope ONE more pre-declared build round for the roster
+  driver on the R-2 pattern (plan-only default; HARD-STOP header; no
+  default target; gates = empty/missing identity map AND the bound
+  STOP-on-ambiguous; pure half + pins pre-declared; lifecycle banked at
+  §B6.5), or rule the roster half Kevin-live-manual at the dry-run (NOT
+  recommended — the same logic the director already accepted at R-2:
+  Kevin is a beginner, and a manual path rehearses nothing the live run
+  would reuse).
+
+**VERDICT: READY on every RULED seam — the five GC seams stand closed,
+R-1 and R-2 are CLOSED AS RULED, every binding construction rule is
+proven on the committed trees, and every bar landed on its pre-declared
+line. ONE fresh residual (R-3) stands between here and a fully
+script-driven dry-run.**
+
+**Recommendation, plainly:** rule R-3 into one more small build round on
+the R-2 pattern — and it is the LAST seam of this class BY CONSTRUCTION:
+the dry-run's bound what-runs is exactly identity README 1–8 + roster
+README 1–7; the identity half is now fully driven (the GC-1 runner +
+this round's executor), and the data manifests are keep/drop-sheet work
+outside the dry-run spec. With R-3 landed, the build era is CLOSED and
+the next step is SCHEDULING THE KEVIN-LIVE SESSION per the runbook —
+the dry-run (05 §6.5 step 1: throwaway project, synthetic fixtures,
+teardown recorded) runs FIRST; splitting the dry-run and the live
+cutover into separate sessions is permitted (the runbook only orders
+them, it does not weld them).
+
+**Effect:** every R-CLOSURE ruling is executed and proven; the identity
+half of the cutover spine is COMPLETE on disk and has never run; the
+only daylight between here and the schedulable Kevin-live session is
+the R-3 ruling.
