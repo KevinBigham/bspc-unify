@@ -4552,3 +4552,194 @@ commit each, bars exact at each. **The swap CODE rounds (CUT-4+) do
 NOT start this round:** they are authorized only after the director
 reviews the bound successor signatures, the pre-declared test events,
 and the gap-inventory verdict in this round's report.
+
+---
+
+## 2026-06-11 — CUT-4-OPEN — SWAP UNLOCKED: CALL-1..CALL-4 RECORDED (Kevin, in words, checked against the bindings at 6038377) + THE SWAP-ROUND PRE-DECLARATION TABLE (exact, fixed before any code commit lands)
+
+**Gate:** heads at the start of the swap round: UNIFY `eb0a54c`, BSPC
+`9e68c17`, Coach `707439c`, all trees clean, all synced. Baseline bars
+proven fresh at those heads (STEP 0, every run with explicit `cd` +
+`pwd` proof): BSPC 835 (TZ=UTC) + pgTAP 335 (Files=14) / Coach 1080 /
+Functions 115. **PWD-PROOF's second live catch, named:** the STEP-0
+Coach jest call was issued without its own explicit `cd` and its pwd
+line proved it executed in BSPC/ACTIVE (it reproduced the BSPC 835);
+the run was re-issued correctly and the cited 1080 comes from the
+proven re-run. HARD-STOP restated for the round: this is a CODE
+round — nothing runs against any live store; no §B0 probe, no
+provisioning, no backfill, no file copy, no live-auth action of any
+kind. The §6.1 provisioning probe stays a binding gate at PROVISIONING
+(a future HARD-STOP-zone operation with Kevin present), not work for
+today. Local test stack only.
+
+**Check method (CUT-0 precedent):** each call below was checked
+word-against-binding against 05 §6.2a / §6.2b / §6.4 / §6.6 as landed
+at `6038377`. A call MATCHes when it accepts what its binding bound
+and any added rationale is consistent with the binding; anything else
+would be FLAGGED and the round STOPPED, never force-fit. **Result:
+four MATCHes, zero mismatches. The swap is unlocked.**
+
+**CALL-1 — SUCCESSOR SIGNATURES: RATIFIED.** Both successor signature
+sets are APPROVED AS BOUND at 6038377. D-CUT7 pair:
+getNotificationPreferences() → {pushEnabled, digestEnabled};
+upsertNotificationPreferences(Partial) → void; own-row RLS
+(notification_prefs_own); ON CONFLICT (user_id); a missing row reads
+both-true (schema defaults + dailyDigest missing-row-means-included);
+4 bound pins minimum. D-CUT8 — staff.ts as a NEW service: StaffProfile
+shape as bound; subscribeStaffProfiles(cb) → unsubscribe;
+setStaffRole(profileId, 'super_admin'|'coach_admin');
+setStaffGroups(profileId, Group[]) via delete+insert reconciliation;
+transport = postgres_changes on profiles + coach_groups; NO
+client-side authority pre-check — enforce_profile_self_update is the
+wall (A-STRICT semantics; the screen is Kevin-only via isAdmin); 6
+bound pins minimum. Signatures land AS WRITTEN; frozen exports stay
+byte-frozen; successors precede consumers.
+*Check: MATCH — restates §6.2a and §6.2b exactly as bound; the
+successors-precede-consumers ordering law matches the §6.2
+one-logical-change-per-commit design.*
+
+**CALL-2 — SETTINGS TOGGLES: RATIFIED.** The three reader-less
+settings toggles (newNotes, attendanceAlerts, aiDraftsReady) RETIRE at
+the swap as a NAMED UI change in the D-K3 class. The Daily Digest
+toggle is restored end-to-end onto digest_enabled — the D-CUT7
+"restores a shipped surface" intent lands exactly there. The read-only
+Push OS-status row stays read-only (a pushEnabled toggle is a future
+product decision — no-widening). The frozen Coach.notificationPrefs
+type keeps all four keys with type-compat true defaults so no consumer
+changes shape. Persisting reader-less keys to new PG columns is
+DECLINED as the FYI-C dead-end class reborn — a toggle that lies.
+Named paths back: aiDraftsReady returns WITH the banked D-G4 producer;
+attendanceAlerts is superseded by the real notification_rules surface;
+newNotes returns only if a product round revives its producer. KEVIN
+LEVER: if Kevin says keep the toggles, this call re-opens BEFORE the
+settings re-point lands; otherwise it stands.
+*Check: MATCH — ratifies the §6.2a RECOMMENDED disposition in its own
+words; the KEVIN LEVER is an addition consistent with the binding's
+"returns to the director" framing and is honored by sequencing (the
+settings re-point lands late in the Coach sequence, after the
+successor surfaces and the auth core).*
+
+**CALL-3 — TEST-EVENT TABLE: RATIFIED.** The 05 §6.4 table is ACCEPTED
+AS BOUND. Coach 1080 → declared band +10..+18 with ZERO deletions (the
+AuthContext suite TRANSFORMS 1→1 preserving the push-cleanup
+assertion; D-CUT7 +4 min; D-CUT8 +6 min; new AuthContext pins +3..+5 —
+role map super_admin→admin / coach_admin→coach / non-staff→null,
+cold-start session restore, signOut push_tokens cleanup; settings +
+forgot-password +1..+2; portal session pins +0..+1 landing in root
+test/, Phase A precedent; FYI-A 12-file dead-mock sweep +
+src/__mocks__/firebase.ts deletion at count 0 with per-file
+verify-at-deletion, K6 precedent). BSPC 835 and Functions 115 EXACT
+through every 05 commit. pgTAP 335 EXACT through every 05 commit
+EXCEPT the §6.6 gap-build commit, which ADDS pins in a +4..+8 band
+fixed by its own pre-declaration. The realtime-publication migration
+(exactly 23 → exactly 25: + profiles, + coach_groups) updates pgTAP
+011's exact-membership VALUES in the SAME commit as a CONTENT-ONLY
+change — pgTAP stays 335 there, pre-declared; event delivery rides
+existing walls (profiles_select_admin, coach_groups_staff). Exact
+per-commit counts fix in this round's pre-declarations, which the
+execution report MUST OPEN WITH.
+*Check: MATCH — the §6.4 table and its band sentences accepted
+verbatim; the fix-per-commit requirement is discharged by the
+PRE-DECLARATION TABLE below, committed in this entry BEFORE any code
+commit lands.*
+
+**CALL-4 — GAP VERDICT: RATIFIED.** The §6.6 SMALL verdict is ACCEPTED
+and the reserved fork resolves to BUILD AT THE SWAP ROUNDS. GAP-1
+closes by adding the is_my_swimmer() OR-arm to swimmers_select_own
+(the standing transitional two-arm shape, RC-1/RD-10; narrows to
+guardianships-only at convergence with checklist items 3/9). GAP-2
+closes with the narrow swimmer_strengths_parent_view(swimmer_id,
+strengths) WHERE is_my_swimmer(swimmer_id) (D-C4 one-wall-one-rule;
+the staff table stays staff-only). BOTH land in ONE BSPC migration
+carrying the §6.4 +4..+8 pgTAP band. The portal's parentPortal.ts
+re-points from httpsCallable to direct reads with the DTO interfaces
+FROZEN. Capability-preserving: the callable already served these same
+parents this same data via its sanitized service-role slice — a
+transport re-homing, not a widening. This unblocks decline-schedule
+step C1 on schedule. Re-banking declined. (On record: schedule[] has
+been served EMPTY since Phase H — parity-is-empty; the D-H5(b) bank
+stands.)
+*Check: MATCH — accepts the §6.6 verdict and recommendation exactly;
+the added capability-preserving line is TRUE against the callable as
+re-read fresh this round (functions/src/callable/parentPortal.ts
+serves sanitized swimmers/strengths/goals/times/attendance slices via
+service-role to exactly the linkedSwimmerIds parents — the same
+parents, the same fields); the C1-unblock line matches 06 §B6's "gated
+on D-CUT6 direct reads live (05 §6.6)".*
+
+**Four derivation facts pre-stated for the record (fresh reads this
+round, so the landed log carries no surprises):**
+1. **The signOut re-point adds NO service export.** AuthContext reads
+   its own active `push_tokens` rows with the supabase client (own-row
+   RLS, `push_tokens_own`) and unregisters EACH via the EXISTING
+   `unregisterPushToken` export. The D-K4 addition freeze holds: the
+   only service additions this round are the two ratified surfaces.
+2. **The portal redeem re-point is the RPC's designed second path.**
+   `redeem_parent_invite` already GRANTs EXECUTE to authenticated
+   (00010:131) and derives the redeemer from auth.uid() — the D-I2
+   spoof-proof clause IGNORES the profile param for end users. The
+   portal calls the RPC directly with the SAME frozen INV01/INV02/
+   INV03 → message-string map the Phase-I shell carries; the shell
+   itself retires later at 06 §B6 step C2, unchanged this round.
+3. **GAP-1's family arm narrows to the 00005 idiom as it widens.** The
+   new two-arm swimmers_select_own carries the SAME family arm shape
+   attendance/times/goals already have (family_id NOT NULL + approved
+   account) — the 00004/00005 hole-closing precedent applies to the
+   pending-parent read, pinned in the new pgTAP file.
+4. **Non-staff means role 'family'.** user_role is
+   ('family','coach_admin','super_admin') — the §6.2 "non-staff"
+   resolution (coach = null) keys on role ∉ {super_admin, coach_admin}
+   OR account_status ≠ 'approved'.
+
+### THE PRE-DECLARATION TABLE (exact; fixed NOW, before any code commit; landing outside any line = STOP)
+
+| # | Commit | Repo | One-line scope | BSPC jest | pgTAP | Coach jest | Functions |
+|---|---|---|---|---|---|---|---|
+| 0 | CUT-4-OPEN | UNIFY | this entry: CALL-1..4 + this table | 835 (E) | 335 (E) | 1080 (E) | 115 (E) |
+| 1 | SWAP-1 | BSPC | 00012: publication 23 → 25 (+profiles, +coach_groups) + 011 VALUES same-commit (content-only) | 835 | 335 | 1080 (E) | 115 (E) |
+| 2 | SWAP-2 | BSPC | 00013: GAP-1 two-arm swimmers_select_own + GAP-2 swimmer_strengths_parent_view + NEW pgTAP 015 (+8: four GAP-1 pins, four GAP-2 pins) | 835 | **343** | 1080 (E) | 115 (E) |
+| 3 | SWAP-3 | Coach | D-CUT7 pair lands in notifications.ts, signatures AS WRITTEN, +4 pins in notifications.test.ts | 835 (E) | 343 (E) | **1084** | 115 |
+| 4 | SWAP-4 | Coach | staff.ts NEW service, signatures AS WRITTEN, +6 pins in NEW staff.test.ts | 835 (E) | 343 (E) | **1090** | 115 |
+| 5 | SWAP-5 | Coach | config/supabase.ts persistence pin + AuthContext core swap (suite TRANSFORMS 1→1, +4 new pins) + forgot-password successor (+1, new screen test) | 835 (E) | 343 (E) | **1095** | 115 |
+| 6 | SWAP-6 | Coach | settings re-point onto the D-CUT7 pair + the NAMED CALL-2 three-toggle retirement (+1, new screen test) | 835 (E) | 343 (E) | **1096** | 115 |
+| 7 | SWAP-7 | Coach | admin.tsx re-points onto staff.ts (screen renders its own labels from PG roles; +0) | 835 (E) | 343 (E) | 1096 | 115 |
+| 8 | SWAP-8 | Coach | firebase death: FYI-A 12-file dead-mock sweep + src/__mocks__/firebase.ts + src/config/firebase.ts + firebase dep removal; closing grep (+0) | 835 (E) | 343 (E) | 1096 | 115 |
+| 9 | SWAP-9 | Coach (parent-portal/ + root test/) | portal session → supabase.auth; parentPortal.ts httpsCallable → direct reads + redeem RPC, DTOs BYTE-FROZEN; lib/firebase.ts + portal firebase dep die; +1 root-test session pin | 835 (E) | 343 (E) | **1097** | 115 |
+| 10 | LANDED LOG | UNIFY | the round's landed-log entry | 835 (E) | 343 (E) | 1097 (E) | 115 (E) |
+
+**(E) = untouched-repo endpoint run**, legal only when that repo's
+head is byte-identical to the head of its nearest proven run, named as
+such in the scoreboard. The Functions bar re-runs FRESH at every Coach
+commit (rows 3–9) — its workspace sits inside the Coach repo, so the
+repo head moves even though functions/ is untouched. BSPC re-runs
+fresh at rows 1–2; pgTAP re-runs fresh at rows 1–2 (migration up +
+full suite).
+
+**Band conformance, checked at declaration:** Coach ends 1097 = 1080
++17, inside [+10..+18], ZERO test deletions (the AuthContext suite
+transforms 1→1; every other touched suite only grows). pgTAP ends 343
+= 335 +8, inside the gap-build [+4..+8] band, 335 exact at the
+content-only publication commit. BSPC 835 exact at every row.
+Functions 115 exact at every row (decline schedule C1..C6 rides future
+06 rounds, none of it executes here).
+
+**Deletions pre-declared (the complete list; everything else only
+transforms or grows):** ZERO test deletions. Count-0 deletion events,
+each with per-file verify-at-deletion evidence at landing: the 12
+FYI-A dead jest.mock('../../config/firebase') blocks (GoalCard,
+docExport, attendanceStore, calendarStore, meetStore, practiceStore,
+swimmersStore, videoStore via the shared mock; csvImport, docxExport,
+export, hy3Import inline) — mock lines only, their tests untouched;
+src/__mocks__/firebase.ts; src/config/firebase.ts (FYI-G re-verified
+at deletion); the Coach `firebase` package dependency (+ the stale
+package.json keyword); parent-portal/src/lib/firebase.ts + the portal
+`firebase` dependency (outside the bar). Named code deletions inside
+transforms: the NM-5 auto-admin branch (AuthContext.tsx:57–85) dies
+unported; settings' dead Firestore prefs write (:46) and admin's
+onSnapshot/updateDoc trio (:39/:59/:73) die with their re-points.
+
+**Effect: SWAP-1..SWAP-9 execute in this round under the table above.
+Any landing outside its declared line = STOP and explain before
+proceeding. The cutover OPERATION (provisioning, probe, go-live,
+Firebase sign-in disable) stays HARD-STOP future work per 05 §6.1/§6.5
+and 06 PART B.**
