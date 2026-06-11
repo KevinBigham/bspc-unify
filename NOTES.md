@@ -3684,3 +3684,77 @@ auth bank (five named artifacts) — the precondition line for the
 **Execution blocks on D-K1–D-K4. No Phase K implementation this
 round; bars untouched (835 TZ=UTC + 335 / 1067 / 115); UNIFY is the
 sole repo touched (this entry).**
+
+---
+
+## 2026-06-10 — PHASE K RATIFICATION (Kevin, in words) — D-K1/D-K2/D-K3/D-K4 ALL RATIFIED; FYI 1–7 accepted unstruck; execution unblocked
+
+Each ruling below was checked against its [DECIDE] block in the PHASE
+K SCOPE entry at `60abc91` before recording. **All four rulings and
+all seven FYIs match their blocks exactly — no mismatches, nothing
+recorded half-open.**
+
+**D-K1 RATIFIED — option (a).** The auth bank is FIVE named
+artifacts: src/contexts/AuthContext.tsx, app/admin.tsx,
+app/(tabs)/settings.tsx, app/forgot-password.tsx,
+src/config/firebase.ts. A password-reset screen IS the Firebase-auth
+account store (coherent-reading class, per the D-J1 (iii) precedent).
+All five die together at the 05 auth cutover; Phase K touches NONE of
+them. The consumer-less getFunctions handle is named and untouched
+(bank property). Building a Supabase reset now is DECLINED as a
+mixed-auth surface mid-migration.
+
+**D-K2 RATIFIED — option (a).** practice-pdf-uploader.tsx joins the
+Phase K work list (13 re-points + messages). Its view arm re-points
+onto the EXISTING mediaUpload.getSignedFileUrl(PRACTICE_PLANS_BUCKET,
+storagePath, 3600); the firebase/storage import drops. The contract
+shape is exporting the existing PRACTICE_PLANS_BUCKET const — a named
+one-line ADDITION, no behavior change. The pre-H legacy-path 404
+caveat is ACCEPTED AS NAMED: pre-launch test data; the 06 runbook
+owns object existence at file copy. Zero test-count change
+pre-declared (the component has no suite; the const export is
+type-only).
+
+**D-K3 RATIFIED — option (a).** The goals textarea AND its prefill
+RETIRE from app/swimmer/edit.tsx: a NAMED UI change,
+parity-CORRECTING. The legacy write lands in a field no PG reader
+will ever surface (dead-end data, split-brain class); the B-era goals
+feature is the ratified owner of goal lifecycle.
+Free-text-to-structured diff-mapping is DECLINED as a widening; a
+read-only dead control is DECLINED. No test pins the textarea.
+
+**D-K4 RATIFIED — option (a).** Five named ADDITIONS to existing
+services, signatures AS WRITTEN in the block binding:
+swimmers.subscribeSwimmer(id, cb); meets.subscribeMeet(id, cb);
+calendar.subscribeEvent(id, cb); video.subscribeVideoSession(id, cb);
+video.subscribeSwimmerVideoSessions(swimmerId, cb, opts
+{postedOnly?, max? default 10}) via the video_session_swimmers
+junction (kind='tagged', created_at desc, channel on both tables with
+re-fetch — the J idiom). Additions, not changes; every frozen export
+stays byte-frozen. Each is a narrower projection of rows the same
+role already reads — RLS-identical, zero new capability (the ratified
+J-rider precedent). Composition was shown partially impossible (no
+tag-axis composition; a coach-scoped list regresses cross-coach
+opens; the store covers active swimmers only while inactive are
+reachable), so the additions are the honest floor. Each lands in K1
+with ≥2 house-mock pins per export, exact counts cited at landing,
+BEFORE any consumer re-points (successors-precede-consumers, the J
+commit-order law).
+
+**FYI-1 THROUGH FYI-7 ALL ACCEPTED AS NAMED, none struck:** (1) dead
+jest.mock firebase blocks removed in K6 with per-file
+verify-at-deletion — the module graph must no longer reach
+src/config/firebase — zero count change; (2) scripts/ seed tooling is
+stale-by-migration, named to the decommission family; K deletes
+nothing (no-widening); (3) the getFunctions handle is named and
+untouched; (4) firestore.rules untouched — dies with the Firebase
+project per 06; (5) inventory line drift absorbed, no substantive
+drift; (6) standards.tsx unbounded → max(1000) is the phase's SINGLE
+named parity delta, conservative direction, carried in the landed
+log; (7) VideoCompareScreen.test transforms with VideoComparison's 3.
+
+**Standing after this entry:** execution unblocked on the K1–K6
+mini-plan as written at `60abc91`; only K1 moves the Coach bar
+(declared band 1067 → +10-to-+15, cite exact); BSPC 835 (TZ=UTC) +
+pgTAP 335 and Functions 115 are EXACT-unchanged pins for every
+commit; the BSPC repo is untouched end to end.
