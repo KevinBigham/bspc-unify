@@ -5256,3 +5256,100 @@ for objection.**
 **Effect:** the rulings are on the books; the documents now say what the
 director ruled; the only code this round may write is the GC-1 runner +
 pins and the GC-2 comment line, both pre-declared above.
+
+---
+
+## 2026-06-11 — GAP-CLOSURE + RUNNER ROUND, GC-3: THE RE-VERDICT (the five seams re-run against the landed state)
+
+**Method.** Fresh re-run of the STAGE-2 sweep's five seams against the
+trees as committed this round (UNIFY `2355f2e`, Coach `1767355` +
+`39e6585`; BSPC FROZEN at `58e7cff`, untouched as bound). Quote-checks
+read the LANDED text, not intentions; the closing proofs P1–P7 were run
+against the committed trees and are reproduced in the round readback.
+
+**The five seams:**
+
+1. **GAP-A — CLOSED.** Both corrections landed in `2355f2e` and read as
+   ruled: the TERRAIN §0 header now says **"~~23~~ 32 collection paths
+   (25 ★ + 7 ⚠)"** with the dated annotation naming §B2's 23-manifest-ROW
+   organization as the old number's origin; 06 §B0 now says **"ALL ~~23~~
+   32 census paths"** with the matching annotation. Both name the landed
+   probe's enumerated-32 build as the operative reading; the probe itself
+   needed no change (it was built on the enumerated list).
+2. **GAP-B — CLOSED in its ruled homes; ONE residual, numbered below.**
+   The dry-run spec block sits under 05 §6.5 step 1 with every ruled
+   element verified present (fresh throwaway; 00001..00013 via standard
+   tooling; SYNTHETIC fixtures only with PART A's rule RESTATED inside;
+   the five-part success bar; teardown deletion confirmed + recorded;
+   real-export rehearsal EXPLICITLY OUT; Kevin-live FIRST item). 06 §B2
+   carries the one-line pointer. **R-1:** the identity/roster READMEs'
+   own dry-run lines (BSPC repo, FROZEN this round; the pre-declared
+   pointer conditional covered only the Coach-repo case) still lack a
+   pointer to the spec — their requirement lines are not WRONG, just
+   unlinked.
+3. **GAP-C — CLOSED; ONE fresh-eyes residual, numbered below.** The
+   runner landed at `1767355` and was verified against every binding
+   construction rule on the COMMITTED tree: HARD-STOP header present;
+   step-3 scope exactly (no roles, profile_id never written, 'bspc' rows
+   out of scope); NO default target (the operator env pair, partial =
+   named error; zero embedded refs/credentials — the service-role key
+   never appears anywhere); plan-only by default with the NAMED no-op
+   line; the §6.1 gate at main():198 sits physically ABOVE the plan-only
+   return (:204) and the single write call site (:210), and all write
+   verbs live inside executeProvisioning (:146-186) — proofs P1–P3;
+   the +17 pins green (suite 17/17; Coach 1128 EXACT, twice, second run
+   against the committed tree); lifecycle re-based −18 → −35 with the
+   1093 endpoint preserved; the carve-out grew by exactly the runner
+   shell (proof P6: five named files). 05 §6.1 carries the dated
+   re-date annotation. **R-2 (fresh sweep, new):** identity README
+   steps 4–6 (profiles via coachToProfile/parentToProfile; coach_groups;
+   guardianships with the COPPA dangling-link repair) have ratified,
+   unit-tested PURES but NO named executor — the README marked only
+   step 3 "not yet written," and the GAP-B dry-run runs "identity README
+   steps 1–8," so something must drive 4–6 at the dry-run. This was
+   invisible to STAGE-2 (its §6.1 item verified the GATE, and the
+   README's own text flagged only step 3); the fresh sweep surfaces it.
+4. **GAP-D — CLOSED.** Both ruled items verified verbatim in 05 §6.5
+   step 3 with the dated marker: the invite-code redeem round-trip and
+   the swimmer-detail direct-read render (strengths + results +
+   attendance under the 00013 walls).
+5. **GAP-E — CLOSED.** The comment at parent-portal/src/lib/profile.ts
+   now reads "auth.ts has ridden Supabase sessions since the CUT-4+ swap
+   (SWAP-9), so this read is LIVE" — no firebase mention in ANY case.
+   The faithful SWAP-9 lowercase grep stays EMPTY (proof P5); the
+   STRICTER case-insensitive sweep now shows exactly ONE hit in the
+   whole portal: parentPortal.ts:73, accurate history, needing nothing.
+
+**Ruling 6 standing:** the two broken-dormant client-SDK scripts are
+named in the GC-0 record and die at §B6.5; the GC-1 runner is the ONLY
+legitimate provisioning tool.
+
+**VERDICT: READY on all five ruled seams — every gap the director ruled
+is CLOSED as ruled. TWO residuals, each a decision for the director,
+neither fixed silently:**
+
+- **R-1 — README pointers (doc-only, two lines, BSPC repo).** Decision:
+  schedule a doc-only BSPC commit for the two pointer lines at the next
+  round BSPC unfreezes, or rule the 05 §6.5 + 06 §B2 homes sufficient
+  (the READMEs already bind the dry-run; only the cross-reference is
+  missing).
+- **R-2 — the steps-4–6 executor.** The dry-run (and the live identity
+  backfill) needs a driver for README steps 4–6; the pures exist and are
+  tested, the executor does not. Decision: scope ONE more pre-declared
+  build round (the same construction rules as the GC-1 runner: plan-only
+  default, HARD-STOP header, no default target, pure half + pins,
+  lifecycle banked at §B6.5), or rule steps 4–6 Kevin-live-manual at the
+  dry-run (NOT recommended: Kevin is a beginner, and a manual path
+  rehearses nothing the live run would reuse).
+
+**Recommendation, plainly:** rule R-2 into one more small build round;
+treat R-1 as bundle-able into any future BSPC-unfrozen commit. With R-2
+landed, the next step is SCHEDULING THE KEVIN-LIVE SESSION per the
+runbook — the dry-run (05 §6.5 step 1, synthetic fixtures, throwaway
+project, teardown recorded) is its first item, and every remaining step
+is Kevin-live by standing rule.
+
+**Effect:** the five ruled seams are closed on the books and in the
+code; the runbook's spine now has its gate-bearing tool; the only
+daylight between here and a schedulable Kevin-live session is the R-2
+ruling.
