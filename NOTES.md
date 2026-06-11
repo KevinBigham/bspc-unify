@@ -3044,3 +3044,36 @@ on the record — J commits 1, 2, 4 are cleared; commit 3 BLOCKS on
 D-J5; commit 5 closes whatever lands. No implementation began this
 round; the only repo touched is UNIFY (this entry + the 01
 amendment).
+
+---
+
+## 2026-06-10 — D-J5 RATIFIED (Kevin, in words) + the precisification confirmed + residual rulings — PHASE J EXECUTION OPENS
+
+1. **D-J5 RATIFIED.** The five CF modules + the scheduled rebuild
+   retire in commit 3; the 18 named tests delete WITH their subjects;
+   **the evidence table at `1ce60a1` BINDS row-by-row as the
+   successor mapping**; successors precede deletions by commit order
+   (commits 1–2 land the successors, commit 3 the deletions);
+   **Functions lands at EXACTLY 115**; the drop is deliberate — the
+   FIRST test-count drop in project history — and the landed log must
+   cite it; **any deletion outside the 18 rows is a flagged
+   deviation.**
+2. **The director confirms the D-J1 rider's recorded decomposition as
+   a PRECISIFICATION (D-I1 class): it defines, does not alter; no
+   correction required.** The 21 = 3 + 14 + 3 + 1 decomposition, the
+   headline 19, and the Phase K work-list 13 stand as recorded.
+3. **Residual rulings:** (i) 04:106 and 04:156 receive ONE-LINE dated
+   [D-J2] annotations in commit 5 — annotate, never rewrite; the
+   original words stay visible. (ii) **02_SCHEMA_REDTEAM.md stays
+   UNTOUCHED, by ruling** (a point-in-time register); commit 5's
+   landed log carries the line that 02:122/162 are
+   moot-by-retirement.
+
+All seven D-J decisions are now ratified. Execution of the §5 plan
+opens under the standing norms: four bars green at every landed
+commit, never advance on red, one green commit per logical change,
+RC-3, tripwire armed mid-execution, no force-push/rebase/amend, HARD
+STOPS unchanged. Pre-declared expectations bind: pgTAP +14-to-22
+(commit 1), Coach 1081±6 (commit 2), Functions 115 EXACT (commit 3),
+Coach −18 EXACT from the post-commit-2 count (commit 4). Bars
+untouched by this entry (docs only): 835 TZ=UTC + 316 / 1081 / 133.
