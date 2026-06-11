@@ -4743,3 +4743,89 @@ Any landing outside its declared line = STOP and explain before
 proceeding. The cutover OPERATION (provisioning, probe, go-live,
 Firebase sign-in disable) stays HARD-STOP future work per 05 §6.1/§6.5
 and 06 PART B.**
+
+---
+
+## 2026-06-11 — CUT-4+ SWAP EXECUTION LANDED LOG — the 05 §6.2 swap code is COMPLETE; every commit landed EXACTLY on its pre-declared line
+
+**The eleven commits (every bar proven with cd + pwd at landing;
+(E) = endpoint cite, head byte-identical to the nearest proven run):**
+
+| Commit | Repo | What | BSPC | pgTAP | Coach | Functions | vs declaration |
+|---|---|---|---|---|---|---|---|
+| `f9e23a9` CUT-4-OPEN | UNIFY | CALL-1..4 + the pre-declaration table | 835 (E) | 335 (E) | 1080 (E) | 115 (E) | exact ✓ |
+| `d5c4c0d` SWAP-1 | BSPC | 00012 publication 23→25 + BOTH membership proofs (011 + 014:19) | 835 | 335 | 1080 (E) | 115 (E) | exact ✓ |
+| `58e7cff` SWAP-2 | BSPC | 00013 GAP-1 two-arm + GAP-2 view + NEW pgTAP 015 (+8) | 835 | **343** | 1080 (E) | 115 (E) | exact ✓ |
+| `3c18f76` SWAP-3 | Coach | D-CUT7 pair AS WRITTEN, +4 pins | 835 (E) | 343 (E) | **1084** | 115 | exact ✓ |
+| `ecfc26c` SWAP-4 | Coach | staff.ts AS WRITTEN, +6 pins | 835 (E) | 343 (E) | **1090** | 115 | exact ✓ |
+| `9670768` SWAP-5 | Coach | persistence pin + AuthContext swap (1→1 + 4 pins) + forgot-password (+1) | 835 (E) | 343 (E) | **1095** | 115 | exact ✓ |
+| `000f722` SWAP-6 | Coach | settings → D-CUT7 pair + the NAMED CALL-2 retirement (+1) | 835 (E) | 343 (E) | **1096** | 115 | exact ✓ |
+| `35f3663` SWAP-7 | Coach | admin.tsx → staff.ts (+0) | 835 (E) | 343 (E) | 1096 | 115 | exact ✓ |
+| `090b27a` SWAP-8 | Coach | firebase death: FYI-A 12 + shared mock + config + dep; closing grep (+0) | 835 (E) | 343 (E) | 1096 | 115 | exact ✓ |
+| `c2b0339` SWAP-9 | Coach (portal + root test/) | portal session + direct reads + redeem RPC; lib/firebase.ts + dep die (+1) | 835 (E) | 343 (E) | **1097** | 115 | exact ✓ |
+| (this commit) | UNIFY | this landed log | 835 (E) | 343 (E) | 1097 (E) | 115 (E) | exact ✓ |
+
+**Endpoint: BSPC 835 (TZ=UTC) + pgTAP 343 (Files=15) / Coach 1097 /
+Functions 115. Coach 1080 → 1097 = +17 inside the ratified [+10..+18],
+ZERO test deletions (the AuthContext suite transformed 1→1 with the
+push-cleanup assertion preserved; every other touched suite only
+grew). pgTAP 335 → 343 = +8 at the gap-build commit only, top of the
+ratified [+4..+8]. BSPC jest and Functions EXACT at every commit.**
+
+**The named CALL-2 UI change, landed at `000f722` (quoted):** "THE
+ROUND'S ONE NAMED UI CHANGE (CALL-2, D-K3 class): the three
+reader-less toggles RETIRE — newNotes (producer retired pre-G, no
+server reader), attendanceAlerts (superseded by the per-coach
+notification_rules surface, real since G), aiDraftsReady (returns WITH
+the banked D-G4 producer) — named in-file with their paths back; the
+read-only Push OS-status row stays; the dead Firestore prefs write
+(:46) and the NotifPref type (:13) die with the bank." Daily Digest is
+restored end-to-end onto digest_enabled. The Kevin lever stood unused.
+
+**The closing grep (SWAP-8/SWAP-9, shown in-session):** Coach app-wide
+live firebase imports = ZERO (the only matcher left before deletion
+was src/config/firebase.ts itself); the K-era five-artifact list reads
+0/0/0/0 mentions with config/firebase.ts and src/__mocks__/firebase.ts
+GONE; parent-portal/src + portal package.json = zero firebase
+mentions, lib/firebase.ts gone, both client firebase deps uninstalled.
+**Named carve-out:** `firebase-admin` stays in the Coach root
+package.json — it is the scripts/ seed-tool dependency whose
+retirement rides the 06 scripts step (the FYI-E pre-declared −4).
+
+**Named corrections (none silent, none landed red):**
+1. **The 05 §6.2b "ONE results_eq" aside was WRONG** — the publication
+   exact-membership proof exists in TWO places: pgTAP 011 AND pgTAP
+   014 test 19 (Phase J's "publication untouched" pin carried a full
+   second copy of the 23-list). Caught LIVE by the first SWAP-1 pgTAP
+   run (014:19 failed 23-vs-25); both VALUES lists updated in the same
+   commit; the operative pre-declaration (CONTENT-ONLY, pgTAP 335)
+   held exactly. The 05 aside is corrected by this entry — the
+   membership proof is TWO results_eq tests, and BOTH update with any
+   future publication change.
+2. **The first AsyncStorage jest wiring was wrong** (SWAP-5): the
+   stale v2 deep path ('/jest/async-storage-mock') broke 5 suites RED
+   in the working tree; fixed to the package's v3 './jest' export
+   before anything landed — no red commit exists.
+3. **PWD-PROOF live catches this round: three.** The STEP-0 Coach
+   baseline run (no explicit cd → executed in BSPC/ACTIVE, printed the
+   BSPC 835 — re-issued); two mid-round compound commands whose
+   git/grep halves ran in functions/ after a `cd functions` earlier in
+   the same chain (both caught by their pwd lines before any damage;
+   re-issued from the root). The standing line keeps earning its keep.
+
+**Machine note (J precedent):** the Coach pre-commit formatter
+restyled at several landings; the suite was re-run against each
+committed tree and the landed numbers above are from those re-runs.
+
+**Effect: the 05 §6.2 SWAP CODE IS COMPLETE — both apps and the portal
+ride supabase.auth + direct canonical reads end to end; the
+five-artifact bank is dead; the D-CUT6 direct reads are LIVE in code,
+so 06 §B6 steps C1 (portal callables) and C2 (redeemInvite shell) are
+now condition-met and UNBLOCKED for a future 06 execution round.
+NOTHING ran against any live store this round (local test stack only).
+What remains before the apps point at a real project is OPERATION, all
+HARD-STOP: 05 §6.1 provisioning + THE PROBE + NM-1 confirm + agreement
+audit (throwaway dry-run first), the §6.5 go-live + named smoke
+checklist, Firebase Email/Password sign-in disabled only after smoke
+passes, then 06 PART B per the keep/drop sheet — every step with Kevin
+live.**
