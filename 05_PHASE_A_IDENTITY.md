@@ -261,38 +261,342 @@ to Supabase; re-enable the trigger; verify both apps. (See §6.)
 
 ---
 
-## 6. SINGLE riskiest sub-step — the **auth-credential / account cutover** (review hardest)
+## 6. THE AUTH-CUTOVER MINI-PLAN (the single riskiest sub-step, expanded in place)
 
-Not a data swap — this is moving every human's *login* from Firebase Auth to
-Supabase Auth, and it's where the worst failure modes live:
+> **AMENDED IN PLACE 2026-06-11 per D-CUT1 (CUT-1 round, e71050a/D-J2
+> annotation precedent).** The original §6 was a placeholder that prescribed
+> "treat the auth cutover as its own mini-plan with its own red-team pass."
+> This IS that mini-plan. The original four failure modes are preserved as
+> the risk register (§6.7) with their now-settled answers. Every banked
+> pointer reading "05 §6" resolves here.
 
-1. **Passwords don't transfer.** Firebase stores scrypt hashes; Supabase uses
-   bcrypt. We cannot silently re-home credentials. Either (a) export Firebase scrypt
-   hashes and import via a custom-hash path Supabase can verify, or (b) force a
-   password reset for all users at cutover. (a) is fiddly and may not be supported;
-   (b) is a coordinated user-facing event. **This needs a decision and a tested
-   dry-run before any cutover.**
-2. **One-to-one identity integrity is COPPA-critical.** Each Firebase user must map
-   to exactly one Supabase user → exactly one `profiles` row, and each parent's
-   `guardianships` must *exactly* reproduce their prior `linkedSwimmerIds`. A single
-   mis-mapped row exposes the **wrong child's** attendance/times/notes to a parent.
-   The remap table is the chokepoint; it must be built deterministically and
-   audited (counts in = counts out, no dangling, no duplicates) against a throwaway
-   DB first.
-3. **The escalation guard meets a many-super_admin world (NM-1).** Once
-   `enforce_profile_self_update` is live, only `super_admin` can change roles. If the
-   admin→super_admin backfill mints many super_admins, that's a wide privileged
-   surface from day one. Get NM-1 settled before backfill writes roles.
-4. **Provider-swap correctness in the Coach App.** `AuthContext` is the one place the
-   whole app's session originates; a subtle bug (e.g. session not restored on cold
-   start, or `isAdmin` mis-derived from the role map) locks staff out or over-grants.
-   Its existing test coverage is **one test** — coverage must grow here specifically.
+> **HARD STOP (governs all of §6).** Nothing in this section runs without
+> Kevin live and his explicit approval, in a dedicated cutover round. The
+> operational sequences (§6.1 provisioning, §6.5 cutover/rollback) are
+> INSTRUCTIONS-ONLY. The CODE changes (§6.2) land in their own pre-declared
+> swap rounds (CUT-4+), authorized only after the director reviews this
+> document's bound signatures, test events, and gap verdict.
 
-**Recommendation:** when we execute, treat the auth cutover as its own mini-plan
-with its own red-team pass; build the `migration_identity_map` + provisioning +
-guardianship reconstruction against a **throwaway Supabase project** and assert
-in/out integrity before touching anything real; decide the password story (import vs
-forced reset) up front.
+### 6.0 Preconditions (proven, quoted from the record)
+
+- **The app-side bank, from the K landed log at `e8fb7f7`:** "after Phase K,
+  the Coach app's ENTIRE live firebase surface is EXACTLY the five-artifact
+  auth bank — src/contexts/AuthContext.tsx, app/admin.tsx,
+  app/(tabs)/settings.tsx, app/forgot-password.tsx, src/config/firebase.ts —
+  re-proven by a fresh import grep on the final tree." All five die together
+  here.
+- **The portal-half precondition (FYI-B naming of record, scope entry at
+  `cdfc8d6`):** four parent-portal files carry the portal's Firebase
+  residue — `src/lib/firebase.ts` (client), `src/lib/auth.ts` (session half
+  only; profile read is Supabase since Phase A), `src/app/dashboard/page.tsx`
+  (firebase `User` type), `src/lib/parentPortal.ts` (httpsCallable
+  transport). The session pieces swap here WITH the bank; the transport's
+  fate is §6.6/D-CUT6.
+- Phase K accepted at `e8fb7f7`; bars at the start of any swap round: BSPC
+  835 (TZ=UTC) + pgTAP 335 / Coach 1080 / Functions 115.
+
+### 6.1 Provisioning — the BINDING GATE (instructions-only, HARD STOP)
+
+- **OD-6, settled 2026-06-09:** NO password-hash import. Both apps are
+  pre-launch with zero real users; accounts are provisioned with fresh
+  Supabase credentials (forced reset / invite flow); the migration never
+  touches password material. The §6.7 risk-register item 1 is CLOSED by
+  this ruling.
+- **The staged run order is `BSPC/ACTIVE/migration/identity/README.md`
+  steps 1–8** (apply map DDL; disable `on_auth_user_created`; provision per
+  Firebase user with fresh credentials — the step-3 runner is "not yet
+  written" and lands as scaffolding in the staging round; build profiles;
+  coach_groups; guardianships with dangling-link COPPA repair; audits
+  in==out; re-enable trigger; smoke), with its standing dry-run-against-a-
+  throwaway-project requirement.
+- **THE PROBE, verbatim from the bank — a BINDING gate, not advice:** "after
+  provisioning, every Firestore parents-doc uid must resolve a NON-empty
+  profile via the map; zero-resolves = STOP. The mask is removed by
+  verification, not by code (data-layer freeze)."
+- **The NM-1 step, verbatim:** "the live list must be pulled from the
+  `coaches` collection at backfill time for Kevin to confirm; not derivable
+  from code." Kevin = the sole `super_admin`; every remaining Coach "admin"
+  → `coach_admin`. Roles are written only AFTER Kevin confirms the list
+  (risk-register item 3 closes here).
+- **The banked post-backfill invite/guardianship agreement audit** runs
+  before the swap is declared live: every redeemed invite's guardianship
+  exists; counts in == out; no dangling, no duplicates.
+
+### 6.2 The swap design (all five bank artifacts die together; one logical change per commit)
+
+**Identity pin (derived, not open):** post-swap `Coach.uid` :=
+`auth.users.id` — forced by the D-C7 transitional `attendance.marked_by →
+auth.users` FK. Legacy Firebase uids embedded in rows remap at convergence
+(checklist item 5) via `migration_identity_map`.
+
+**(i) `src/config/supabase.ts` — the RN session-persistence pin.** Today's
+client is data-only (`createClient(url, anonKey)`). The swap configures:
+AsyncStorage as the session `storage` adapter, `autoRefreshToken: true`,
+`persistSession: true`, `detectSessionInUrl: false`. Cold-start session
+restore is the §6.4 named risk; a session-restore pin is mandatory.
+
+**(ii) `src/contexts/AuthContext.tsx` — the core swap.** Exported shape
+FROZEN: `{user, coach, loading, error, signIn, signOut, isAdmin}`.
+- Session: `supabase.auth.getSession()` + `onAuthStateChange` replace
+  `onAuthStateChanged`; `signInWithPassword` replaces
+  `signInWithEmailAndPassword`, behind the EXISTING error-message map
+  (auth/invalid-credential et al. re-keyed to supabase error codes; the
+  user-facing strings are part of the frozen surface and do not change).
+- Coach resolution: `profiles` (by `user_id = session.user.id`) +
+  `coach_groups` + `notification_preferences`, mapped into the frozen
+  `Coach` type: `uid := user_id`; `email`; `displayName := full_name`;
+  `role`: `super_admin→'admin'`, `coach_admin→'coach'`; `groups :=
+  coach_groups.practice_group[]`; `notificationPrefs.dailyDigest :=
+  digest_enabled`, remaining keys type-compat `true` (reader-less; §6.2a);
+  `fcmTokens := active own push_tokens.expo_push_token[]`;
+  `createdAt/updatedAt := profiles timestamps`.
+- A profile that is NOT staff (`role` ∉ {super_admin, coach_admin}) or not
+  `approved` resolves `coach = null` + the existing not-a-coach error path.
+  **The NM-5 auto-create-admin branch (today AuthContext.tsx:57–85) is
+  DELETED, not ported** — ratified; gated provisioning (OD-3) governs all
+  new accounts.
+- signOut: read OWN active `push_tokens` rows via the notifications
+  service, `unregisterPushToken` each, then `supabase.auth.signOut()` —
+  the suite's one pinned assertion ("cleans up push subscriptions before
+  sign out") is PRESERVED.
+- `isAdmin` stays `coach?.role === 'admin'` — which post-map means
+  **super_admin ONLY (Kevin)**: D-CUT8 A-STRICT semantics. The admin screen
+  and the settings import buttons become Kevin-only at the swap; any future
+  widening is a named product decision in the D-H9 class, never a migration
+  side-effect.
+
+**(iii) `app/forgot-password.tsx`** — `sendPasswordResetEmail(auth, email)`
+(:31) → `supabase.auth.resetPasswordForEmail(email)`. The D-K1 decline
+("building a Supabase reset now is DECLINED as a mixed-auth surface
+mid-migration") expires HERE, by design — the swap is the moment it stops
+being mixed-auth. Reset-email template + redirect URL are cloud-console
+staging lines in 06 PART B.
+
+**(iv) `app/(tabs)/settings.tsx`** — re-points onto the D-CUT7 surface
+(§6.2a). The dead-end Firestore prefs write (:46) dies with the bank.
+
+**(v) `app/admin.tsx`** — re-points onto the D-CUT8 `staff.ts` surface
+(§6.2b). The whole-collection `onSnapshot` (:39) and the two `updateDoc`
+toggles (:59, :73) die with the bank.
+
+**(vi) `src/config/firebase.ts`** — deleted (with the firebase deps from
+package.json at the same commit). Per FYI-G its `storage` + `functions`
+exports already have zero live importers — verified again at deletion.
+Test-side, the FYI-A sweep (12 dead `jest.mock('../../config/firebase')`
+lines, per-file verify-at-deletion evidence, zero count impact) lands
+FIRST; then `src/__mocks__/firebase.ts` deletes with the bank.
+
+**(vii) The portal session half.** `parent-portal/src/lib/auth.ts` sign-in/
+out/listener → `supabase.auth` (same idiom the portal already uses for its
+profile read since Phase A); `dashboard/page.tsx` firebase `User` type →
+the Supabase session user type. `lib/firebase.ts` and the `parentPortal.ts`
+httpsCallable transport die when the §6.6 direct reads land (small-gap
+verdict); if the director re-banks the gap instead, the transport survives
+functions-scoped until the D-CUT5 callable-retirement step — and the
+Firebase client config with it, named.
+
+### 6.2a D-CUT7 — the notification-preferences successor (signatures AS BOUND)
+
+Derived fresh (CUT-1 round): PG `notification_preferences` has exactly TWO
+real, read columns — `push_enabled` (00001; honored per-user by the BSPC
+`send-notification` sender at delivery, with a `profiles.push_enabled`
+fallback) and `digest_enabled` (00008/D-G3; honored by `dailyDigest` at
+digest build, missing-row-means-included). NOTHING reads any other
+preference key in either workspace (fresh greps, functions/ + BSPC Deno).
+
+```ts
+// src/services/notifications.ts — additions (D-CUT7, D-K4 addition class)
+export interface NotificationPreferences {
+  pushEnabled: boolean;   // notification_preferences.push_enabled
+  digestEnabled: boolean; // notification_preferences.digest_enabled
+}
+export async function getNotificationPreferences(): Promise<NotificationPreferences>;
+export async function upsertNotificationPreferences(
+  patch: Partial<NotificationPreferences>,
+): Promise<void>;
+```
+
+Semantics: own-row only (`notification_prefs_own` RLS, `user_id =
+auth.uid()`); upsert is `ON CONFLICT (user_id)`; a missing row reads as
+`{pushEnabled: true, digestEnabled: true}` (schema defaults + the
+dailyDigest missing-row semantic). **House-mock pins, ≥2 per export, bound:**
+get → (1) row→shape mapping, (2) missing-row defaults; upsert → (3)
+payload + conflict-key correctness, (4) error propagation. **Minimum +4.**
+
+**The four settings toggles, dispositions bound (returns to the director in
+the round report):** the screen's toggle keys are `dailyDigest | newNotes |
+attendanceAlerts | aiDraftsReady` (settings.tsx:13), all writing the dead
+Firestore doc today.
+- **Daily Digest → `digestEnabled`. REAL, restored end-to-end** (the
+  D-CUT7 ruling's "restores a shipped toggle surface" lands here).
+- **newNotes / attendanceAlerts / aiDraftsReady — NO reader exists
+  anywhere post-G** (fresh greps above). RECOMMENDED: these three toggle
+  rows RETIRE at the swap as a NAMED UI change (the D-K3
+  named-single-UI-change class): `newNotes` — producer retired pre-G, no
+  server reader; `attendanceAlerts` — superseded by the per-coach
+  `notification_rules` in-app surface (real since G); `aiDraftsReady` —
+  returns WITH the D-G4 product item when its producer ships. Persisting
+  reader-less keys to new PG columns is DISRECOMMENDED as the FYI-C
+  dead-end class reborn (a toggle that lies). The read-only "Push
+  Notifications" OS-status row stays; adding a `pushEnabled` toggle is a
+  future product decision (no-widening).
+- The frozen `Coach.notificationPrefs` type keeps all four keys
+  (type-compat `true` defaults for the reader-less three) so no consumer
+  changes shape.
+
+### 6.2b D-CUT8 — the staff administration successor (signatures AS BOUND)
+
+```ts
+// src/services/staff.ts — NEW service (D-CUT8 surface (a), D-K4 addition class)
+export interface StaffProfile {
+  profileId: string;   // profiles.id
+  userId: string;      // profiles.user_id (= post-swap Coach.uid)
+  email: string;       // profiles.email
+  displayName: string; // profiles.full_name
+  role: 'super_admin' | 'coach_admin'; // PG truth; the screen renders its own labels
+  groups: Group[];     // coach_groups.practice_group rows
+}
+export function subscribeStaffProfiles(
+  onChange: (staff: StaffProfile[]) => void,
+): () => void;
+export async function setStaffRole(
+  profileId: string,
+  role: 'super_admin' | 'coach_admin',
+): Promise<void>;
+export async function setStaffGroups(
+  profileId: string,
+  groups: Group[],
+): Promise<void>;
+```
+
+- Transport: postgres_changes on `profiles` + `coach_groups`. **Neither
+  table is in the realtime publication today (exactly 23 tables, pgTAP
+  011-pinned)** — one BSPC migration grows the publication 23 → 25 with
+  pgTAP 011's exact-membership VALUES list updated in the same commit (the
+  RH-12 idiom; that proof is ONE `results_eq` test, so this is a
+  CONTENT-ONLY update — **pgTAP stays 335 EXACT, pre-declared**). Event
+  delivery rides the existing walls (`profiles_select_admin`,
+  `coach_groups_staff`).
+- `subscribeStaffProfiles` filters `role IN ('super_admin','coach_admin')`
+  and joins groups; `setStaffGroups` reconciles by delete+insert on
+  `coach_groups` for that profile.
+- The service does NOT pre-check authority: `enforce_profile_self_update`
+  (00002:120) is the wall — role changes are DB-enforced super_admin-only;
+  a guard rejection surfaces through the normal error path (A-STRICT
+  semantics; the screen is Kevin-only via `isAdmin` anyway).
+- **House-mock pins, ≥2 per export, bound:** subscribe → (1) rows+groups
+  join mapping, (2) unsubscribe/channel cleanup; setStaffRole → (3) update
+  payload + target, (4) error propagation (guard rejection); setStaffGroups
+  → (5) delete+insert reconciliation, (6) error propagation. **Minimum +6.**
+
+### 6.3 What the cutover MUST NOT change (D-I1 interplay)
+
+- Invite redemption stays staff-authorized LINK creation; approval stays
+  ACCOUNT activation. **The Phase I precisification stands verbatim:
+  "'dark until approval' means ZERO rows from every swimmer-keyed table,
+  proven in pgTAP"** — including the explicitly-accepted pending-redeemer
+  guardianships-row read. The cutover changes WHO the redeem caller is (a
+  native Supabase uid instead of a mapped Firebase one) and NOTHING else
+  about invites: `parent_invites` + the redeem RPC are already PG (Phase I).
+- OD-3 gated provisioning governs every new account (no auto-approve
+  anywhere; the NM-5 deletion composes with it).
+- The data-layer freeze holds: no service interface changes ride along with
+  the auth swap beyond the two bound successor surfaces above.
+
+### 6.4 Swap test plan (pre-declared; exact bands)
+
+**The named risk this section exists for:** cold-start session restore
+(provider-swap correctness — risk-register item 4). Coverage grows at
+AuthContext specifically.
+
+| Event (Coach jest 1080 baseline) | Count |
+|---|---|
+| AuthContext suite TRANSFORMS in place (mocks re-pointed to the supabase idiom; the "cleans up push subscriptions before sign out" assertion preserved) | 1 → 1, zero deletions |
+| D-CUT7 pins (§6.2a, bound) | **+4 minimum** |
+| D-CUT8 pins (§6.2b, bound) | **+6 minimum** |
+| New AuthContext pins: role map (super_admin→admin / coach_admin→coach / non-staff→null), session restore on cold start, signOut push_tokens cleanup re-point | +3 to +5 |
+| settings re-point (digest toggle wiring) + forgot-password successor | +1 to +2 |
+| portal session-swap pins (land in root `test/`, the Phase A +5 precedent — parent-portal/ itself is outside the bar) | +0 to +1 |
+| FYI-A dead-mock sweep (12 files) + `src/__mocks__/firebase.ts` deletion | **0, verify-at-deletion per file (K6 precedent)** |
+
+**Band: Coach 1080 → +10..+18, ZERO deletions** (exact counts fix
+per-commit in the CUT-4+ round pre-declarations). **BSPC 835 EXACT and
+Functions 115 EXACT through every 05 commit. pgTAP 335 EXACT through every
+05 commit** — including the publication content-only update (§6.2b) —
+**except the §6.6 gap-build commit if its small-gap verdict is ratified:
+that commit ADDS pgTAP pins for the two new parent-read surfaces (band +4
+to +8, fixed in its own round pre-declaration).** No other bar moves.
+
+### 6.5 Cutover execution + rollback (instructions-only, HARD STOP)
+
+Order at the cutover round (each step gated on the one before):
+1. §6.1 provisioning + THE PROBE (zero-resolves = STOP) + NM-1 confirm +
+   agreement audit — on the throwaway project FIRST (mandatory dry-run),
+   then live.
+2. The swap code (already landed in CUT-4+, dark behind the env) goes live:
+   Coach app + portal builds pointed at the Supabase project.
+3. Smoke checklist, named: coach login; role renders (Kevin sees ADMIN,
+   a coach_admin does not); admin list live-updates; digest toggle
+   round-trips to PG; password-reset email round-trips; portal parent
+   login + dashboard render; cold-start relaunch restores the session.
+4. Firebase Email/Password sign-in is disabled ONLY after step 3 passes
+   (the 06 §7 standing sentence) — that step lives in 06 PART B §B6.
+**Rollback (pre-launch):** env flip back to Firebase + revert commit; no
+data has moved that the §6.1 audits did not verify; the map table holds
+the correspondence either way.
+
+### 6.6 D-CUT6 — the portal's post-cutover data path: THE GAP INVENTORY (in full)
+
+End-state (ratified): DIRECT Supabase reads under the parent RLS walls.
+The transport breaks at the swap regardless — the Firebase callable sees
+no `request.auth` from a Supabase session — so this inventory decides
+WHEN the direct reads build. Field-by-field against the frozen DTOs
+(`parentPortal.ts`), each mapped to its parent-readable source:
+
+| Portal payload field | Parent-readable source today | Verdict |
+|---|---|---|
+| `profile` (uid, email, displayName, linkedSwimmerIds) | `profiles` self-read + `guardianships_select_own` — **the portal already does this read directly** (lib/auth.ts profile half, Phase A/I) | ✅ no gap |
+| `swimmers[]` summary (id, names, group, gender, active, photo) | `swimmers_select_own` is **family_id-arm ONLY** (00001:453) — a guardianship-linked (Coach-world) parent has NO arm until OD-1 convergence item 2 | ❌ **GAP-1** |
+| `swimmer.strengths` | `swimmer_coach_profile` is **staff-only** (`scp_staff_all`, 00003:84); the callable exposed a sanitized slice via service-role | ❌ **GAP-2** |
+| `swimmer.goals[]` (event names) | `goals_select_own` carries the family-OR-`is_my_swimmer()` two-arm shape (00005:289, RD-10) | ✅ no gap |
+| `times[]` (event, course, hundredths, isPR, meet, date) | `swim_results_select_own` two-arm (00005:220); `timeDisplay` derives client-side (the formatter is already a pure RD-12 copy — it moves into the portal) | ✅ no gap |
+| `attendance[]` (id, practiceDate, collapsed status) | `attendance_parent_view` (00004:160) — same D-C4 collapse, `is_my_swimmer()` OR family arm, filter `swimmer_id` client-side | ✅ no gap |
+| `schedule[]` | **already served EMPTY since Phase H** (`parentPortal.ts:267` returns `[]`; D-H5(b) calendar went staff-only). Direct-read parity = the same empty list; "D-H5(b) parent arms ship only with a parent calendar feature" stands banked | ✅ parity-is-empty |
+| `profilePhotoUrl` rendering | signed-URL capability for parents on `profile-photos` exists (Phase F walls) | ✅ no gap |
+
+**VERDICT: SMALL — exactly two narrow parent-read surfaces, both in
+established idioms:**
+- **GAP-1 closes** by adding the `is_my_swimmer()` OR-arm to
+  `swimmers_select_own` — the SAME transitional two-arm shape
+  attendance/goals/times already have (RC-1/RD-10 pattern); it narrows to
+  guardianships-only at convergence exactly like checklist items 3/9.
+- **GAP-2 closes** with a narrow parent view (proposed
+  `swimmer_strengths_parent_view(swimmer_id, strengths)` WHERE
+  `is_my_swimmer(swimmer_id)`) — the D-C4 one-wall-one-rule class; the
+  staff table stays staff-only.
+- Both land in ONE BSPC migration + pgTAP pins (the §6.4 pre-declared +4..+8
+  band) in the swap rounds; the portal's `parentPortal.ts` re-points from
+  `httpsCallable` to direct reads with the DTO interfaces FROZEN.
+
+**Recommendation: BUILD AT THE SWAP ROUNDS (small gap). The
+build-now-vs-re-bank fork returns to the director with this verdict in the
+round report.** If re-banked instead, the portal transport survives
+functions-scoped until the D-CUT5 callable-retirement step, named.
+
+### 6.7 Risk register (the original §6 failure modes, with their settled answers)
+
+1. **"Passwords don't transfer."** CLOSED by OD-6 (2026-06-09): NO
+   hash import; fresh credentials; pre-launch zero real users.
+2. **"One-to-one identity integrity is COPPA-critical."** Answered by the
+   §6.1 BINDING probe (zero-resolves = STOP), the deterministic
+   `migration_identity_map` chokepoint, the in==out/no-dangling/no-duplicate
+   audits, and the mandatory throwaway-project dry-run.
+3. **"The escalation guard meets a many-super_admin world."** CLOSED by
+   NM-1: Kevin is the sole super_admin; the live coaches list is pulled at
+   backfill for his confirmation before any role writes.
+4. **"Provider-swap correctness in the Coach App."** Answered by §6.2(i)'s
+   persistence pin, §6.4's mandatory session-restore + role-map pins, and
+   the §6.5 smoke checklist (cold-start relaunch is a named smoke step).
 
 ---
 
