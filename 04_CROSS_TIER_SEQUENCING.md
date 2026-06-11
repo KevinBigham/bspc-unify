@@ -103,7 +103,7 @@ changes.
 | **G** | **notifications + rules** | evaluator READS attendance → must follow C; idempotency UNIQUE + upsert; FCM→Expo tokens. |
 | **H** | **calendar + meets + plans + import_jobs** [D-H8] | Lower fan-in; can come late. season_plans needs tests written first. |
 | **I** | **parent_invites + parent-portal cutover** | redeemInvite creates guardianships; portal callable now reads migrated A/B(+C/D). Parent-facing cutover. |
-| **J** | **aggregations decommission** | Do NOT migrate; recompute via PG triggers/jobs; retire/re-point rebuildAggregations + dashboardAggregations. |
+| **J** | **aggregations decommission** | Do NOT migrate; recompute via PG triggers/jobs *[D-J2, ratified 2026-06-10: VIEWS won — compute-on-read (00011); no triggers/jobs exist]*; retire/re-point rebuildAggregations + dashboardAggregations. |
 
 ### Per-step: function coordination + green guardrails
 - **A — Identity.** Client: AuthContext/profile reads. Functions: `redeemInvite`
@@ -156,6 +156,7 @@ changes.
 - **J — aggregations.** No data migration. Recompute via PG (unbuilt
   triggers/jobs); point `aggregations.ts` reads at PG-computed views; retire the
   two aggregation CFs.
+  *[D-J2, ratified 2026-06-10: "(unbuilt triggers/jobs)" resolved — the recompute landed as compute-on-read VIEWS (00011); the views wording prevails.]*
 
 ## Where the deferred backfills slot in (from NOTES.md)
 | Backfill | Phase |

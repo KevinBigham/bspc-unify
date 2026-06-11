@@ -3077,3 +3077,118 @@ STOPS unchanged. Pre-declared expectations bind: pgTAP +14-to-22
 (commit 1), Coach 1081±6 (commit 2), Functions 115 EXACT (commit 3),
 Coach −18 EXACT from the post-commit-2 count (commit 4). Bars
 untouched by this entry (docs only): 835 TZ=UTC + 316 / 1081 / 133.
+
+---
+
+## 2026-06-10 — PHASE J LANDED (code-side COMPLETE): six green commits; the FIRST net-negative bars, deliberate, bound, and hit to the digit
+
+Baseline re-verified before any code (835 TZ=UTC + 316 / 1081 / 133;
+colima + supabase healthy). Every pre-declared expectation landed
+exactly or inside its declared band; zero deletions outside the two
+named sets; the tripwire never fired. Per commit:
+
+1. **UNIFY `eac93cc` (commit 0, paperwork)** — D-J5 ratification +
+   precisification confirmation + residual rulings recorded
+   (previous entry).
+2. **BSPC `c073e29` (commit 1)** — `00011_phase_j_aggregations.sql`
+   + pgTAP `014-aggregation-views` (19 proofs). Four staff-gated
+   compute-on-read views, each with an explicit is_staff() arm:
+   agg_swimmer_attendance (status-aware VERBATIM per 07 §2 — applied
+   to the WHOLE per-swimmer row set including last_practice_date,
+   the coherent reading of the law, named; strict legacy 30/90
+   timestamp-cutoff semantics carried — practice_date > today−N;
+   22/64 denominators + the "Approximate: 5 practices/week" comment
+   verbatim per D-J4(a)); agg_swimmer_prs_notes (full D-J3(a) shape;
+   prsByEvent from personal_bests, "<event>_<course>" keys verbatim);
+   agg_dashboard_attendance (the CF's INCLUSIVE 84-day date-string
+   window carried — both legacy inclusivity asymmetries preserved,
+   annotated in the migration); agg_dashboard_activity (4-arm UNION
+   8/5/5/5, every FYI-9 template verbatim — truncateNote-60+'...',
+   '— NEW PR!', 'Manual entry', 'VIDEO READY: N swimmer(s) analyzed'
+   with the junction-counted plural, joined names per D-B7, FYI-10
+   'pr' via the personal_bests match, review-only video arm, ORDER BY
+   ts DESC LIMIT 15). PLUS the GA-1 closure (attendance_check_in
+   REVOKE FROM PUBLIC, anon — 00004 had revoked only anon's direct
+   grant; PUBLIC inheritance was the GA-1 hole — anon→42501 proven)
+   and GA-2 (four inert trigger-fn defaults revoked, zero behavior
+   change). pgTAP 014 = P-ATT, the status-aware negative, P-PRNOTES
+   ×2, P-DASHATT, P-DASHACT ×3 + the FYI-10 derivation proof, 3
+   family/pending/anon zero-rows walls, GA-1, GA-2, publication
+   EXACTLY 23 (re-proven; the RH-12 contingency did NOT fire — all
+   five source tables were already members). **pgTAP 316 → 335 (+19,
+   inside the declared +14-to-22 band).**
+3. **Coach `6183004` (commit 2)** — aggregations.ts swap behind
+   FROZEN signatures (channel-on-source-tables + full re-fetch — the
+   importJobs idiom; the swim_results channel covers personal_bests,
+   whose trigger runs in the same transaction; activity fetch carries
+   an explicit ORDER BY ts DESC — view-internal order is not a
+   PostgREST guarantee). **The §2 NAMED-AT-EXECUTION obligation,
+   executed: prsByEvent's date column is `personal_bests.achieved_at`,
+   whose canonical rule COALESCE(date, created_at::date) IS the
+   legacy `meetDate ?? createdAt` fallback — same semantics, one
+   column, stated.** timeDisplay derived on read via the existing
+   formatTimeDisplay (the SQL formatter in the activity texts matches
+   it branch-for-branch). roster.tsx's inline 2×N Firestore doc subs
+   collapsed INTO the service (04:54's "aggregations.ts (read-only)"
+   finally literally true); useDashboardData's pendingDrafts
+   re-pointed onto two new count subscriptions in the EXISTING
+   audio.ts/video.ts services (the ratified D-J1 rider — same
+   status='review' team-wide count, staff wall, no new capability);
+   the hook holds ZERO direct Firestore. Tests: services 18 → house
+   supabase mock with subjects preserved (the doc-missing arms became
+   the view's no-row/zero-row arms — named transform); hook 8
+   re-pointed; roster 2 follow the screen; +4 rider pins (2 per media
+   service). **Coach 1081 → 1085 (+4, inside the declared ±6 band).**
+4. **Coach `13967d8` (commit 3)** — the retirement. Deleted the four
+   dark Firestore triggers + dashboardAggregations (the shared
+   recompute module) + scheduled/rebuildAggregations (the 4 AM stale
+   rewriter — the only machinery that still fired); index.ts dropped
+   the five exports and its Phase F comment block now hands the
+   family to this record. Test deletions = EXACTLY the 18 rows of
+   the evidence table bound at `1ce60a1` — no more, no fewer;
+   successors landed AHEAD by commit order (commits 1–2). functions
+   tsc clean. **Functions 133 → 115 EXACTLY — the FIRST test-count
+   drop in project history, pre-declared, ratified, and cited here.**
+5. **Coach `fce4d62` (commit 4)** — the D-J6 sweep: useSwimmer.ts +
+   8 tests, useMeetDetails.ts + 7 tests (the corrected count — §5's
+   "~5" was wrong, flagged at ratification), demoReadiness.ts + 3
+   tests; zero-importer evidence re-verified at deletion time. The
+   stores' type-only firebase Unsubscribe imports → local type.
+   **Coach 1085 → 1067 (−18 EXACTLY, the pre-declared pin).**
+6. **BSPC `migration/j/README.md` + this landed log (commit 5)** —
+   the null-manifest behind the standing HARD-STOP header: NOTHING
+   migrates (P2-5/04:172, ratified twice), no rows copied, no
+   backfill exists, first PG read correct by construction. Cutover
+   lines recorded there: **the D-C1(b) checklist line is SATISFIED
+   as of commit 2** (C+G+J reader code all landed); the stale
+   aggregations docs + every write-dead collection die at the
+   06-runbook decommission step (nothing here runs); the D-J7
+   coach_chat disposition line (Phase K retirement; named pre-launch
+   data loss; contents never read). Ruled paperwork applied: 04:106
+   and 04:156 carry one-line dated [D-J2] annotations (original
+   words visible — annotate-never-rewrite); **02_SCHEMA_REDTEAM.md
+   stays untouched by ruling, and this log carries the line: 02:122
+   and 02:162 are MOOT-BY-RETIREMENT** (they describe the drafted
+   shape of a table D-J2 retired; their don't-migrate/recompute law
+   halves remain true).
+
+Named execution details (none rose to tripwire; all in ratified
+directions): (i) the activity time arm renders canonical NULL-course
+rows (BSPC-origin; the legacy feed never saw any) without the course
+token — template-preserving for every row the legacy feed could have
+produced, never the string 'undefined'; (ii) the status-aware set
+governs the whole per-swimmer aggregate row set (not just the
+percentages) and both dashboard attendance arms — the 07 §2 law read
+coherently; (iii) commits 2–4 passed through the house lint-staged
+pre-commit pass (eslint --fix + prettier); suites were re-verified
+green against the committed trees; (iv) BSPC app code was untouched
+(migrations + pgTAP only), so BSPC tsc is clean by construction;
+Coach tsc keeps its pre-existing errors (jest-only bar, standing).
+
+**Bar at close: BSPC 835 (TZ=UTC) + pgTAP 335 / Coach 1067 /
+Functions 115.** Deletion norm: the two named sets (18 Functions
+rows bound at `1ce60a1`; 18 Coach tests = 8+7+3 pinned at
+ratification) — nothing else. Phases A–J code-side COMPLETE.
+**Next: PHASE K — UI residual sweep (named at D-J1), scope-before-
+code, from the D-J1 file:line artifact; then the 05/06 cutover
+planning.**
