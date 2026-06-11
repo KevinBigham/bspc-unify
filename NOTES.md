@@ -5353,3 +5353,225 @@ is Kevin-live by standing rule.
 code; the runbook's spine now has its gate-bearing tool; the only
 daylight between here and a schedulable Kevin-live session is the R-2
 ruling.
+
+---
+
+## 2026-06-11 — R-CLOSURE ROUND, RC-0: GAP-CLOSURE accepted; the six R-CLOSURE rulings recorded; the comms-line closure landed (the FINAL build round — R-1 doc closure + the R-2 steps-4–6 executor)
+
+**STEP-0 heads gate (passed):** UNIFY `5896a9c` / BSPC `58e7cff` / Coach
+`39e6585` — all clean, all level with origin. **Fresh baselines, each from
+a run carrying its own cd + pwd (PWD-PROOF standing):**
+- BSPC jest **835** (117 suites, TZ=UTC) — pwd `/Users/kevin/bspc-unify/BSPC/ACTIVE`
+- pgTAP **343** PASS (Files=15) — pwd `/Users/kevin/bspc-unify/BSPC/ACTIVE`
+- Coach jest **1128** (109 suites) — pwd `/Users/kevin/bspc-unify/BSPC-Coach-App`
+- Functions **115** (12 suites) — pwd `/Users/kevin/bspc-unify/BSPC-Coach-App/functions`
+
+**HARD-STOP restatement (code round):** the executor LANDS but NEVER RUNS;
+the §B0 probe and the GC-1 runner stay un-run. Nothing executes against any
+store — no Firestore, no Storage, no Supabase project of any kind, no
+throwaway creation. Local test stack only. ZERO test deletions.
+
+**ACCEPTANCE (the director, in words):** the GAP-CLOSURE + RUNNER round is
+ACCEPTED — four exact landings (`2355f2e` / `1767355` / `39e6585` /
+`5896a9c`), every bar on its pre-declared line; the five GC construction
+derivations are RATIFIED (the runner pair's names; the operator env pair;
+the step-3-exact scope; the OD-6 choice-preserving no-email construction;
+the DDL-as-cross-repo-contract + idempotent write shape); the
+freeze-conflict handling is ACCEPTED (the README pointer conditional did
+not fire because the READMEs live in frozen BSPC; carried honestly as
+residual R-1 — now ruled, below).
+
+**THE SIX RULINGS (the director, in words, R-CLOSURE round):**
+1. **R-1 → SCOPED UNFREEZE.** BSPC unfreezes for EXACTLY ONE doc-only
+   commit (RC-1): the two README pointer lines (identity + roster, to the
+   05 §6.5 step-1 dry-run spec) + the dated stale-fact annotation. Any
+   BSPC schema, migration, or test change = STOP; every other clause of
+   the freeze stands.
+2. **R-2 → BUILD.** The steps-4–6 executor lands this round (RC-2) on the
+   GC-1 pattern under the SAME binding construction rules: HARD-STOP
+   header (Kevin-live only); NO default target, no embedded refs or
+   credentials (operator env/flags only, named in the header); plan-only
+   by default with the named no-op line; the EMPTY-OR-MISSING-identity-map
+   HARD ABORT physically above the plan-only return and every write call
+   site (line-number proof, GC-1 style); steps 4–6 EXACTLY with each
+   step's bound audit/STOP conditions implemented as written; new
+   orchestration/render pures pinned, pre-declared EXACT; the I/O shell
+   named UNTESTED (no trusted mocks — Firestore and Supabase are never
+   faked); lifecycle banked BEFORE the pins land; the carve-out grows by
+   exactly the executor shell.
+3. **Manual mode REJECTED.** The steps-4–6-as-Kevin-live-manual
+   alternative is rejected (the GC-3 recommendation accepted: Kevin is a
+   beginner, and a manual path rehearses nothing the live run would
+   reuse).
+4. **The stale step-3 fact ruled D-J7-class.** The identity README's
+   parenthetical "(Runner not yet written...)" is a stale recorded fact →
+   corrected at RC-1 with the dated annotation (the e71050a
+   amend-in-place idiom): the step-3 runner LANDED at GC-1, and the
+   steps-4–6 executor lands this round per ruling 2.
+5. **The comms line RATIFIED.** The Kevin-owned account-announcement line
+   is a precondition of the sign-in-disable step — CONDITIONAL on no
+   equivalent line already existing in the bound text (checked below; it
+   does not → the one named line lands at 06 §B6 step 1, this commit).
+6. **The new green baseline RATIFIED:** BSPC jest 835 (TZ=UTC) + pgTAP
+   343 (Files=15) / Coach jest 1128 (109 suites) / Functions 115 — the
+   GAP-CLOSURE endpoint bars are the R-CLOSURE starting bars (re-proven
+   fresh at STEP-0 today).
+
+### THE ROUND PRE-DECLARATION TABLE (fixed NOW, before any landing)
+
+| # | Commit | Repo | One-line scope | BSPC jest | pgTAP | Coach jest | Functions |
+|---|---|---|---|---|---|---|---|
+| 0 | RC-0 | UNIFY | this entry: acceptance + the six rulings + the pre-declaration + the comms-line closure landed at 06 §B6 step 1 (checked first: no equivalent existed) | 835 (E) | 343 (E) | 1128 (E) | 115 (E) |
+| 1 | RC-1 | BSPC | the SCOPED UNFREEZE, doc files ONLY: the two README pointer lines (identity + roster → the 05 §6.5 step-1 dry-run spec) + the dated D-J7-class annotation correcting the stale step-3 "Runner not yet written" fact; zero schema, zero migrations, zero test changes | **835 FRESH** | **343 FRESH** | 1128 (E) | 115 (E) |
+| 2 | RC-2 | Coach | the steps-4–6 executor LANDS, never runs: `scripts/backfill-identity-graph.ts` (thin I/O shell, HARD-STOP header, no default target, plan-only by default, the empty/missing-map HARD ABORT, explicitly UNTESTED) + `scripts/backfill-identity-graph-plan.ts` (pure: plan derivation + gate + render) + **+20 pure-part pins** in `scripts/__tests__/backfill-identity-graph-plan.test.ts` (suites 109 → 110) | 835 (E) | 343 (E) | **1148 FRESH** | **115 FRESH** |
+| 3 | RC-3 | UNIFY | the FINAL re-verdict: the five ruled seams PLUS R-1/R-2 re-run against the landed state — READY (build era CLOSED) or numbered residual decisions | 835 (E) | 343 (E) | 1148 (E) | 115 (E) |
+
+(E) = untouched-repo endpoint cite, legal only while that repo's head is
+byte-identical to its nearest proven run. **The only bar that moves this
+round is Coach jest, +20 at RC-2, ZERO deletions anywhere.** BSPC jest and
+pgTAP are EXACT at RC-1, proven with FRESH runs (the doc-only commit must
+move no test). Functions re-runs FRESH at RC-2 (the round's only Coach
+commit); Coach runs FRESH at RC-2. Landing outside a declared line = STOP.
+
+**The +20 pin breakdown (pre-declared EXACT):**
+- `deriveGraphPlan` ×8 — full fresh build with the NM-1 roles (designated
+  → super_admin, every other coach → coach_admin) + the NM-4 placeholder
+  fallback for parents; profile_id-non-null map rows mark step 4
+  already-built (skip); unprovisioned identities (no map row / user_id
+  NULL) EXCLUDED from step 4 + reported; step-5 group dedupe +
+  out-of-domain flag + existing-pair skip; step-6a resolve via the
+  swimmer map + COPPA dangling drop-and-report + dedupe + existing-pair
+  skip; step-6a DEFER on a missing-or-empty swimmer map while
+  linkedSwimmerIds exist; step-6b one row per family swimmer for BSPC
+  parents, deduped, existing-pair skip; duplicate uids across
+  coaches/parents reported once (coach source wins).
+- `runIdentityMapGate` ×4 — HARD ABORT on map MISSING; HARD ABORT on map
+  EMPTY; HARD ABORT when no row is provisioned (every user_id NULL); pass
+  with the provisioned count.
+- `renderGraphPlan` ×6 — header + Kevin-live HARD STOP + per-step counts;
+  the NM-1 roster block in both variants (designated named / pending-
+  confirm + execute-requires line); WARNING lines (unprovisioned,
+  duplicate uids, out-of-domain groups); the COPPA dangling report + the
+  step-6a deferral line quoting roster README step 7; the gate HARD-ABORT
+  banner with the no-write-path line; the named plan-only no-op tail (env
+  pair + --execute + --super-admin-uid) and the EXECUTE MODE line.
+- `renderGraphSummary` ×2 — created/skipped counts for all three tables +
+  map profile_id updates + the step-7 next pointer; the failures STOP
+  block (REPORTED, never retried) + the deferred-6a re-run pointer.
+
+**Lifecycle, banked + named (pre-declared BEFORE the pins land):** the
+executor pair + its 20 pins are decommission tooling — they retire at
+**06 §B6 step 5 (the scripts/ deletion step), the SAME named step as
+FYI-E, the probe pair, and the GC-1 runner pair.** That step's Coach delta
+re-bases **−35 → −55** (seeds −4 + probe −14 + runner −17 + executor −20):
+**1148 → 1093 — the director's ruled 1093 endpoint is preserved; the
+step's delta is the binding fact.**
+
+**The carve-out, pre-declared:** grows by exactly the executor shell (it
+reads Firestore coaches + parents via firebase-admin). After RC-2 the
+firebase-admin importer list is SIX named files, scripts/ only:
+`probe-firebase-inventory.ts`, `seed-meets.ts`, `provision-identities.ts`,
+`seed-roster.ts`, `seed-demo-data.ts`, `backfill-identity-graph.ts`.
+
+### The six construction facts (named so the director can object)
+
+- **CF-1 — names + home.** `scripts/backfill-identity-graph.ts` (shell,
+  UNTESTED) + `scripts/backfill-identity-graph-plan.ts` (pure) +
+  `scripts/__tests__/backfill-identity-graph-plan.test.ts` (20 pins) —
+  the GC-1 naming idiom; "backfill" is the READMEs' own verb; steps 4–6
+  build the identity backfill's GRAPH (profiles + coach_groups +
+  guardianships).
+- **CF-2 — target + the no-target consequence.** The SAME operator env
+  pair as the step-3 runner: `BSPC_MIGRATION_SUPABASE_URL` +
+  `BSPC_MIGRATION_SUPABASE_SERVICE_ROLE_KEY` (never the app's
+  EXPO_PUBLIC_* pair; a partial pair = named error; no ref or credential
+  anywhere in the repo). Firestore side: `FIREBASE_ADMIN_KEY_PATH` else
+  `GOOGLE_APPLICATION_CREDENTIALS` (the seed/probe idiom, PART A §6
+  handling). UNLIKE the runner, this tool has NO no-target plan mode: the
+  identity map IS the gate input (the ruled gate: EMPTY OR MISSING map =
+  HARD ABORT), and with no target the map is unreadable = MISSING — the
+  tool prints the gated plan frame with the HARD-ABORT banner naming the
+  env pair and exits 1 above every write path. The runner could plan from
+  Firestore alone because its gate rode Firestore counts; the executor's
+  ENTIRE derivation rides the map, so a map-less "plan" would be fiction.
+- **CF-3 — the NM-1 mechanism.** 05 §6.1 (the governing, later text;
+  §6.7 risk item 3: "CLOSED by NM-1: Kevin is the sole super_admin")
+  settles the role rule: Kevin = the sole super_admin; every remaining
+  coach — Firestore 'admin' AND 'coach' alike — → coach_admin; parents →
+  family; roles are written only AFTER Kevin confirms the live roster,
+  and the list is "not derivable from code" (§6.1's own words) — so the
+  confirm MUST be an operator input. Construction: execute mode REQUIRES
+  `--super-admin-uid=<firebase_uid>` (the confirm made explicit and
+  auditable); the designated uid must be one of the planned coach
+  identities (anything else = named error ABOVE the write path); plan
+  mode prints the roster with roles marked pending-confirm and names the
+  required flag. This SUPERSEDES mapping.ts's NOTES-#3 `mapCoachRole`
+  ('admin' → super_admin): that mapping predates the settlement and its
+  own comment names the multi-super_admin minting NM-1 left open; the
+  FIELD mappings (NM-3 approved-status, NM-4 placeholder fallback) are
+  re-stated per the GC-1 DDL-as-contract idiom with consistency pins; the
+  frozen BSPC pures themselves are untouched. FLAGGED, not force-fit.
+- **CF-4 — the step-6a ordering gate.** Two bound texts compose: identity
+  README step 6 ("swimmer-id resolver comes from the Phase B roster
+  reconciliation") and roster README step 7 ("guardianship building for
+  Coach parents runs after this map exists"). Construction: a MISSING or
+  EMPTY `migration_swimmer_map` while any linkedSwimmerIds exist =
+  step-6a DEFERRED, named (zero 6a writes planned; the render quotes
+  roster README step 7 and points at the re-run) — NOT a whole-run abort
+  (steps 4/5/6b are legal before the roster backfill, which itself needs
+  the identity map for `created_by`) and NOT mass-dangling (dangling = a
+  resolver MISS against a BUILT map → dropped + REPORTED, the COPPA NM-6
+  repair as written; an UNBUILT map defers instead — mass-dropping
+  against an unbuilt map would be a FALSE COPPA repair). The executor is
+  idempotent (skip-existing everywhere), so the documented interleave —
+  identity 4/5/6b → roster 1–7 → re-run for 6a → step-7 audits — is two
+  invocations of the same tool; this also reconciles 06 §B2's
+  identity-then-roster spine with roster step 7's resolver note.
+- **CF-5 — write shapes + idempotency (the DDL is the contract).**
+  profiles upsert onConflict `user_id` (00001 UNIQUE) returning id → map
+  `profile_id` UPDATE (the README's "record profile_id in the map");
+  coach_groups upsert onConflict `(profile_id, practice_group)` (00002
+  PK); guardianships upsert onConflict `(guardian_profile_id,
+  swimmer_id)` (00002 UNIQUE); map rows with profile_id non-null SKIP
+  step 4; existing pairs SKIP. Types re-stated with provenance from
+  00001/00002 + the two map DDLs; profiles writes carry exactly
+  (user_id, email, full_name, role, account_status) — family_id is READ
+  for 6b, never written.
+- **CF-6 — scope walls + plan-layer checks.** Steps 4–6 EXACTLY: writes
+  NO auth users (step 3), runs NO step-7 audits (auditIdentityMap /
+  auditGuardianships remain the BSPC step-7 tools), touches NO
+  swimmers/roster rows (Phase B), never provisions 'bspc'-source map
+  rows, sends NO emails. Plan-layer audit-class checks (unprovisioned
+  uids, duplicate uids, out-of-domain practice groups vs the 00002 CHECK
+  domain, the COPPA dangling report) are CONSISTENT with the step-7
+  audits, not duplications of them.
+
+**TRIPWIRE CHECK (the standing rule):** material candidates — the
+executor's home + names (CF-1), target supply + no-target consequence
+(CF-2), the NM-1 confirm mechanism (CF-3), the 6a ordering gate (CF-4),
+the write shapes + idempotency keys (CF-5), the scope walls + plan-layer
+checks (CF-6) — every one resolved from bound text (05 §6.1/§6.5/§6.7,
+06 §B2/§B6, both READMEs, mapping.ts, the 00001/00002 DDL + the two map
+DDLs) composed with the standing GC-1 idiom. **NO TRIPWIRE FIRES**; the
+six construction facts are named above so the director can object to any
+of them before the Kevin-live session.
+
+### THE COMMS-LINE CLOSURE (ruling 5) — path taken: LAND, flagged
+
+Checked FIRST, as the conditional requires: a case-insensitive sweep of
+the bound 05/06 text for an existing announcement/comms precondition
+(announce / notify / comms / email-the / account-email) returns exactly
+TWO hits, both unrelated — 06:356 (the jobs queue "carries only BSPC-side
+announcements", §B3 mechanics) and 05:128 (NM-3's pending-parents
+"announcements/schedule" visibility line). 05 §6.5 step 4 and 06 §B6
+step 1 (the sign-in-disable step) carry NO comms precondition. **So the
+ONE named line lands at 06 §B6 step 1 — the sign-in-disable step's own
+sentence, per the doc's structure, dated — landed in THIS commit:**
+"and only after Kevin has sent the account announcement — the Kevin-owned
+comms line (ratified 2026-06-11, R-CLOSURE round): every coach and parent
+is told the account now lives on Supabase and how to set a password (the
+OD-6 paths: the landed forgot-password flow or an operator-sent invite)."
+
+**Effect:** every R-CLOSURE ruling is on the books; the pre-declaration is
+fixed before any landing; RC-1, RC-2, and RC-3 are unblocked, each landing
+only on its declared line.

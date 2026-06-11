@@ -404,7 +404,11 @@ guardianships-only at this sweep, alongside checklist items 3/9.
 ## §B6 — Firebase project death, ordered (D-CUT5 collapse plan)
 
 1. **Disable Email/Password sign-in** — only after the 05 §6.5 smoke
-   checklist passes (the PART A §7 standing sentence).
+   checklist passes (the PART A §7 standing sentence), **and only after
+   Kevin has sent the account announcement — the Kevin-owned comms line
+   (ratified 2026-06-11, R-CLOSURE round): every coach and parent is told
+   the account now lives on Supabase and how to set a password (the OD-6
+   paths: the landed forgot-password flow or an operator-sent invite).**
 2. **Firestore rules → deny-all;** data disposition per the §B2 keep/drop
    sheet record.
 3. **functions/ workspace retirement — LAST compute standing; the
