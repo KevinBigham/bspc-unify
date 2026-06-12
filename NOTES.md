@@ -5717,3 +5717,311 @@ them, it does not weld them).
 half of the cutover spine is COMPLETE on disk and has never run; the
 only daylight between here and the schedulable Kevin-live session is
 the R-3 ruling.
+
+---
+
+## 2026-06-11 — ROSTER-DRIVER ROUND (R-3): TRIPWIRE RECORD — the build STOPPED at the bound feed-back-in clause; numbered decisions for the director (paper only; NO code landed; all four bars (E))
+
+**What this entry is.** The ROSTER-DRIVER round opened under the rulings
+recorded in §A below, with the driver build (RD-1) bound to this clause:
+*"The resolution feed-back-in mechanism follows the bound text EXACTLY —
+if the bound text leaves it unpinned, TRIPWIRE: STOP, numbered mini-plan
++ red-team ending in decisions for the director. Do not invent a
+format."* The full-corpus evidence check came back UNPINNED, so the
+tripwire FIRED at RD-1 design time — BEFORE the round pre-declaration
+was fixed and before ANY landing. Nothing landed anywhere but this
+record: no RD-0 as declared (a pre-declaration table cannot honestly be
+fixed while the pin count and the gate construction hang on the open
+decisions), no RD-1 code, no RD-2 verdict, no 6a-loop line. BSPC stays
+FROZEN and untouched at `880aed8`; Coach untouched at `156e384`; all
+four bars are (E) at this commit — BSPC jest 835 (TZ=UTC) + pgTAP 343
+(Files=15) / Coach 1148 (110 suites) / Functions 115, heads
+byte-identical to the R-CLOSURE fresh runs. ZERO test changes anywhere.
+House precedent: the Phase D, Phase H, and Phase I scoping tripwires
+landed exactly this shape — one paper commit, then stop.
+
+### §A — THE ANTECEDENT RULINGS, recorded in words (the round opened under these)
+
+**The director ACCEPTED the R-CLOSURE round in full:** four exact
+landings (`e7778db` / `880aed8` / `156e384` / `ae293c8`), every bar on
+its pre-declared line. **The six construction facts CF-1..CF-6 are
+RATIFIED**, with two singled out: **CF-2** (no-target-aborts-as-MISSING —
+the identity map IS the gate input, so a missing target is the map
+MISSING and the HARD ABORT fires above every write path) and **CF-3**
+(the NM-1 confirm as the REQUIRED `--super-admin-uid` execute flag,
+superseding mapping.ts NOTES-#3 per the settled 05 §6.1). **The
+vault-door proof set P1–P4+P9 is NAMED THE STANDING STANDARD for
+write-capable tools:** every future write-capable script proves, with
+committed-tree line numbers — the --execute gate, every input HARD ABORT
+physically above the write path, write verbs confined to the one execute
+function, and the totality count (no other write verbs anywhere).
+
+**R-3 is RULED: BUILD**, on the R-2 pattern, with binding construction
+rules (HARD-STOP header; no default target; plan-only by default; CF-2
+input gates over BOTH the Coach swimmer export AND the identity map; the
+human-judgment gates as REPORT-AND-STOP with --execute REFUSING while
+either set is non-empty and the tool NEVER auto-resolving a possible
+same-swimmer match; steps 2–6 exactly with scope walls; pures pinned
+pre-declared, shell UNTESTED; lifecycle banked before pins; carve-out
+pre-declared at seven files). **Manual mode stays REJECTED.** **The
+boundary argument is ACCEPTED:** R-3 is the LAST seam of its class by
+construction (the dry-run's bound what-runs = identity README 1–8 +
+roster README 1–7; the identity half is fully driven; the §B2 DATA
+manifests are keep/drop-sheet work outside the dry-run spec). **The
+tsc-drift note is covered by the standing bank** (the 104 pre-existing
+tsc error lines; jest is the bar). **The green baseline is RATIFIED:**
+BSPC 835 (TZ=UTC) + pgTAP 343 (Files=15) / Coach 1148 (110 suites) /
+Functions 115. **BSPC is FULLY FROZEN again** — the 6a line, if needed,
+lands UNIFY-side (and §C MP-11 below proves it IS needed).
+
+### §B — THE TRIPWIRE: the evidence, in full
+
+The bound corpus on resolving the two human-judgment sets — ALL of it:
+
+1. **roster README step 3 (BSPC `880aed8`), verbatim:** "**STOP and
+   resolve manually if `ambiguous` is non-empty**; review
+   `nameOnlyCollisions` (created as new, but a human should confirm they
+   are genuinely different kids — avoids silent duplicate swimmers)."
+2. **reconcile.ts (frozen BSPC pure):** header — "same-name candidates
+   that cannot be confirmed by DOB are reported (not silently merged or
+   dropped)"; and the signature `reconcileRoster(coachSwimmers,
+   bspcSwimmers)` — deterministic in its two inputs, with NO
+   resolution/override parameter anywhere in the module.
+3. **migration_swimmer_map.sql, verbatim:** `match_method TEXT CHECK
+   (match_method IN ('usa_swimming_id', 'name_dob', 'created_new'))` —
+   the CHECK actively EXCLUDES any manual/override method.
+4. **06 §B2 (both homes):** "STOP on ambiguous" — nothing more.
+5. **The sweep:** 00_TERRAIN / 02 / 03 / 04 / 05 / NOTES carry no other
+   mention of ambiguous, nameOnlyCollisions, or any manual-resolution
+   recording format (the only grep hits are unrelated: 03's realtime
+   channel-name collisions; 02's P1-5 id collisions). There is no
+   feed-back-in mechanism anywhere in the bound corpus.
+
+**The contradiction, precisely.** The ruled construction says
+"--execute REFUSES while either set is non-empty." For `ambiguous`,
+that loop CAN close inside the bound text: every ambiguity is a
+source-data defect (two BSPC rows sharing one usa_swimming_id, or
+duplicate name+DOB rows), the pure is deterministic, and the map CHECK
+excludes overrides — so "resolve manually" can only mean FIX THE SOURCE
+DATA and re-run; the data is the only feed-back channel that exists.
+Declaring that THE mechanism is a ruling (RD-D2 below), but it invents
+nothing. For `nameOnlyCollisions` the loop CANNOT close: the README's
+own design says collision docs ARE created-as-new (the review is the
+duplicate-catching obligation), genuinely-different same-name kids are
+an expected and legitimate case — and NO data fix can clear such a
+collision, because it keys on the shared normalized name itself. Under
+the ruled refusal, one genuinely-different pair dead-locks --execute
+PERMANENTLY, and every exit is foreclosed: an acknowledgment flag
+invents a format ("Do not invent a format"), making collisions
+non-blocking contradicts the ruled sentence, and hand-creating the kid
+so the doc skips as already-mapped re-introduces the manual path the
+director rejected at R-2. A material construction fact the bound text
+does not pin → TRIPWIRE, STOP.
+
+### §C — THE NUMBERED MINI-PLAN (everything already pinned or derived; the post-ruling round is mechanical)
+
+- **MP-1 — names + carve-out.** `scripts/backfill-roster.ts` (thin I/O
+  shell, UNTESTED, HARD-STOP header) + `scripts/backfill-roster-plan.ts`
+  (pure: gates + plan derivation + render) +
+  `scripts/__tests__/backfill-roster-plan.test.ts` (synthetic fixtures
+  only). The firebase-admin carve-out grows by exactly the shell: SEVEN
+  named files, scripts/ only.
+- **MP-2 — the export read (README step 2).** Firestore `swimmers`
+  collection via firebase-admin (FIREBASE_ADMIN_KEY_PATH else
+  GOOGLE_APPLICATION_CREDENTIALS; the PART A §6 key handling). Docs read
+  into the bound `CoachSwimmerDoc` shape re-stated verbatim from the
+  frozen reconcile.ts, PLUS `createdBy` carried ALONGSIDE the bound
+  shape (ground truth: the Firestore docs carry it — seed-roster.ts:121
+  writes `createdBy: coachUid`; the frozen pure type stays untouched).
+- **MP-3 — targets + input gates (CF-2 EXACTLY).** Operator env pair
+  `BSPC_MIGRATION_SUPABASE_URL` +
+  `BSPC_MIGRATION_SUPABASE_SERVICE_ROLE_KEY`; a partial pair is a named
+  error; NO no-target plan mode — no target ⇒ the identity map is
+  MISSING ⇒ HARD ABORT naming the pair. The gates, each physically ABOVE
+  the plan-only return and any write call site (the P1–P4+P9 standard,
+  proven with committed-tree line numbers at landing):
+  (a) Coach swimmer export MISSING or EMPTY → HARD ABORT;
+  (b) identity map MISSING / EMPTY / zero-provisioned → HARD ABORT (the
+  map is BOTH the created_by resolver and the ordering proof that
+  identity steps 4/5 ran first);
+  (c) `migration_swimmer_map` TABLE unreadable → named HARD ABORT
+  pointing at roster README step 1 (the apply-the-SQL operator step; an
+  EMPTY map table is a normal first run, NOT an abort);
+  (d) the human-judgment gates per the RD-D1/RD-D2 rulings.
+- **MP-4 — the re-stated pures (DDL-as-contract idiom; frozen BSPC
+  originals untouched).** reconcileRoster (usa exact → name+DOB →
+  create-new with collision report; ambiguous on multi-candidates; the
+  exact norm functions), coachFieldsPatch (fill-NULLs-only; BSPC wins
+  every conflict; Coach consent/photo-block always carries over),
+  coachSwimmerToRows (the swimmer/coachProfile/legacyGoals triple),
+  legacyGoalsToGoalRows (trim/dedupe/drop-blank), auditSwimmerMap
+  (exactly-once / no-collapse / none-unprovisioned) — each with
+  consistency pins mirroring the frozen originals' pinned behaviors
+  (`__tests__/migration/roster-reconciliation.test.ts`).
+- **MP-5 — the practice-group domain.** Re-stated as the EIGHT-value
+  committed-chain set (00003:47-48 — Diamond, Platinum, Advanced, Gold,
+  Silver, Bronze, Masters, Swim Lessons), explicitly NOT the 00002
+  seven-value set (see RD-D5). The Coach app's own GROUPS constant
+  (src/config/constants.ts) is seven groups INCLUDING 'Masters' and
+  excluding 'Swim Lessons' — every Coach group is in-domain under the
+  committed 8-value set, so out-of-domain on the roster side fires only
+  on malformed data (doc excluded from create-new + REPORTED, the R-2
+  outOfDomain idiom). Matched docs never patch practice_group (not a
+  patch field — BSPC wins).
+- **MP-6 — write shapes (committed DDL chain).** Step 4 per matched
+  doc: `swimmers` UPDATE with the fill-NULLs patch (empty patch ⇒ no
+  UPDATE call) + the map record {firebase_doc_id, swimmer_id, method}
+  upsert onConflict firebase_doc_id ignoreDuplicates. Step 5 per
+  toCreate doc, in this order: `swimmers` INSERT
+  (coachSwimmerToRows.swimmer + created_by per RD-D3) returning id →
+  map record 'created_new' IMMEDIATELY (a partial failure can then never
+  re-create the kid) → `swimmer_coach_profile` INSERT (PK swimmer_id) →
+  `goals` INSERT (legacyGoalsToGoalRows; swimmer_id + event_name are the
+  only NOT NULLs — 00005:264). Failures REPORTED, never retried; any
+  failure ⇒ STOP banner.
+- **MP-7 — idempotency (RD-D4).** Docs with an existing map row SKIP
+  everything and are REPORTED as already-mapped — the ratified R-2
+  existing-pairs idiom and the only re-run-safe reading (the map PK is
+  firebase_doc_id). The same skip is what makes the RD-D2 data-fix loop
+  and the deferred-6a interleave converge across re-runs.
+- **MP-8 — the audit gate (README step 6, bound).** Execute mode: after
+  all writes, read back the FULL map and run auditSwimmerMap — not ok ⇒
+  STOP banner with the three defect lists. Plan mode prints the
+  PROJECTED audit (existing + planned rows) as preview; the bound gate
+  is the execute-side one.
+- **MP-9 — scope walls.** Writes ONLY swimmers / swimmer_coach_profile
+  / goals / migration_swimmer_map. No auth users, no profiles, no
+  roles, no guardianships (that is the executor's deferred 6a, AFTER
+  this map exists), no emails. Reads: Firestore swimmers; the identity
+  map; BSPC swimmers (the BspcSwimmerRow columns + the patch columns
+  display_name/gender/profile_photo_url); the swimmer map.
+- **MP-10 — lifecycle, banked BEFORE any pins land.** Driver + pins
+  retire at 06 §B6 step 5 with the rest of scripts/; that step's Coach
+  delta re-bases −55 → −(55+N), N = the pin count fixed in the
+  post-ruling round's pre-declaration; 1148+N − (55+N) = **1093 — the
+  ruled endpoint is preserved for any N; the delta is the binding
+  fact.** Expected pin shape, R-2 style: gate ×~4 / derive ×~8–10 /
+  render-plan ×~6 / render-summary ×~2.
+- **MP-11 — the 6a-loop line (the RD-0(b) conditional; CHECK half
+  executed).** Grep-proven: the
+  re-run-the-graph-executor-after-roster-step-7 completion move is named
+  NOWHERE in 05/06 — only roster README step 7, the executor's DEFER
+  reason, and RC-3's narrative carry it ⇒ the LAND path fires in the
+  post-ruling round: ONE dated cross-reference sentence in the 06 §B2
+  identity-then-roster paragraph (UNIFY-side, never the BSPC READMEs),
+  placed per the doc's own structure.
+- **MP-12 — the readback obligation carries.** The post-ruling round's
+  report reproduces the STOP-on-ambiguous implementation (the
+  report-and-stop rendering + the execute-refusal guard) verbatim from
+  the committed tree.
+
+### §D — RED-TEAM (each option attacked, including this plan's own derivations)
+
+- **RT-1 vs RD-D1(a) (reviewed flags).** Flag-fatigue: Kevin copies the
+  printed flags without reading. Mitigated by construction: one flag
+  printed INSIDE each per-collision evidence block (the doc's name/DOB
+  against every candidate's name/DOB/usa id), so the copy passes through
+  the evidence, and the execute summary re-prints what was acknowledged.
+  Residual accepted: no tool can force reading.
+- **RT-2 vs RD-D1(b) (README-faithful, non-blocking).** Nothing enforces
+  that the review happened before --execute; a silently duplicated kid
+  is the exact harm the director's never-auto-resolve rule exists to
+  prevent. This is why (a) is recommended despite being a new format.
+- **RT-3 vs RD-D2 (data-fix as THE mechanism).** It means editing live
+  BSPC rows mid-cutover. Defense: every ambiguity IS a live-data defect
+  (duplicate usa ids / duplicate name+DOB rows) — fixing it corrects the
+  live app regardless of the migration; the dry-run rehearses the loop
+  safely on synthetic fixtures; and an ambiguity the operator cannot
+  decide leaves the refusal standing, which is the bound STOP doing its
+  job.
+- **RT-4 — dead-lock audit of the recommended bundle.** ambiguous →
+  always data-fixable; collisions → always flaggable per RD-D1(a);
+  missing inputs → named aborts. NO permanent dead-lock remains (the
+  same audit that found the original one, re-run against the
+  recommendation).
+- **RT-5 vs RD-D3 (created_by NULL on miss).** Provenance loss — but
+  REPORTED per doc in plan and summary, and the column is nullable BY
+  canonical design (ON DELETE SET NULL: provenance there is already
+  best-effort).
+- **RT-6 vs MP-7 (mapped-docs-skip).** A doc mapped by a prior partial
+  run whose companion writes failed stays incomplete across re-runs.
+  Defense: that failure was REPORTED + STOP at its own run (MP-6's
+  ordering makes the hole visible); repairs are deliberately NOT
+  attempted (the R-2 never-retried idiom); a named known-limitation line
+  goes in the header.
+- **RT-7 — the boundary, re-checked.** After this driver: identity 1–8
+  fully driven (runner + executor); roster step 1 is a one-file SQL
+  apply (the .sql's own header: "Applied manually by the backfill
+  runner"; the identity map's twin is applied the same way), steps 2–6
+  are this driver, step 7 is a statement of effect. R-3 remains the LAST
+  seam of its class by construction.
+- **RT-8 vs RD-D5.** Could the executor's seven-value domain be
+  intended (coach assignments deliberately narrower)? The evidence says
+  no, twice: 00003 widens BOTH CHECKs "to the ratified 8 (canonical
+  enum set)" with 00002:39 declaring coach_groups carries "the same
+  CHECK as swimmers.practice_group" (the chain's intent is symmetric) —
+  and the Coach app's own GROUPS constant INCLUDES 'Masters', so a real
+  Masters assignment is producible today.
+
+### §E — THE DECISION QUEUE (numbered; recommendations marked)
+
+- **RD-D1 — the nameOnlyCollisions unblock (THE TRIPWIRE CORE).**
+  (a) **RECOMMENDED:** per-doc reviewed flags —
+  `--reviewed-collision=<docId>`, repeatable; --execute REFUSES naming
+  the exact missing docIds until EVERY collision doc is covered; the
+  plan prints each flag inside its evidence block. This is the NM-1
+  confirm idiom the director already ratified at R-2 (the explicit
+  operator token IS the human confirm), and the tool still never
+  auto-resolves: the flag only ever permits CREATE-AS-NEW, never a
+  match. It is an invented format until ruled — which is exactly what
+  this queue is for.
+  (b) README-faithful: collisions listed in full but non-blocking
+  (weakest protection; RT-2).
+  (c) Refusal + out-of-band manual creation (rejected-class: the manual
+  path rehearses nothing).
+- **RD-D2 — the ambiguous mechanism.** **RECOMMENDED: ratify data-fix +
+  idempotent re-run as THE mechanism** (the only bound-consistent
+  reading; §B). The plan names each ambiguous doc's candidate set and
+  the fix surface (BSPC admin UI / Coach app), and the refusal stands
+  while the set is non-empty. Alternative: a recorded manual-resolution
+  format — requires amending the FROZEN BSPC repo (the map CHECK + the
+  reconcile pures + their tests); heavy, NOT recommended.
+- **RD-D3 — created_by resolution.** **RECOMMENDED:** doc.createdBy →
+  identity map → profile_id (the executor's step 4 fills map.profile_id
+  — verified against migration_identity_map.sql and the committed
+  IdentityMapRow contract); unresolvable or absent → created_by NULL +
+  REPORTED per doc (the column is nullable with ON DELETE SET NULL —
+  canonical tolerates NULL provenance). Alternative: refuse execute on
+  any miss (couples the roster to a departed coach's provisioning; NOT
+  recommended).
+- **RD-D4 — the idempotency construction.** **RECOMMENDED: ratify**
+  mapped-docs-SKIP-before-reconcile + the MP-6 per-doc write order
+  (insert → map record → companions; failures reported, never retried).
+- **RD-D5 — the landed executor's PRACTICE_GROUP_DOMAIN drift (fresh
+  finding of this round's DDL verification, separate from the driver).**
+  Committed evidence: the executor re-states the 00002 seven-value set
+  (backfill-identity-graph-plan.ts:91, committed tree) but 00003:50-52
+  DROPPED and RE-ADDED the coach_groups CHECK at EIGHT values (adding
+  'Masters') — and the Coach app's GROUPS constant
+  (src/config/constants.ts) includes 'Masters', so the case is
+  REACHABLE: a real Masters coach assignment would be skipped + REPORTED
+  by the executor where the committed CHECK would accept the row.
+  Conservative in direction (under-creates, never violates the DB,
+  visibly reported) but a genuine re-statement-vs-committed-DDL drift —
+  exactly the class these sweeps exist to catch. **RECOMMENDED:** rule
+  the one-line domain correction + its pin update into the post-ruling
+  round's pre-declaration. Alternative: rule the narrower set
+  intentional and annotate the executor header (the evidence in RT-8
+  argues against).
+
+**With RD-D1..RD-D5 ruled, the post-ruling round is the declared RD
+shape end to end:** RD-0 (this acceptance + the rulings + THE
+PRE-DECLARATION TABLE with the exact pin count + the MP-11 6a line + the
+RD-D5 fix if ruled), RD-1 (the driver lands, never runs, vault-door
+proofs), RD-2 (the BUILD-ERA-CLOSING re-verdict).
+
+**Effect:** the build era's closing round stopped at its own declared
+tripwire, exactly as designed. The identity half of the cutover spine
+stands complete and never-run; the roster driver is fully designed with
+five numbered decisions between here and its landing; no tree moved
+except this record.
