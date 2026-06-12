@@ -6025,3 +6025,141 @@ tripwire, exactly as designed. The identity half of the cutover spine
 stands complete and never-run; the roster driver is fully designed with
 five numbered decisions between here and its landing; no tree moved
 except this record.
+
+---
+
+## 2026-06-11 — ROSTER-DRIVER ROUND TAKE 2, RD2-0: the tripwire stop ACCEPTED; RD-D1..RD-D5 RULED; the sweep verdict; the pre-declaration; the 6a sentence LANDED (the build resumes)
+
+**Acceptance, in words.** The director ACCEPTS the 7c931cb tripwire stop
+as CORRECT CONDUCT: firing on the unpinned feed-back-in mechanism
+instead of inventing a format was the designed behavior; the §A
+antecedent banking and the declared readback deviation (tripwire-record
+sections in place of the build sections) are both accepted as correct
+conduct. The 7c931cb precedent STANDS for this round: anything material
+still unpinned after the rulings = TRIPWIRE, stop again.
+
+**THE FIVE RULINGS, in words:**
+
+- **RD-D1 — RULED option (a), AS AMENDED:** the per-doc reviewed flag
+  `--reviewed-collision=<docId>` (repeatable) is the collision unblock —
+  plan mode prints every collision's FULL evidence block (the doc and
+  every candidate: name, DOB, group, usa-id presence) with its exact
+  flag inside the block; --execute REFUSES while any collision is
+  uncovered, naming the missing docIds; **the flag is ONE-DIRECTIONAL:
+  it permits CREATE-AS-NEW ONLY, never a match** (no flag-to-match path
+  exists in the tool at all); and **the preserved-acknowledgment-summary
+  addition**: the execute summary lists every acknowledged collision
+  with its evidence digest, rendered as a block the standing output
+  rules preserve in the cutover record (NOTES).
+- **RD-D2 — RULED: data-fix + idempotent re-run IS the mechanism** for
+  `ambiguous`; the override channel is DECLINED. The tool
+  reports-and-refuses with each doc's candidate set and the fix surface
+  named (BSPC admin UI / Coach app); resolution = fix the source data,
+  re-run; no resolution input exists.
+- **RD-D3 — RULED:** created_by = doc.createdBy → identity map →
+  profile_id; a miss (no row / NULL profile_id / absent createdBy) =
+  created_by NULL + a per-doc report in BOTH plan and summary.
+- **RD-D4 — RULED as written:** mapped-docs-SKIP-before-reconcile; the
+  per-doc write order swimmer INSERT → map record IMMEDIATELY →
+  companions; failures reported, never retried. **The never-recreated
+  invariant is NAMED** (a partial failure can never re-create a kid)
+  and goes in the driver's header verbatim.
+- **RD-D5 — RULED fix-recommended:** the one-line PRACTICE_GROUP_DOMAIN
+  correction to the committed eight-value end-state lands at RD2-1 with
+  the CONTENT-ONLY pin transform (zero count change), plus the bounded
+  re-stated-domain consistency sweep across all three tools. **THE
+  META-LESSON is added to the vault-door standard: a re-stated domain
+  derives from the DDL chain's END-STATE — never from a single
+  migration read in isolation.**
+- **RT-4's dead-lock re-audit is ACCEPTED:** ambiguous → always
+  data-fixable; collisions → always flaggable; missing inputs → named
+  aborts; no permanent dead-lock remains.
+
+**THE SWEEP VERDICT (run at design time, before this pre-declaration):**
+every re-stated enum/domain in the probe, runner, and executor was
+checked against the committed DDL chain's end-state. Findings:
+- **Executor: EXACTLY ONE drift** — `PRACTICE_GROUP_DOMAIN` (the
+  seven-value 00002 set) vs the 00003 end-state (eight values,
+  'Masters' added at 00003:50-52). Fix sites, exact: the constant
+  (plan :91) + four domain-citation lines (plan :90, :126, :503 —
+  the :503 line is RENDERED text — and shell :20). The executor's other
+  00002 cites (the PK pair :305, the UNIQUE pair :324, the table homes)
+  are structurally correct — 00003 changed neither — and stand.
+- **Executor roles/status: MATCH.** 'super_admin'/'coach_admin'/
+  'family' vs `user_role` and 'approved' vs `account_status` — both
+  enums created at 00001:13-14 and NEVER amended (the chain's only
+  ALTER TYPE ADD VALUEs are attendance_status ×4 at 00004:31-34,
+  touched by no tool).
+- **Runner: MATCH.** source 'coach'/'parent'/'bspc' vs the
+  migration_identity_map CHECK; no other re-stated domains.
+- **Probe: ZERO re-stated PG domains** (empty grep).
+Nothing structural anywhere → the one same-class drift lands at RD2-1,
+pre-declared by exact count below.
+
+**THE ROUND PRE-DECLARATION (fixed BEFORE any landing):**
+
+| # | Commit | Repo | One-line scope | BSPC jest | pgTAP | Coach jest | Functions |
+|---|---|---|---|---|---|---|---|
+| 0 | RD2-0 | UNIFY | this entry: the acceptance + the five rulings + the sweep verdict + this pre-declaration + the 6a sentence LANDED in the 06 §B2 spine paragraph (the 7c931cb MP-11 conditional resolved to LAND) | 835 (E) | 343 (E) | 1148 (E) | 115 (E) |
+| 1 | RD2-1 | Coach | the RD-D5 fix: PRACTICE_GROUP_DOMAIN → the committed 00003 eight-value end-state (+ 'Masters') + the FOUR 00002→00003 domain-citation lines (plan :90/:126/:503, shell :20) + EXACTLY THREE named content-only pin updates (the step-5 domain pin — local 'Sharks' probe keeps out-of-domain coverage, counts 2→3; the per-step-counts pin — STEP 5 line 3→4; the WARNING pin — 00003 text + 'coach-amy:Sharks'); ZERO pin count change | 835 (E) | 343 (E) | **1148 FRESH (content-only; 110 suites)** | **115 FRESH** |
+| 2 | RD2-2 | Coach | the roster driver LANDS, never runs: `scripts/backfill-roster.ts` (thin I/O shell, UNTESTED, HARD-STOP header carrying the never-recreated invariant + the RT-6 known-limitation line) + `scripts/backfill-roster-plan.ts` (pure: gates + reconcile re-statement + plan derivation + renders) + **+43 pins** in `scripts/__tests__/backfill-roster-plan.test.ts` (suites 110 → 111) | 835 (E) | 343 (E) | **1191 FRESH ×2 (pre-commit + committed tree)** | **115 FRESH** |
+| 3 | RD2-3 | UNIFY | the BUILD-ERA-CLOSING re-verdict: every ruled seam + R-1/R-2/R-3 + RD-D1..D5 + the landed 6a loop, re-run against the committed trees | 835 (E) | 343 (E) | 1191 (E) | 115 (E) |
+
+(E) = untouched-repo endpoint cite, legal only while that repo's head is
+byte-identical to its nearest proven run (BSPC `880aed8` carries the
+RC-1 committed-tree fresh runs all round — the freeze means it never
+moves). **The moving bars: Coach 1148 EXACT at RD2-1 (content-only,
+proven fresh) and Coach 1148 → 1191 (+43, ZERO deletions) at RD2-2.**
+Landing outside a declared line = STOP and explain.
+
+**The +43 pin breakdown, pre-declared EXACT:** consistency pins
+mirroring the frozen BSPC originals ×19 (reconcileRoster ×8 /
+coachFieldsPatch ×3 / coachSwimmerToRows ×2 / legacyGoalsToGoalRows ×2 /
+auditSwimmerMap ×4) + runRosterInputGate ×6 (export MISSING; export
+EMPTY; identity map MISSING; identity map EMPTY-or-zero-provisioned;
+swimmer-map TABLE unreadable naming README step 1; EMPTY swimmer map
+passes as the normal first run) + deriveRosterPlan ×8 (mapped-docs
+skip+report; matched→patch plans incl. empty-patch-no-UPDATE;
+collision-docs-in-toCreate uncovered by default; reviewed flags split
+covered/uncovered naming missing docIds; out-of-domain under the 00003
+eight-value set with 'Masters' IN; created_by resolves via profile_id;
+created_by miss → NULL + report; projected audit composes
+existing+planned) + renderRosterPlan ×6 (header+HARD STOP+counts;
+gate-abort banner; the collision evidence block with its inline flag;
+the ambiguous block naming candidate sets + fix surfaces + the
+no-override rule; out-of-domain/created-by-miss/already-mapped
+warnings; the named plan-only no-op tail + EXECUTE MODE line) + the
+execute-refusal renders ×2 (ambiguous refusal names docs + the
+data-fix mechanism + no-override; collision refusal names EXACTLY the
+missing docIds + their flags) + renderRosterSummary ×2 (counts +
+failures STOP block; the ACKNOWLEDGED COLLISIONS preservation block
+with evidence digests).
+
+**Lifecycle, banked + named BEFORE the pins land:** the driver pair +
+its 43 pins retire at **06 §B6 step 5** (the scripts/ deletion step,
+with the probe, runner, executor, and seeds). That step's Coach delta
+re-bases **−55 → −98** (seeds −4 + probe −14 + runner −17 + executor
+−20 + driver −43): **1191 − 98 = 1093 — the ruled endpoint is
+preserved; the step's delta is the binding fact.**
+
+**The carve-out, pre-declared:** firebase-admin stays scripts/-only and
+grows by EXACTLY the driver shell — SEVEN named files:
+probe-firebase-inventory.ts, provision-identities.ts,
+backfill-identity-graph.ts, **backfill-roster.ts (new)**, seed-meets.ts,
+seed-roster.ts, seed-demo-data.ts.
+
+**The 6a sentence — LANDED (this commit).** The 7c931cb MP-11
+conditional resolved to LAND (grep-proven absent from 05/06); the dated
+cross-reference now sits in the 06 §B2 spine paragraph, verbatim:
+"**The 6a completion loop (landed 2026-06-11, ROSTER-DRIVER round,
+RD2-0 ruling): after roster step 7 has built the swimmer map, RE-RUN
+the steps-4–6 graph executor — its deferred step 6a now completes the
+Coach-parent guardianship links (safe by its idempotent upserts:
+completed steps skip) — and only then do the identity step-7/8 audits
+close.**"
+
+**Tripwire check for this round:** with the five rulings, every [DECIDE]
+hole in the 7c931cb mini-plan is closed; MP-1..MP-12 stand as the
+construction facts AS AMENDED by the rulings; the design reads found NO
+new unpinned material fact. NO TRIPWIRE FIRES — the build proceeds on
+the declared lines above.

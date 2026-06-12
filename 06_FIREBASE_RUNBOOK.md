@@ -265,7 +265,12 @@ exists. The identity manifest is `migration/identity/README.md` steps 1–8
 dangling-link COPPA repair; audits in==out, no dangling, no duplicates),
 followed by the roster manifest (`migration/roster/README.md` steps 1–7 —
 reconcile, **STOP on ambiguous**, map audit) which builds the swimmer-id
-resolver everything else needs.
+resolver everything else needs. **The 6a completion loop (landed
+2026-06-11, ROSTER-DRIVER round, RD2-0 ruling): after roster step 7 has
+built the swimmer map, RE-RUN the steps-4–6 graph executor — its
+deferred step 6a now completes the Coach-parent guardianship links
+(safe by its idempotent upserts: completed steps skip) — and only then
+do the identity step-7/8 audits close.**
 
 **Every DATA manifest below runs only per the keep/drop sheet** Kevin
 signs at execution with the §B0 counts in front of him; every drop becomes
