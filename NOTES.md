@@ -6163,3 +6163,122 @@ hole in the 7c931cb mini-plan is closed; MP-1..MP-12 stand as the
 construction facts AS AMENDED by the rulings; the design reads found NO
 new unpinned material fact. NO TRIPWIRE FIRES — the build proceeds on
 the declared lines above.
+
+---
+
+## 2026-06-11 — ROSTER-DRIVER ROUND TAKE 2, RD2-3: THE BUILD-ERA-CLOSING RE-VERDICT (every ruled seam + R-1/R-2/R-3 + RD-D1..D5 + the landed 6a loop, re-run against the committed trees)
+
+**Method.** Fresh re-run of the full readiness sweep against the trees as
+committed this round (UNIFY `97796a0`, BSPC `880aed8` — frozen,
+untouched, byte-identical to its proven runs — Coach `a5925aa`).
+Quote-checks read the LANDED text; the vault-door proofs were run
+against the committed trees and are reproduced in the round readback.
+
+**The five ruled GC seams — ALL STANDING CLOSED.** GAP-A's TERRAIN §0 +
+06 §B0 corrections are untouched (this round's only 06 edit is the §B2
+6a sentence, not the census); GAP-B stands pointer-complete in all four
+homes; GAP-C stands and is now THREE tools deep (runner + executor +
+driver, all landed, none ever run); GAP-D's smoke items stand verbatim;
+GAP-E re-proven this round (the faithful portal grep EMPTY).
+
+**R-1 — STANDING CLOSED.** BSPC stayed FROZEN the whole round: zero
+commits, head `880aed8`, (E) cites legal throughout.
+
+**R-2 — STANDING CLOSED, and now END-STATE-TRUE.** The RD-D5 correction
+landed at `9b842f5` (3 files, +18/−9): PRACTICE_GROUP_DOMAIN is the
+committed 00003 eight-value set; the four 00002→00003 domain-citation
+lines updated (including the RENDERED :503 warning text); EXACTLY the
+three pre-declared content-only pin updates, zero count change; Coach
+**1148 EXACT** fresh twice (pre-commit + committed tree); Functions
+**115** fresh. The sweep verdict stands: that was the ONLY re-stated
+domain drift in all three tools.
+
+**R-3 — CLOSED AS RULED.** The roster steps-2–6 driver landed at
+`a5925aa` (3 files, 1961 insertions, ZERO deletions) and was verified
+against EVERY binding construction rule on the COMMITTED tree:
+- HARD-STOP header (Kevin-live only; first live execution = the GAP-B
+  dry-run; the NEVER-RECREATED invariant and the RT-6 known-limitation
+  line both named in it, as ruled).
+- Steps 2–6 EXACTLY with the scope walls: writes NO auth users, NO
+  profiles, NO roles, NO guardianships (the executor's deferred 6a runs
+  after this map exists), sends NO emails.
+- NO default target; the operator env pair only; partial = named error;
+  zero embedded refs or credentials; plan-only by default with the
+  NAMED no-op line.
+- THE GATE ANATOMY, proven with committed-tree line numbers: the CF-2
+  gate computed at main():376; its HARD-ABORT exit (:387→:393) sits
+  physically ABOVE the plan-only return (:395), the RD-D2 ambiguous
+  refusal (:400→:404), the RD-D1 collision refusal (:406→:411), and the
+  single write call (:414). Write verbs are confined to
+  executeRoster (:257): swimmers UPDATE :281 → map upsert :293
+  (matched); swimmers INSERT :309 → map upsert :323 IMMEDIATELY (the
+  never-recreated invariant) → swimmer_coach_profile INSERT :340 →
+  goals INSERT :352 (created). The shell contains ZERO .delete/.rpc
+  anywhere (the P9 totality count).
+- RD-D1 AS RULED: per-collision evidence blocks (the doc and every
+  candidate: name, DOB, group, usa-id presence) with the exact
+  `--reviewed-collision=<docId>` flag inside each block; the refusal
+  names EXACTLY the missing docIds; the flag is one-directional
+  (create-as-new only — no flag-to-match path exists); acknowledged
+  collisions are digested and rendered under "PRESERVE THIS BLOCK IN
+  THE CUTOVER RECORD (NOTES)".
+- RD-D2 AS RULED: ambiguous = report-and-refuse naming each candidate
+  set + the fix surfaces (BSPC admin UI / Coach app); no override
+  channel exists anywhere in the tool.
+- RD-D3 AS RULED: created_by = doc.createdBy → map profile_id; misses →
+  NULL + per-doc report in plan AND summary.
+- RD-D4 AS RULED: mapped-docs-SKIP before reconciliation; the per-doc
+  write order; failures REPORTED, never retried; the execute-side
+  auditSwimmerMap gate (step 6) over the READ-BACK map, failure = STOP.
+- The pures re-stated VERBATIM from the frozen BSPC reconcile.ts with
+  19 consistency pins; the DDL contracts re-stated from the chain
+  END-STATE (the RD-D5 meta-lesson applied at birth: the EIGHT-value
+  00003 swimmers domain, 'Masters' in-domain by pin).
+- Bars: targeted 42/43 first run — ONE test-fixture bug (the default
+  fixture doc carries no DOB, so it collides rather than matches),
+  fixed pre-commit and NAMED — then 43/43; Coach **1191 EXACT** twice
+  (fresh pre-commit + fresh on the committed tree after the formatter
+  restyle; 111 suites; tree clean = 0); Functions **115** fresh; tsc
+  filtered: ZERO driver lines (the 104 pre-existing lines stand).
+- Lifecycle: banked at RD2-0 BEFORE the pins — the §B6.5 delta re-based
+  −55 → −98; 1191 − 98 = **1093**, the ruled endpoint preserved.
+  Carve-out grew by EXACTLY the driver shell: the SEVEN pre-declared
+  firebase-admin files, scripts/ only; src/ and app/ EMPTY.
+
+**RD-D1..RD-D5 — ALL EXECUTED AS RULED** (D1 the flags + preserved
+acknowledgments; D2 data-fix as THE mechanism, no override; D3 the
+profile_id lookup with NULL+report; D4 the idempotency construction +
+the invariant in the header; D5 the fix + the sweep + the meta-lesson
+now in the vault-door standard).
+
+**The 6a completion loop — LANDED AND NAMED in the bound sequence**
+(06 §B2 spine paragraph, RD2-0): after roster step 7 builds the map,
+the graph executor RE-RUNS for its deferred step 6a, then the identity
+step-7/8 audits close. The MP-11 conditional is closed.
+
+**Fresh-eyes residual check: NONE.** The boundary argument, re-checked
+against the landed trees: the dry-run's bound what-runs is identity
+README 1–8 + roster README 1–7 (05 §6.5 step 1). Identity 1–8 is fully
+tool-driven (probe → §6.1 runner → steps-4–6 executor). Roster step 1
+is the bound SQL-apply operator step (the .sql's own header), steps 2–6
+are this driver, step 7 is the map's effect — now wired into the named
+6a loop. The §B2 DATA manifests remain keep/drop-sheet work outside the
+dry-run's bound success spec. Every seam of the executor/driver class
+is closed; no new class emerged from this sweep.
+
+**VERDICT: READY — THE BUILD ERA IS CLOSED.** Every ruled seam stands
+closed and proven on the committed trees; every bar landed exactly on
+its pre-declared line (1148 content-only, then 1191 = 1148+43); the
+cutover spine — identity AND roster — is COMPLETE on disk and has never
+run. **The next step is SCHEDULING THE KEVIN-LIVE SESSION per the
+runbook: the dry-run (05 §6.5 step 1 — fresh throwaway project,
+00001..00013, synthetic fixtures only, success = audits green + probe
+non-empty + both smoke logins, teardown deleted and recorded) runs
+FIRST; splitting the dry-run and the live cutover into separate
+sittings is permitted (the runbook orders them, it does not weld
+them).**
+
+**Effect:** the build era that began with Phase A closes here. Four
+never-run tools (probe, runner, executor, driver) + 06 PART B + the 05
+§6.5 order are the complete machine; everything between this commit and
+a migrated club is Kevin-live operation.
