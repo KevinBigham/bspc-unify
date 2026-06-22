@@ -6323,3 +6323,109 @@ Coach 1191 / Functions 115.
 This sitting = SITTING 1, the 05 §6.5 step-1 dry-run rehearsal against
 THROWAWAY projects ONLY. The real Firebase project and any real Supabase
 project are UNTOUCHABLE this sitting.
+
+## 2026-06-22 — SITTING 1 · STEP 1: the FIXTURE MANIFEST banked
+
+The synthetic rehearsal fixtures, designed from the seed-demo-data.ts
+shapes and verified against the frozen reconcile pure + the two plan
+pures. ALL data below is invented — no real swimmer/family/coach. The
+baseline seeder already supplies most cases for free; only 5 Firebase
+`swimmers` docs and 5 Supabase `swimmers` rows are added to force the
+four tricky roster situations + an explicit Masters create. No fixture
+fires a tripwire: every bound case (clean match by usa_swimming_id, clean
+match by name+DOB, create, RD-D1 collision, RD-D2 ambiguous→data-fix→
+re-run, RD-D5 Masters, super-admin coach, deferred-6a parent, §6.1 probe)
+is covered by construction.
+
+=====BEGIN STEP-1 FIXTURE MANIFEST=====
+
+WHAT THE BASELINE (seed-demo-data.ts) ALREADY COVERS — no work needed:
+  • coaches/demo-coach-alpha — role 'admin', groups = all 7 (incl 'Masters'),
+    email demo.coach.alpha@example.com. → feeds --super-admin-uid=demo-coach-alpha
+    (the SYNTHETIC SUPER-ADMIN; graph makes it super_admin, all others coach_admin).
+  • coaches/demo-coach-beta — role 'coach', email demo.coach.beta@example.com → coach_admin.
+  • parents/demo-parent — email demo.parent@example.com, linkedSwimmerIds=['demo-swimmer-01'].
+    → EXERCISES THE DEFERRED 6a LOOP: demo-swimmer-01 only resolves AFTER the roster
+    backfill maps it, so the first graph run DEFERS 6a; the post-roster re-run lands the
+    guardianship. Also satisfies the §6.1 probe (a parent uid resolving a non-empty profile).
+  • swimmers/demo-swimmer-01..30 — firstName 'BSPC Demo', lastName '01'..'30' (all UNIQUE
+    names), NO usaSwimmingId, DOB 201X-01-15, createdBy 'demo-coach-alpha'. With NO matching
+    BSPC rows, ALL 30 are clean CREATEs → covers the CREATE case.
+    demo-swimmer-07/14/21/28 are group 'Masters' → also cover RD-D5 from the baseline.
+
+STEP-1 ADDITIONS — Firebase `swimmers` docs (loaded by a transient rehearsal-only loader;
+see MECHANISMS). All createdBy='demo-coach-alpha' (so created_by resolves; no RD-D3 miss):
+
+  [A] docId rehearsal-match-usa     — firstName 'Match'   lastName 'Usa'    group Gold
+        gender M  DOB 2014-02-02  usaSwimmingId 'USAID-MATCH-001'  displayName 'Match Usa Display'
+        SERVES: clean MATCH by usa_swimming_id + a NON-EMPTY fill-NULLs patch (step-4 UPDATE branch).
+  [B] docId rehearsal-match-namedob — firstName 'Namedob' lastName 'Match'  group Silver
+        gender F  DOB 2013-03-03  NO usaSwimmingId  displayName 'Namedob Match'  (no consent/photo flags)
+        SERVES: clean MATCH by name+DOB + an EMPTY patch (step-4 map-record-only branch).
+  [C] docId rehearsal-collision     — firstName 'Casey'   lastName 'Rivers'  group Bronze
+        gender F  DOB 2015-05-05  NO usaSwimmingId  displayName 'Casey Rivers'
+        SERVES: NAME-ONLY COLLISION (RD-D1) — same name as BSPC row C but DIFFERENT DOB →
+        created-as-new, requires --reviewed-collision=rehearsal-collision.
+  [D] docId rehearsal-ambiguous     — firstName 'Jordan'  lastName 'Banks'   group Advanced
+        gender M  DOB 2012-06-06  usaSwimmingId 'USAID-DUP-009'  displayName 'Jordan Banks'
+        SERVES: AMBIGUOUS (RD-D2) — its usa id matches TWO BSPC rows → report-and-refuse;
+        resolved by the DATA FIX below, then re-run → clean usa_swimming_id match.
+  [E] docId rehearsal-masters       — firstName 'Marina'  lastName 'Masters' group Masters
+        gender F  DOB 1990-09-09  NO usaSwimmingId  displayName 'Marina Masters'
+        SERVES: explicit RD-D5 'Masters' create (in-domain under the 00003 eight-value CHECK).
+
+STEP-1 ADDITIONS — Supabase `swimmers` seed rows (synthetic; via SQL; family_id NULL is legal
+post-00003; practice_group in the 8-value domain). Explicit UUIDs for exact verification:
+
+  rowA  id 11111111-0000-4000-8000-0000000000a1  first_name Match   last_name Usa
+        DOB 2014-02-02  usa 'USAID-MATCH-001'  practice_group Gold
+        display_name NULL  gender NULL  profile_photo_url NULL
+        → the [A] usa match target; NULLs let the fill-patch fire.
+  rowB  id 11111111-0000-4000-8000-0000000000b2  first_name Namedob last_name Match
+        DOB 2013-03-03  usa NULL  practice_group Silver
+        display_name 'Namedob Match'  gender F  profile_photo_url 'https://example.com/p.jpg'
+        → the [B] name+DOB match target; fully populated → empty patch.
+  rowC  id 11111111-0000-4000-8000-0000000000c3  first_name Casey   last_name Rivers
+        DOB 2011-11-11  usa NULL  practice_group Platinum
+        display_name 'Casey Rivers (Sr)'  gender F
+        → the [C] collision candidate (different DOB = different kid; never matched).
+  rowD1 id 11111111-0000-4000-8000-0000000000d4  first_name Jordan  last_name Banks
+        DOB 2012-06-06  usa 'USAID-DUP-009'  practice_group Advanced
+        display_name 'Jordan Banks'  gender M
+  rowD2 id 11111111-0000-4000-8000-0000000000d5  first_name Jordan  last_name Banks-Twin  ← the DEFECT
+        DOB 2012-06-06  usa 'USAID-DUP-009'  practice_group Advanced
+        display_name 'Jordan Banks Twin'  gender M
+        → rowD1+rowD2 share one usa id → [D] is AMBIGUOUS.
+
+THE RD-D2 DATA FIX (rehearsed between plan run #1 and the --execute):
+  UPDATE swimmers SET usa_swimming_id = NULL WHERE last_name = 'Banks-Twin';   (clears the duplicate)
+  → re-run plan: [D] now matches rowD1 alone by usa_swimming_id; ambiguous is empty.
+
+CASE → COVERAGE CHECK (all bound cases fire):
+  clean MATCH usa_swimming_id … [A]              clean MATCH name+DOB … [B]
+  CREATE … baseline 30 + [E] (+[C] as created-new)   NAME-ONLY COLLISION … [C] (RD-D1)
+  AMBIGUOUS→data-fix→re-run … [D] (RD-D2)        Masters domain … baseline 07/14/21/28 + [E] (RD-D5)
+  super-admin coach … demo-coach-alpha            deferred-6a parent … demo-parent
+  §6.1 probe non-empty … demo-parent resolves     step-4 both branches … [A] non-empty / [B] empty patch
+
+NO INTERFERENCE: baseline 30 ('bspc demo NN', no usa) never match/collide with the 5 BSPC rows
+('match usa','namedob match','casey rivers','jordan banks','jordan banks-twin'); the 5 added docs
+are mutually unique. Identity side stays exactly the baseline 3 auth users (no new coaches/parents),
+so emails stay unique. auditSwimmerMap: 35 entries, each doc once, each swimmer_id once (matched
+rows A/B/D1 distinct; creates distinct) → green by construction.
+
+MECHANISMS to PROPOSE-and-approve in STEP 2/3 (flagged for honesty; none is a tripwire):
+  1. Loader for the 5 added docs = a TRANSIENT rehearsal-only `tsx` script (firebase-admin,
+     FIREBASE_ADMIN_KEY_PATH=throwaway, synthetic-only), shown + run once + DELETED at teardown.
+     NOT seed-demo-data.ts (frozen) and NEVER committed to the frozen repos.
+  2. auditIdentityMap + auditGuardianships + the §6.1 probe have NO landed runner (only the
+     roster's auditSwimmerMap runs in-tool). → read-only SQL equivalents computing their exact
+     ok-conditions (no NULL user_id/profile_id; no dup (guardian,swimmer); every parent uid →
+     non-null profile_id).
+  3. Smoke logins: provisioning makes auth users with NO password (OD-6 fresh-credentials).
+     → set a password on the throwaway auth users via the admin API, then sign in (rehearses the
+     forced-reset/invite path).
+  4. on_auth_user_created disable/enable = ALTER TABLE auth.users DISABLE/ENABLE TRIGGER
+     on_auth_user_created (trigger defined at 00001:351).
+
+=====END STEP-1 FIXTURE MANIFEST=====
