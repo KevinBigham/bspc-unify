@@ -6429,3 +6429,83 @@ MECHANISMS to PROPOSE-and-approve in STEP 2/3 (flagged for honesty; none is a tr
      on_auth_user_created (trigger defined at 00001:351).
 
 =====END STEP-1 FIXTURE MANIFEST=====
+
+## 2026-06-22 — SITTING 1 · STEP 2: throwaway environments built + loaded (with a seeder-bug finding)
+
+Both throwaway environments stood up and loaded with synthetic fixtures. One
+genuine bug surfaced (the dry-run doing its job) + the KEY-SAFETY gate caught a
+real-project key before any write. Records below.
+
+**(0) KEY-SAFETY GATE CAUGHT A REAL-PROJECT KEY — then cleared.**
+Kevin's first downloaded key was `bspc-coach-app-firebase-adminsdk-fbsvc-7eaaea06c5.json`.
+Per the gate, BEFORE any run I extracted ONLY the project_id (no secret fields):
+`project_id: bspc-coach-app` = THE REAL PROJECT. HARD STOP — not used for any run.
+Diagnosis: Kevin had generated a key inside the EXISTING real project instead of a
+new one. Remediation: real key deleted from Downloads; Kevin created a genuinely new
+project; replacement key `bspc-throwaway-firebase-adminsdk-fbsvc-a2a01e730b.json`
+re-checked → `project_id: bspc-throwaway` ✅. The gate worked exactly as designed.
+
+**(1) SUPABASE (target) = LOCAL throwaway.** Substrate ruling: local `supabase start`
+on localhost (safest — no cloud Supabase reachable; local keys are public/non-secret).
+`supabase --workdir BSPC/ACTIVE start -x vector,logflare` → migrations 00001..00013
+applied on boot; Project URL `http://127.0.0.1:54321`, DB `postgres:postgres@127.0.0.1:54322`.
+DB was already pristine (swimmers/profiles/auth.users/families all 0 — no reset needed).
+Applied the two transient map DDLs + seeded the 5 synthetic BSPC rows via docker-exec psql
+(no local psql binary; container `supabase_db_bspc-swim-app`). VERBATIM verify:
+```
+CREATE TABLE / COMMENT / CREATE TABLE / COMMENT / INSERT 0 5
+ swimmers = 5
+ id_map = migration_identity_map | sw_map = migration_swimmer_map
+ id_map_rows = 0 | sw_map_rows = 0
+ Jordan | Banks      | USAID-DUP-009   | Advanced  | 2012-06-06
+ Jordan | Banks-Twin | USAID-DUP-009   | Advanced  | 2012-06-06   (the RD-D2 duplicate)
+ Namedob| Match      |                 | Silver    | 2013-03-03
+ Casey  | Rivers     |                 | Platinum  | 2011-11-11
+ Match  | Usa        | USAID-MATCH-001 | Gold      | 2014-02-02
+```
+Confirmed pre-seed: `usa_swimming_id` has NO UNIQUE constraint (so the RD-D2 duplicate
+seeds cleanly); `family_id` nullable; gender CHECK (M|F); practice_group CHECK = the
+8-value domain incl Masters.
+
+**(2) FIREBASE (source) = CLOUD throwaway `bspc-throwaway`, Spark.** Firestore enabled
+by Kevin (first run surfaced SERVICE_DISABLED naming `project=bspc-throwaway` — itself a
+proof the key targets the throwaway). Loaded the demo fixtures + 5 rehearsal docs. VERBATIM:
+```
+Target Firebase project_id: bspc-throwaway
+Loaded 736 docs (731 baseline + 5 rehearsal additions).
+Readback: coaches=2 parents=1 swimmers=35
+Rehearsal docs: rehearsal-match-usa, rehearsal-match-namedob, rehearsal-collision, rehearsal-ambiguous, rehearsal-masters
+```
+
+**(3) FINDING — seed-demo-data.ts cannot run standalone (latent bug).** Run directly via
+`tsx`, it threw at commitWrites:
+```
+Error: Value for argument "data" is not a valid Firestore document. Cannot use "undefined"
+as a Firestore value (found in field "group"). ... enable `ignoreUndefinedProperties`.
+  at commitWrites (scripts/seed-demo-data.ts:411) at main (scripts/seed-demo-data.ts:428)
+```
+Root cause: line 276 builds a demo VideoSession with `group: undefined`, and line 394
+`getFirestore()` is called WITHOUT `ignoreUndefinedProperties` → the single undefined field
+in ONE unused-by-spine doc aborts the WHOLE batch (coaches/parents/swimmers included).
+The migration spine never reads sessions; this is purely a seeder-execution defect.
+
+WORKAROUND (no edit to the frozen file): transient `scripts/_rehearsal-load-fixtures.ts`
+imports the seeder's own exported `buildDemoWrites()` (→ byte-identical baseline fixtures),
+calls `db.settings({ ignoreUndefinedProperties: true })`, then commits baseline + the 5
+rehearsal docs. Hard guards in the wrapper: refuses unless EXPO_PUBLIC_BSPC_ENV=demo AND
+the key's project_id contains "throwaway". Untracked scratch file; never `git add`-ed;
+deleted at teardown → the frozen BSPC-Coach-App tree stays byte-identical.
+
+RED-TEAM: (a) same data — it calls the seeder's own builder; (b) ignoreUndefinedProperties
+cannot harm the spine — every field the spine reads already coalesces missing→null/''; the
+only known undefined is the unused videoSession.group; (c) no real-project reach — wrapper
+guard + the pre-run project_id print; (d) no frozen-tree drift — untracked + deleted.
+
+DECISION FOR THE DIRECTOR: workaround accepted for the dry-run; the seeder bug
+(seed-demo-data.ts:276 `group: undefined` + :394 missing `ignoreUndefinedProperties`)
+is logged here to be FIXED in a later build window — out of scope for the frozen era.
+
+STEP 2 COMPLETE. Next = STEP 3, the spine (05 §6.5 / 06 §B2): disable on_auth_user_created
+→ identity provision (plan→execute) → identity graph (plan→execute, --super-admin-uid=
+demo-coach-alpha; 6a defers) → roster (plan→fix ambiguous→re-run→execute --reviewed-collision=
+rehearsal-collision) → re-run graph for 6a → re-enable trigger → audits + §6.1 probe → smoke logins.
