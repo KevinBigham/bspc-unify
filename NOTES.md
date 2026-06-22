@@ -6282,3 +6282,44 @@ them).**
 never-run tools (probe, runner, executor, driver) + 06 PART B + the 05
 §6.5 order are the complete machine; everything between this commit and
 a migrated club is Kevin-live operation.
+
+---
+
+## 2026-06-15 — SITTING 1 (dry-run rehearsal) OPENS · DIRECTOR ROTATION #2 · acceptance + the SITTING-1 RULINGS recorded
+
+**(a) Outgoing-director acceptance — BUILD ERA CLOSED.** The outgoing
+director ACCEPTED the ROSTER-DRIVER TAKE 2 round (RD2-0..RD2-3): the
+build era is CLOSED with a READY verdict at UNIFY head `e97d8af`. The
+four never-run cutover tools (probe-firebase-inventory.ts,
+provision-identities.ts, backfill-identity-graph.ts, backfill-roster.ts)
++ 06 PART B + the 05 §6.5 order are the complete cutover machine —
+complete on disk, never run.
+
+**(b) DIRECTOR ROTATION #2.** A new director is seated (separate chat;
+authored this sitting's executor prompt); the director role is absorbed.
+Heads re-verified at sitting open, all clean and level on
+`## main...origin/main`: UNIFY `e97d8af` / BSPC `880aed8` / Coach
+`a5925aa`. The four bars carry by (E) — no tested repo moved, every head
+byte-identical to its last proven run: BSPC 835 (TZ=UTC) + pgTAP 343 /
+Coach 1191 / Functions 115.
+
+**(c) THE SITTING-1 RULINGS.**
+- **The dry-run is MANDATORY and runs FIRST.** A skip was PROPOSED by
+  Kevin and DECLINED by the director. Reasoning recorded: real-roster
+  data of unknown extent; a hard-to-undo cutover; proof-over-confidence.
+- **Environment = a fresh THROWAWAY Firebase cloud project** (Kevin's
+  steer + director ruling), free Spark tier, with its OWN
+  service-account key saved clearly OUTSIDE the repo root.
+- **THE KEY-SAFETY LAW.** Every tool/seed run points
+  `FIREBASE_ADMIN_KEY_PATH` at the throwaway key; the resolved Firebase
+  project_id AND the Supabase URL are confirmed THROWAWAY before each
+  run. NEVER run seed-roster.ts or seed-meets.ts — they are hard-wired
+  to the repo-root google-service-account.json = the REAL key.
+- **The fixtures MUST genuinely exercise** the RD-D1 collision flow
+  (`--reviewed-collision`), the RD-D2 ambiguous→data-fix flow
+  (report-and-refuse → fix source → re-run; no override channel), and
+  the RD-D5 'Masters' practice-group domain.
+
+This sitting = SITTING 1, the 05 §6.5 step-1 dry-run rehearsal against
+THROWAWAY projects ONLY. The real Firebase project and any real Supabase
+project are UNTOUCHABLE this sitting.
