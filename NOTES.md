@@ -6509,3 +6509,79 @@ STEP 2 COMPLETE. Next = STEP 3, the spine (05 §6.5 / 06 §B2): disable on_auth_
 → identity provision (plan→execute) → identity graph (plan→execute, --super-admin-uid=
 demo-coach-alpha; 6a defers) → roster (plan→fix ambiguous→re-run→execute --reviewed-collision=
 rehearsal-collision) → re-run graph for 6a → re-enable trigger → audits + §6.1 probe → smoke logins.
+
+## 2026-06-22 — SITTING 1 · STEP 3: spine run — TRIPWIRE, a CUTOVER-BLOCKING tool bug found
+
+The dry-run did its job: it surfaced a production-blocking defect in backfill-roster
+BEFORE any real family data was touched. Identity side + the roster's RD-D1/RD-D2/RD-D5
+decision machinery all PROVED OUT; then the roster's create path failed for every
+consented swimmer. STOP per the tool's own instruction + the tripwire protocol.
+
+WHAT PROVED OUT (verbatim where useful):
+- Trigger off: `on_auth_user_created` tgenabled=D (as supabase_admin; postgres lacked
+  ownership — local-supabase quirk worth noting for the runbook).
+- provision-identities --execute: "Created: 3 auth user(s) ... Failed: 0." Map: 3 rows
+  (demo-coach-alpha/coach, demo-coach-beta/coach, demo-parent/parent), user_id set,
+  profile_id NULL.
+- backfill-identity-graph --execute --super-admin-uid=demo-coach-alpha: "Profiles created:
+  3 ... coach_groups rows created: 14 ... guardianships rows created: 0 ... Failed: 0."
+  Roles: alpha=super_admin, beta=coach_admin, parent=family. STEP 6a DEFERRED (named).
+- roster plan #1: "3 — reconciliation: 2 matched, 1 ambiguous, 32 to create (1 name-only
+  collision)." AMBIGUOUS STOP fired on rehearsal-ambiguous (USAID-DUP-009 → 2 BSPC rows);
+  --execute refused. RD-D2 EXACTLY AS RULED.
+- RD-D2 data fix: `UPDATE swimmers SET usa_swimming_id=NULL WHERE last_name='Banks-Twin'`
+  → roster plan #2: "3 matched, 0 ambiguous" (ambiguity cleared).
+- roster --execute --reviewed-collision=rehearsal-collision: RD-D1 acknowledged block
+  preserved ("Casey Rivers ... confirmed DIFFERENT kids; created as new"). "STEP 6 AUDIT
+  PASSED — 7 map entr(ies): every doc mapped exactly once, no two docs collapsed, none
+  unprovisioned." Matched: 1 patched (rowA fill-NULLs), 2 map-record-only (rowB+rowD1 empty
+  patch). Created 4 = demo-swimmer-07, -22 (the only no-consent demo swimmers) + rehearsal-
+  collision + rehearsal-masters (RD-D5 ✓).
+
+THE BUG — backfill-roster mishandles Firestore Timestamp media-consent dates:
+```
+[swimmers-insert] demo-swimmer-01..30 (except 07,22): invalid input syntax for type
+  timestamp with time zone: "{"_seconds":1775001600,"_nanoseconds":0}"
+```
+28/30 demo swimmers (every one WITH mediaConsent) failed to INSERT; the 2 without consent
+(07, 22) succeeded. The 5 rehearsal swimmers carry no consent so were unaffected.
+
+ROOT CAUSE (contract vs reality mismatch, under-converted export):
+- reconcile.ts:16 — `CoachMediaConsent.date?: string | null` (the tool EXPECTS a string).
+- reconcile.ts:189-190 — `media_consent_at: doc.mediaConsent?.date ?? null` (and expiresAt)
+  pass the value RAW into timestamptz columns; reconcile.ts:231-232 same in the patch path.
+- backfill-roster.ts:173 — readSwimmerExport reads DIRECTLY from Firestore (no JSON step).
+- backfill-roster.ts:183 — dateOfBirth IS bridged via isoStringOrNull; :188 reads
+  mediaConsent RAW → mediaConsent.date stays a Firestore Timestamp.
+- The REAL Coach app stores mediaConsent.date as a Date (src/utils/__tests__/
+  mediaConsent.test.ts uses `new Date()` throughout) → Firestore Timestamp, NOT a string.
+- => Any real swimmer with media consent (likely MOST of the roster) fails the cutover.
+  The jest/pgTAP bars never exercised a live-Firestore Timestamp consent date, so "proven"
+  missed it. Demo seeder faithfully mirrors the real app (Date), so the fixture is correct;
+  the tool is wrong.
+
+NUMBERED FIX (for the DIRECTOR — a governed code change; NOT applied by the executor):
+  1. In backfill-roster.ts readSwimmerExport, build the exported mediaConsent with
+     date/expiresAt bridged through isoStringOrNull (mirror dateOfBirth at :183) — single
+     site, fixes both create (reconcile.ts:189-190) and patch (reconcile.ts:231-232) paths.
+  2. Add a bar: a consented swimmer whose mediaConsent.date is a Firestore Timestamp →
+     media_consent_at lands as timestamptz (this is the gap the bars missed).
+  3. Re-run SITTING 1 from a pristine env after the fix.
+RED-TEAM: (a) fixture-only? NO — real app uses Date, direct Firestore read, contract=string;
+  the 07/22-only successes are the proof. (b) Does bridging break the string path? NO —
+  isoStringOrNull already accepts string|Date|Timestamp|null. (c) Scope: date AND expiresAt,
+  create AND patch — bridging at the single export site covers all four.
+
+CASCADE: demo-swimmer-01 did NOT load → the deferred STEP 6a (demo-parent → demo-swimmer-01)
+cannot complete its happy path this run; so 6a re-run, the full-roster audit, and the parent-
+portal guardianship smoke are BLOCKED until the fix. (§6.1 probe + coach smoke are NOT blocked
+— demo-parent's profile exists.) Per protocol the spine is STOPPED; no blind re-run.
+
+STATE LEFT FOR INSPECTION: both throwaways UP and PAUSED (local Supabase partial: 3 profiles,
+14 coach_groups, swimmer_map=7, 4 created swimmers; Firebase bspc-throwaway intact). on_auth_
+user_created still DISABLED. Teardown DEFERRED to the post-fix clean re-run.
+
+DECISION RECOMMENDED TO THE DIRECTOR: briefly RE-OPEN the build to land fix step 1 + the bar
+step 2, then re-run SITTING 1 from pristine. The dry-run's verdict on the four tools is
+therefore NOT "ready" — one real defect, cleanly caught on synthetic data. EXECUTOR STOPPED,
+awaiting director ruling.
