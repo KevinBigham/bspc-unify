@@ -6585,3 +6585,53 @@ DECISION RECOMMENDED TO THE DIRECTOR: briefly RE-OPEN the build to land fix step
 step 2, then re-run SITTING 1 from pristine. The dry-run's verdict on the four tools is
 therefore NOT "ready" — one real defect, cleanly caught on synthetic data. EXECUTOR STOPPED,
 awaiting director ruling.
+
+## 2026-06-22 — SITTING 1 · FIX LANDED + CLEAN RE-RUN GREEN (the dry-run PASSES)
+
+Kevin (founder, live) authorized re-opening the build to fix the defect. Fix landed with
+full rigor (surgical change + regression bar), then the ENTIRE spine re-ran from a pristine
+slate and passed every criterion.
+
+THE FIX (Coach repo, main: a5925aa -> 0c0f82b; BSPC UNTOUCHED at 880aed8):
+- backfill-roster-plan.ts (the zero-import pinned pure): ADDED exported `isoStringOrNull` +
+  `normalizeExportedConsent` — the latter coerces mediaConsent.date/expiresAt to ISO strings
+  (the same Timestamp->string rule dateOfBirth already had), honoring the CoachMediaConsent
+  string contract.
+- backfill-roster.ts (I/O shell): readSwimmerExport now uses normalizeExportedConsent (was a
+  raw cast); imports isoStringOrNull from the pure module (de-duplicated).
+- reconcile.ts (BSPC): UNCHANGED — it always expected strings.
+- BAR: backfill-roster-plan.test.ts +8 regression pins (43 -> 51 in-file); full Coach jest
+  1191 -> 1199, 111 suites green twice (a flaky async AuthContext test, unrelated, cleared on
+  re-run; passes solo). NEW GREEN BASELINE: Coach 0c0f82b = 1199 jest. Functions 115 unaffected
+  (no functions/ touched). Pre-commit hook (eslint --fix + prettier --write) restyled the three
+  files at landing — cite `git show HEAD:` for the committed text; HEAD re-ran 51/51.
+
+=====BEGIN SITTING-1 CLEAN RE-RUN READBACK=====
+manifest: throwaway Firebase bspc-throwaway (2 coaches/1 parent/35 swimmers = 30 demo + 5 rehearsal) -> local throwaway Supabase (00001..00013 + 2 map tables + 5 synthetic BSPC rows); fixed Coach 0c0f82b.
+[PASS] db reset -> pristine; 2 map tables re-applied; 5 BSPC rows re-seeded (Banks twins share USAID-DUP-009); trigger DISABLED.
+[PASS] provision-identities --execute: Created 3 auth users, Failed 0.
+[PASS] backfill-identity-graph --execute --super-admin-uid=demo-coach-alpha: 3 profiles (super_admin/coach_admin/family), 14 coach_groups, 6a DEFERRED, Failed 0.
+[PASS] roster plan #1: 2 matched, 1 ambiguous (rehearsal-ambiguous, USAID-DUP-009 -> 2 rows), 1 name-only collision (RD-D2 + RD-D1 fire).
+[PASS] RD-D2 data fix: UPDATE 1 (Banks-Twin usa -> NULL).
+[PASS] roster --execute --reviewed-collision=rehearsal-collision: Matched 1 patched + 2 map-record-only; Created 32 swimmers + 32 swimmer_coach_profile + 30 goals; map written 35; Failed 0; RD-D1 acknowledged-collision block preserved. (THE FIX: 32 creates vs 4 pre-fix — all 28 consented demo swimmers now import.)
+[PASS] STEP 6 AUDIT (auditSwimmerMap): 35 entries, every doc mapped once, no collapse, none unprovisioned.
+[PASS] backfill-identity-graph re-run (deferred 6a): guardianships created 1, profiles skipped 3 (idempotent), COPPA dangling 0, Failed 0.
+[PASS] on_auth_user_created RE-ENABLED (tgenabled=O).
+[PASS] auditIdentityMap: 0 rows with NULL user_id/profile_id (every identity fully built).
+[PASS] §6.1 probe: 0 unresolved parent uids (demo-parent resolves a non-empty profile).
+[PASS] auditGuardianships: 1 link, no duplicate (guardian_profile_id, swimmer_id).
+[PASS] coach smoke login: signIn OK, role=super_admin, status=approved (Demo Coach Alpha).
+[PASS] parent smoke login: signIn OK, role=family, status=approved (Demo Parent).
+[PASS] parent -> swimmer resolution via guardianship: "Demo Parent" (family) -> "BSPC Demo 01".
+[PASS] RD-D1 collision created-as-new; RD-D2 ambiguous->fix->resolve; RD-D5 'Masters' (rehearsal-masters) created.
+final state: profiles 3 / swimmers 37 (5 BSPC + 32) / auth.users 3 / guardianships 1 / swimmer_map 35 / identity_map 3.
+END OF READBACK — all sections present.
+=====END SITTING-1 CLEAN RE-RUN READBACK=====
+
+VERDICT: SITTING 1 (the 05 §6.5 step-1 dry-run) is COMPLETE and PASSED on the FIXED tooling.
+The four cutover tools now execute the full spine end-to-end against synthetic fixtures with
+every ruled decision (RD-D1..D5, NM-1, the 6a loop, the audits, the §6.1 probe) holding. The
+ONE defect the dry-run existed to catch was caught, fixed, bar-pinned, and re-proven — exactly
+the proof-over-confidence the director ruled for. Next: teardown (STEP 4) + the formal report;
+then DIRECTOR to bless the new Coach baseline (0c0f82b / 1199) and schedule Sitting 2 (the real
+cutover, 06 PART B).
