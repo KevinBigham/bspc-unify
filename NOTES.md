@@ -6635,3 +6635,28 @@ ONE defect the dry-run existed to catch was caught, fixed, bar-pinned, and re-pr
 the proof-over-confidence the director ruled for. Next: teardown (STEP 4) + the formal report;
 then DIRECTOR to bless the new Coach baseline (0c0f82b / 1199) and schedule Sitting 2 (the real
 cutover, 06 PART B).
+
+## 2026-06-22 — SITTING 1 · STEP 4 TEARDOWN + SITTING CLOSE
+
+- Throwaway Firebase project DELETED by Kevin (console confirm dialog showed Project ID
+  `bspc-throwaway` — the throwaway, NOT the real bspc-coach-app; "delete across Firebase +
+  Google Cloud", 30-day restore window). The REAL Firebase project was never touched all sitting.
+- Throwaway Supabase = LOCAL: `supabase stop` ("Stopped supabase local development setup");
+  synthetic data remains only in the local docker volume, reset on next bar run.
+- Transient executor scripts DELETED: scripts/_rehearsal-load-fixtures.ts + scripts/_rehearsal-
+  smoke.ts (never committed). Coach working tree clean on 0c0f82b.
+- Throwaway Firebase service-account key removed from ~/Downloads (inert post-deletion).
+
+SITTING 1 CLOSED. Outcome: the dry-run did its job — caught ONE cutover-blocking defect on
+100% synthetic data, fixed it with full rigor, and re-proved the entire spine green. Repo
+state at close: UNIFY (this logbook) pushed; Coach main 0c0f82b pushed (1199 jest, new
+baseline, +8 regression pins); BSPC untouched (880aed8, 835/343). Functions 115 unaffected.
+
+HANDOFF TO THE DIRECTOR:
+  1. Bless the new Coach baseline 0c0f82b / 1199 (the mediaConsent date-coercion fix + its
+     regression pins) as the frozen head replacing a5925aa / 1191.
+  2. Then schedule SITTING 2 — the REAL cutover (06 PART B): same spine, real Firebase ->
+     real Supabase, real roster. The dry-run is the rehearsal; the tools are now proven.
+  3. Optional follow-up (out of this sitting): the seed-demo-data.ts standalone-run bug
+     (group:undefined + missing ignoreUndefinedProperties) logged 2026-06-22 STEP-2 — a
+     convenience-seeder defect, NOT on the cutover path; fix whenever convenient.
