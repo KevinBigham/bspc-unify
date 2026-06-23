@@ -139,7 +139,7 @@ These are not optional. They held all through the build and the dry-run; they ho
 **Process:**
 - **Propose each exact command and WAIT for Kevin's explicit "yes/go" before running it. Never batch-run**
   the cutover operations. (Running the local test bars to confirm green is safe/read-only.)
-- **Preserve every tool output VERBATIM in `UNIFY/NOTES.md`.** `NOTES.md` is an append-only logbook.
+- **Record sanitized tool output in `UNIFY/NOTES.md`** — inspect every output for secrets, PII, account identifiers, roster data, and media metadata first; record sanitized output only (sensitive findings as path/category or count/status only; never a secret, UID, email, minor, or roster value). `NOTES.md` is an append-only logbook.
 - **Tests are the source of truth — never advance with red tests.** Both repos' suites are the bar.
 - **The canonical schema (`UNIFY/01_CANONICAL_SCHEMA.sql`) is law.** If code wants something the schema
   lacks, propose a migration — don't hack around it.
@@ -235,9 +235,10 @@ practice-group domain is the 8-value end-state incl. 'Masters'.
   done — but the throwaway is already deleted, so that would mean standing up a fresh one.
 - **`seed-demo-data.ts` standalone bug** (above) — convenience-seeder only, fix whenever convenient.
 - **Decommission test math:** the +8 Sitting-1 regression pins live in `backfill-roster-plan.test.ts`, which
-  is itself one of the carve-out tool tests that retires at §B6.5. So the retirement delta grows from −98 to
-  −106, and `1199 − 106 = 1093` (the intended post-decommission endpoint is preserved). The director should
-  re-confirm this arithmetic when blessing the new baseline.
+  is itself one of the carve-out tool tests that retires at §B6.5. The retirement delta is **−105**, and the
+  floor is the **formula — canonical Coach client bar at decommission − 105** (current arithmetic `1199 − 105 = 1094`;
+  the old `−106 / 1093` is **rejected** — it was a back-calculated target). RATIFIED (Director Ruling 03 §1);
+  accounting only — deletion is one named change after cutover + data verification.
 
 ---
 
@@ -269,7 +270,7 @@ practice-group domain is the 8-value end-state incl. 'Masters'.
 4. **Ask Kevin where the director landed:** has the new baseline (`0c0f82b`/1199) been blessed? Is Sitting 2
    scheduled? Don't start the real cutover without that.
 5. **When Sitting 2 is greenlit:** open `06_FIREBASE_RUNBOOK.md` PART B, re-read the §5 laws above, and run
-   the spine in §6 — Kevin live, propose-and-wait, verbatim outputs to `NOTES.md`, real-data care.
+   the spine in §6 — Kevin live, propose-and-wait, **sanitized** outputs to `NOTES.md` (inspect for secrets/PII/roster/media-metadata first), real-data care.
 
 **Bottom line: the hard build is done and the rehearsal proved it works. The next milestone is the real
 cutover — deliberate, director-scheduled, Kevin-live. Be careful, be plain-spoken with Kevin, and surface

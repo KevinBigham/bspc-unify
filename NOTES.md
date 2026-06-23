@@ -6660,3 +6660,186 @@ HANDOFF TO THE DIRECTOR:
   3. Optional follow-up (out of this sitting): the seed-demo-data.ts standalone-run bug
      (group:undefined + missing ignoreUndefinedProperties) logged 2026-06-22 STEP-2 — a
      convenience-seeder defect, NOT on the cutover path; fix whenever convenient.
+
+---
+
+## 2026-06-22 — DIRECTOR EVIDENCE PACKET 01 — §1 Coach baseline proof (read-only)
+
+Coach HEAD: 0c0f82b40f824d920b99a004c6e41eca2c7a3adb (short 0c0f82b)
+HEAD subject: "roster backfill: coerce Firestore Timestamp media-consent dates to ISO (SITTING-1 dry-run fix)"
+Working tree BEFORE and AFTER both runs: CLEAN (git status --porcelain empty; branch ## main...origin/main)
+
+CLIENT invocation: npm --prefix BSPC-Coach-App test -- --runInBand --ci   (package "test" = jest)
+CLIENT result (verbatim summary):
+  Test Suites: 111 passed, 111 total
+  Tests:       1199 passed, 1199 total
+  Snapshots:   1 passed, 1 total
+  Time: 5.312 s ; exit code 0
+  (errorHandler.test.ts emits an INTENTIONAL console.error from the error path under test — suite PASSED; not a failure)
+
+FUNCTIONS invocation: npm --prefix BSPC-Coach-App/functions test -- --runInBand --ci   (package "test" = jest --no-coverage)
+FUNCTIONS result (verbatim summary):
+  Test Suites: 12 passed, 12 total
+  Tests:       115 passed, 115 total
+  Snapshots:   0 total
+  Time: 3.441 s ; exit code 0
+
+Notes: --legacy-peer-deps applies to npm INSTALL (deps already present; not reinstalled). --runInBand matches the repo's own `quality` gate and avoids the documented AuthContext parallel-jest flake. --ci added to prevent snapshot writes; tree confirmed clean after runs. BSPC frozen baseline confirmed 880aed8 (clean). No app code modified.
+
+---
+
+## 2026-06-22 — DIRECTOR EVIDENCE PACKET 01 — §2/§3/§4/§5 audit digest + verification (read-only)
+
+EXECUTOR VERIFICATION GREPS (verbatim):
+- carve-out test counts: seed-demo-data 3 | probe-firebase-inventory-report 14 | provision-identities-plan 17 | backfill-identity-graph-plan 20 | backfill-roster-plan 51 = 105. No it.each/describe.each in any (grep == jest count).
+- firebase-admin in src/ or app/: NONE -> carve-out is scripts/-only; no shipping behavior retired.
+- PROCESS bridge callers in app: src/services/mediaPipeline.ts (AI) AND src/services/attendancePipeline.ts:13 -> evaluateAttendanceRules (NON-AI) both use PROCESS_FUNCTIONS_BASE_URL + PROCESS_SHARED_SECRET (src/config/functions.ts:5-6).
+
+§1 BASELINE: 0c0f82b clean; client 1199/111 suites + functions 115/12 suites, exit 0 (see prior NOTES block).
+
+§2 DECOMMISSION: asserted 1199->1093 (-106) is WRONG. True carve-out 105 -> floor 1094 (-105). 1093 was a back-calculated TARGET (delta re-based -4->-18->-35->-55->-98->-106 across rounds to always land 1093); off-by-one from a stale seeds count (4 vs actual 3). 06 §B6 step5 enumerates only -4 vs a stale 1080 baseline; full carve-out lives only in NOTES round logs. Coverage clean (scripts/-only) -> retirement justified; only arithmetic wrong. 13:68 mislabels the client decommission as "Functions 1199->1093". The +8 Sitting-1 mediaConsent pins live in backfill-roster-plan.test.ts (a retiring file) — migration-plan assertions; retiring with the tool is correct, eyeball before bless.
+
+§4 FUNCTIONS: 10 exported (functions/src/index.ts). AI surface = THREE: processAudioSession + processVideoSession (HTTP onRequest) + sweepStuckSessions (SCHEDULED every 5min; re-drives the AI cores for any status='uploaded' session, sweepStuckSessions.ts:16-39). Omitting the HTTP funcs from --only does NOT stop the scheduled re-driver nor prune already-deployed copies. CI today = bare `--only functions --force` -> all 10 deploy, AI included. v1 OMIT={processAudioSession,processVideoSession,sweepStuckSessions}; DEPLOY={evaluateAttendanceRules,redeemInvite,getParentPortalDashboard,getParentSwimmerPortalData,sweepAttendanceEvaluations,dailyDigest,syncCalendar}. To REMOVE a deployed fn: drop its export from index.ts + one --force prune (frozen-repo edit).
+
+§4 APP: capture->upload->status='uploaded' AUTO-fires the AI POST (src/services/audio.ts:209, video.ts:438, + offline replay in app/(tabs)/index.tsx) — no user gate. The bridge swallows the failed POST (mediaPipeline.ts:22-28) -> capture/upload/storage/playback UNBROKEN, BUT app/video/[id].tsx stalls at 'uploaded' forever, app/ai-review.tsx is permanent false-empty, app/video.tsx says "AI analysis starting". Minimal guard: new EXPO_PUBLIC_MEDIA_AI_ENABLED flag (default false) -> early-return in src/services/mediaPipeline.ts + guards on AI-results UI. Do NOT gate PROCESS_FUNCTIONS_BASE_URL (shared with attendance eval). Guard is a frozen-repo edit; ~+1..+4 tests, no deletions, new floor ~1200-1203.
+
+§5 SECRETS: all via plain process.env; NO defineSecret/functions.config() anywhere. CI injects only FIREBASE_TOKEN; data-plane secrets are out-of-band (functions/.env or functions:secrets:set). config/supabase.ts:8-9 placeholder fallback -> deploys "green" with YOUR_PROJECT/YOUR_SERVICE_ROLE_KEY (silent misconfig hazard). CALENDAR_ICS_URL = OPTIONAL, public iCal URL, NOT a secret (syncCalendar self-skips if unset). evaluateAttendanceRules USES PROCESS_SHARED_SECRET (evaluateAttendance.ts:11 + 06 §B4) — the secret gates HTTP entry points, not "AI". => PROCESS_SHARED_SECRET is REQUIRED for v1.
+
+§3 IDENTITY: coach doc = uid(docid=join key)/email/displayName/role(display-only)/groups(8-domain). NM-1 promotion is uid==--super-admin-uid (NOT the role field). Dup-detect is UID-only; email NEVER normalized (gap -> manual email check needed). ZERO Firebase triggers on coaches writes (clean single-doc reversal). create-coach.ts triple-stale (creates NEW Auth user+password, role:'admin', 6/8 groups) -> unfit for remediation. Existing Auth UID reused; never a 2nd Auth user.
+
+Full subagent transcripts at tasks/{a97f4c19e3297ae85,ad8ebfe68514a3cd2,aeb5ed635ebadbfc4,a529a97cd7065fd93}.output. App + BSPC repos NOT modified (Coach 0c0f82b / BSPC 880aed8 clean). All changes are in the UNIFY working tree only: 13,16,NOTES,README modified; 17,18,19,20 new.
+
+---
+
+## 2026-06-22 — DIRECTOR RULING 03 — §6 CALLABLE-AUTH SURVIVABILITY AUDIT + v1 VAR AUDIT (read-only)
+
+CONTEXT: Ruling 03 ratified the -105 delta; selected Option C (defer evaluateAttendanceRules); selected parameterized Functions config; blessed the identity design in-concept; and opened the callable-auth survivability question (a Firebase callable's request.auth does NOT verify a Supabase access token after cutover), asking for the smallest evidence-backed v1 Functions allow-list. Two read-only Explore audits (BSPC + Coach) follow.
+
+§6.1 index.ts EXPORT TABLE (functions/src/index.ts; line | name | source module | trigger):
+  15 processAudioSession        ./https/processSession              onRequest(HTTP)   [AI]
+  15 processVideoSession        ./https/processSession              onRequest(HTTP)   [AI]
+  16 sweepStuckSessions         ./scheduled/sweepStuckSessions      onSchedule        [AI re-driver, every 5min]
+  17 evaluateAttendanceRules    ./https/evaluateAttendance          onRequest(HTTP)
+  18 sweepAttendanceEvaluations ./scheduled/sweepAttendanceEvaluations onSchedule ('every 5 minutes', :26)
+  19 dailyDigest                ./scheduled/dailyDigest             onSchedule ('every day 20:00', :83)
+  20 redeemInvite               ./callable/redeemInvite             onCall(httpsCallable, :14)
+  21 getParentPortalDashboard   ./callable/parentPortal             onCall (:201)
+  21 getParentSwimmerPortalData ./callable/parentPortal             onCall (:215)
+  22 syncCalendar               ./scheduled/syncCalendar            onSchedule ('every day 06:00', :34)
+
+§6.2 CALLABLE CALLER AUDIT (every non-test caller, by surface):
+  redeemInvite               -> PORTAL-WEB only: parent-portal/src/app/dashboard/page.tsx:60 -> parent-portal/src/lib/parentPortal.ts:267 (which calls Supabase RPC redeem_parent_invite() DIRECTLY, not the callable). Tests: functions/src/__tests__/redeemInvite.test.ts, test/critical-ops/parentInvites.criticalOp.test.ts. NO coach-mobile / parent-mobile caller.
+  getParentPortalDashboard   -> PORTAL-WEB only: parent-portal/src/app/dashboard/page.tsx:9,29 -> parent-portal/src/lib/parentPortal.ts:149 (direct-read loader). NO mobile caller.
+  getParentSwimmerPortalData -> PORTAL-WEB only: parent-portal/src/app/swimmer/[id]/page.tsx:9,43 -> parent-portal/src/lib/parentPortal.ts:175. NO mobile caller.
+  COACH-MOBILE (top-level app/ + src/, excl parent-portal/ & functions/) calls NONE of the three callables. It DOES call evaluateAttendanceRules via src/services/attendancePipeline.ts:13 (HTTP POST).
+  Coach mobile auth = Supabase exclusively (src/config/supabase.ts:1,14; src/contexts/AuthContext.tsx:144,146,157). No Firebase Auth client.
+
+§6.3 BSPC PARENT APP (repo BSPC, 880aed8): ZERO Firebase anywhere (no firebase/functions, no httpsCallable, no 'redeemInvite'). Pure Supabase. Invite redemption = Supabase RPC redeem_parent_invite(p_code, p_redeemer_profile_id) — ACTIVE/supabase/migrations/00010_phase_i_parent_invites.sql:54-124, SECURITY DEFINER, derives redeemer from auth.uid() via auth_profile_id() (00002_phase_a_identity.sql:60-63), REVOKE PUBLIC/anon + GRANT authenticated/service_role (:130-131). pgTAP: ACTIVE/supabase/tests/database/013-parent-invites-walls.test.sql. Auth = supabase.auth (lib/supabase/client.ts:43-50; features/auth/api.ts:9-31). CAVEAT/GAP: the BSPC client has NO invite-redemption UI wired yet (the RPC + pgTAP exist; no screen calls it) — a product/launch-scope gap, independent of the Functions decision.
+
+§6.4 CONCLUSION — smallest v1 export surface with a real LAUNCHING-surface caller (coach mobile + BSPC parent mobile; portal = NOT launched / fast-follow):
+  v1 ALLOW-LIST = { sweepAttendanceEvaluations, dailyDigest, syncCalendar }  (3 scheduled functions; Cloud-Scheduler-triggered -> no client token -> immune to the callable-auth survivability problem).
+  DEFER: redeemInvite + getParentPortalDashboard + getParentSwimmerPortalData (portal-only/fast-follow; mobile replacement = the auth.uid()-gated Supabase RPC). evaluateAttendanceRules (Option C; 5-min sweep covers it; client kick removed, Proposal D). AI trio (media-no-AI, Proposals A+C).
+  Evidence-backed; PENDING Director ratification.
+
+§6.5 v1 VAR AUDIT (grep, non-test; verbatim):
+  EXPO_PUBLIC_PROCESS_FUNCTIONS_BASE_URL / EXPO_PUBLIC_PROCESS_SHARED_SECRET consumers (app/ + src/):
+    src/config/functions.ts:5  PROCESS_FUNCTIONS_BASE_URL = process.env.EXPO_PUBLIC_PROCESS_FUNCTIONS_BASE_URL ?? ''
+    src/config/functions.ts:6  PROCESS_SHARED_SECRET      = process.env.EXPO_PUBLIC_PROCESS_SHARED_SECRET ?? ''
+    src/services/mediaPipeline.ts:5,14,18       (AI media POST   -> killed by Proposal C, hard-disable)
+    src/services/attendancePipeline.ts:7,13,17  (attendance kick -> removed by Proposal D)
+  PROCESS_SHARED_SECRET consumers (functions/src, non-test):
+    functions/src/https/evaluateAttendance.ts:11  (deferred, Option C)
+    functions/src/https/processSession.ts:12      (AI, omitted)
+  => After Proposals C+D: BOTH EXPO_PUBLIC_PROCESS_* vars have ZERO client consumers -> DROP from the v1 matrix. PROCESS_SHARED_SECRET has ZERO v1 EXPORTED consumer -> future-only (not v1). Supersedes Packet-01 §5 "REQUIRED for v1".
+
+§6.6 RULING-03 SELECTIONS APPLIED TO DOCS (UNIFY working tree only): 06 (§B4 v1-overlay + §B6 step5 -105 RATIFIED + exact deletion precondition); 13 (-105 ratified, Option C, 4 hardening changes, allow-list note, line-7 truth amended); 16 (§4 parameterized config + 3-scheduler allow-list + 4 changes, §5 matrix drops EXPO_PUBLIC_PROCESS_*, §6 identity Ruling-03 §4); 17 (blockers, §8a parameterized/fail-closed, §8b 3-scheduler surface, §9 matrix, §11/§12 guardrails); 18 (§3 rulings-in-force bullet, §5 (a)/(b) ruled + new (d)); 19 (full revise: recovery+invite split, support path, removed "nothing is lost"/"more secure"/"won't change"/expiry-duration); 20 (exact payload table + role/groups notes + 2 confirmations + count-only dup check + HELD status). Four code proposals A/B/C/D drafted (NOT implemented). Commit split proposed (HOLD).
+
+FREEZE: App + BSPC repos NOT modified (Coach 0c0f82b / BSPC 880aed8). All changes in the UNIFY working tree only: 06,13,16,NOTES,README modified; 17,18,19,20 new. No commit. No hosted target touched.
+
+---
+
+## 2026-06-22 — DIRECTOR RULING 04 — FINAL GOVERNANCE RECONCILIATION (documentation-only; no code, no hosted target, no commit)
+
+RULINGS APPLIED ACROSS THE 9 UNIFY DOCS (no Coach/BSPC edit; no Firebase/Supabase command):
+§1 v1 FIREBASE FUNCTIONS SURFACE = RATIFIED at exactly { sweepAttendanceEvaluations, dailyDigest, syncCalendar } (all scheduled). EXCLUDED from v1: processAudioSession, processVideoSession, sweepStuckSessions, evaluateAttendanceRules, redeemInvite, getParentPortalDashboard, getParentSwimmerPortalData. The 3 portal callables are deferred WITH the portal and MUST NOT remain in the v1 export surface. syncCalendar CONDITIONAL: deploy only when its calendar source is confirmed + sensitive config bound + tests green; else OMIT (no placeholder).
+§2 PROPOSAL A AMENDED: index.ts exports EXACTLY the 3 schedulers (remove all 7 non-v1 exports, incl. the 3 callables — not "3 deployed + dormant exported callables"). Test pins the EXACT export-name set (not presence/absence of selected names). Broad CI deploy must be incapable of resurrecting excluded funcs. Existing hosted copies -> read-only inventory now + later project_id+Kevin-go removal sitting. NO hosted removal now.
+§3 PROPOSAL B BLESSED DESIGN: SUPABASE_URL required non-secret param no fallback; SUPABASE_SERVICE_ROLE_KEY secret bound per-function to each of the 3 schedulers that uses service-role; CALENDAR_ICS_URL sensitive bound only to syncCalendar, never logged; no param/secret reads at global init; fail closed on missing config; tests for exact per-function bindings + missing-config failure + placeholder rejection + calendar-URL log redaction.
+§4 PROPOSAL C BLESSED + AUDIO-PARITY: cover BOTH audio AND video. Inventory+address every capture/upload/automatic-processing-request/offline-replay/status-loading-view/notification-deeplink/AI-review-results-entry/retrieval/playback path. Acceptance: both media work end-to-end; neither invokes processing; no background path restarts AI; uploaded is honest terminal state; no AI-starting/analyzing/permanent-loading copy; all AI entry points hidden/unavailable; no EXPO_PUBLIC re-enable switch; no test deletion; exact client count holds or rises.
+§5 PROPOSAL D BLESSED AFTER C: remove immediate evaluateAttendanceRules request; attendance write still succeeds; rely solely on sweepAttendanceEvaluations; remove dead PROCESS_* client config ONLY AFTER a repo-wide zero-consumer proof; delete no tests; keep/raise client bar.
+ORDER BINDING: A -> B -> C -> D -> identity-remediation script. One change at a time; do not start the next before the prior is ratified AND committed. (Ruling 04: "Do not begin Proposal A yet.")
+§6 IDENTITY (doc 20): unconditional .set() -> CREATE-ONLY (firestore.create / txn precondition that cannot overwrite a concurrently-created doc). Kevin email+UID NEVER in argv/history/output/NOTES/tests/logs; sensitive input collected interactively, never persisted. Branch B = immediate STOP, no Auth-user creation. Ambiguous write/network outcome = STOP, NO blind delete. Reversal ONLY after known-successful creation + deterministic verification proves removal needed. Execution HELD pending script diff+tests.
+§7 FAMILY COMMS (doc 19): taxonomy ratified (migrated->recovery; net-new->invite) BUT no automatic recovery blast proven. Removed "account and swimmer's information move with it" -> neutral, no data-completeness promise. Do not say a family "will receive" recovery until send mechanism proven. Describe (A) operator-triggered recovery pending proven batch OR (B) family-triggered Forgot Password. Prereqs before family messaging: custom SMTP + send-rate capacity + ONE synthetic end-to-end mobile recovery test. Roster/account volume recorded as a COUNT only (no addresses/identities). Invite template INACTIVE until a net-new onboarding path exists.
+§8 NET-NEW ONBOARDING GATE: NOT a Sitting-2 blocker for migrating existing families; IS a public-launch blocker. Before public launch provide (A) tested mobile invite redemption OR (B) tested+documented staff-assisted onboarding. Do not claim net-new invite flow operational until one exists. (BSPC has redeem_parent_invite RPC + pgTAP but no invite-redemption UI wired.)
+§9 DOCS RECONCILED (UNIFY working tree only): 06 (§B4 Ruling-04 ratification + callables-removed-from-export-surface + syncCalendar conditional); 13 (allow-list RATIFIED, exact-three, binding order, Gate 6 family-email delivery, Gate 7 net-new onboarding, Phase 8 delivery prereq); 16 (§4 RATIFIED + exact-three + syncCalendar conditional + binding order + audio parity, §1 delivery/net-new gates, §6 identity create-only/no-PII); 17 (status+blockers Ruling-04, §8b exact-three + syncCalendar conditional + RATIFIED + Proposal C audio parity, §11 exit, §12 guardrails); 18 (§3 rulings-in-force Ruling-04 + RATIFIED allow-list + binding order + delivery/net-new gates + identity §6, §5 (d)/(c)); 19 (full Ruling-04 revise per §7/§8); 20 (Ruling-04 §6 create-only + no-PII + STOP-not-delete + verified-reversal); README (19/20 descriptions).
+REQUIRED STATE CONFIRMED: 3-scheduler allow-list RATIFIED; Proposal A = exact-three exports; Proposals A/B/C/D UNIMPLEMENTED; 17 remains NOT READY-TO-RUN; family-email delivery = explicit blocker; net-new onboarding = public-launch gate; identity sitting non-executable; Sitting 2 UNSCHEDULED.
+CONTRADICTIONS/SURPRISES SURFACED: (1) syncCalendar conditional => the GUARANTEED-deployable v1 surface today is TWO (sweepAttendanceEvaluations+dailyDigest); syncCalendar's 3rd slot is pending a confirmed iCal source (Packet-01 §5: CALENDAR_ICS_URL currently OPTIONAL, syncCalendar self-skips if unset — no evidence the team source is confirmed). (2) Exact-three strands nothing: the Ruling-03 audit shows the portal lib already uses direct Supabase reads/RPC (parentPortal.ts:149/175/267), so the 3 Firebase callable exports have NO production caller (test-only) — removing them is safe even for the fast-follow portal.
+
+FREEZE (Ruling 04): App + BSPC repos NOT modified (Coach 0c0f82b / BSPC 880aed8). All changes in the UNIFY working tree only: 06,13,16,NOTES,README modified; 17,18,19,20 new. No commit. No push. No hosted target touched. No code implementation (documentation-only).
+
+---
+
+## 2026-06-23 — DIRECTOR RULING 05 — FINAL DOCUMENTATION GATE BEFORE UNIFY COMMITS (documentation-only; no code, no hosted target, no commit)
+
+RULINGS APPLIED ACROSS THE 9 UNIFY DOCS (no Coach/BSPC edit; no Firebase/Supabase command; Proposal A NOT begun):
+§1 INITIAL v1 FUNCTIONS EXPORT SET = EXACTLY TWO: { sweepAttendanceEvaluations, dailyDigest }. syncCalendar is CONDITIONALLY APPROVED but is NOT part of the initial Proposal-A export set (no production calendar source proven to the Director). syncCalendar may be added only by a later, separate change after evidence establishes: a real production feed exists; public vs private/tokenized; config bound safely; URL never logged; tests green; target-gated deploy plan reviewed. Therefore: Proposal A pins index.ts to EXACTLY the TWO; the test asserts the exact two-name export set; do NOT export syncCalendar as a self-skipping placeholder; do NOT call the initial surface "three schedulers"; describe syncCalendar as a conditionally approved follow-on. (Supersedes Ruling-04's "three / syncCalendar-conditional-but-in-set" framing.)
+§2 FAMILY-COMMS GATE NARROWED: custom SMTP + adequate send-rate capacity + one synthetic end-to-end mobile recovery test (+ working redirect/deep-link) are prerequisites for (a) Supabase recovery-email delivery to real families AND (b) disabling Firebase Email/Password sign-in. They do NOT block the pre-cutover announcement via an existing verified team channel. Required order: A draft+approve announcement -> B send via existing channel BEFORE sign-in disabled -> C prove recovery path (SMTP, capacity, redirect/deep link, synthetic mobile reset) -> D only then trigger real recovery messages and later disable Firebase sign-in under its separate gate. Removed every "no family messaging until SMTP" phrasing; replaced with "no real recovery-email delivery and no Firebase sign-in shutdown until the recovery path is proven." Announcement continues to make no data-completeness promise.
+§3 DATE CORRECTION: Director Rulings 02, 03, 04, and 05 were issued 2026-06-23 (NOT 2026-06-22). Sitting 1 remains 2026-06-22. In the editable docs, ruling-date labels corrected to 2026-06-23 at: 06 (the [Director Ruling 03] and [Director Ruling 04] overlay tags), 17 (status line "Reconciled to Director Ruling 04 (2026-06-22)"), 18 ("Governance rulings in force (Ruling 02+03+04, 2026-06-22)"), 19 (status "revised per Director Ruling 04, 2026-06-22"). Genuine Sitting-1 / executor-event / Kevin-decision / verification dates LEFT UNCHANGED at 2026-06-22 (e.g. 13:3 close-of-Sitting-1, 13:88 Kevin [DECIDE], 16:3 + 16:66 executor prep/verify, 17:41 + 17:144 verify/branch, 18:3 + 18:64 + 18:115 prep/Sitting-1/Kevin, 20:3 drafted). NOTES APPEND-ONLY DATE CORRECTION (Ruling 05 §3): the earlier NOTES block headers "## 2026-06-22 — DIRECTOR RULING 03 — ..." and "## 2026-06-22 — DIRECTOR RULING 04 — ..." carry the SUPERSEDED date label 2026-06-22; the CORRECT issue date for Rulings 02/03/04/05 is 2026-06-23. Per Ruling 05 §3 those earlier headers are NOT rewritten (append-only); this note supersedes their date labels. (Sitting-1 / executor-event dates inside earlier NOTES blocks remain genuinely 2026-06-22.)
+§4 REQUIRED FINAL STATE CONFIRMED: initial v1 export set = exactly two scheduled functions; syncCalendar = conditional follow-on, not an initial export; Proposals A/B/C/D + identity-remediation script UNIMPLEMENTED; 17 remains NOT READY-TO-RUN; recovery-email delivery remains a launch/shutdown gate; pre-cutover announcement may use the existing team channel; identity sitting non-executable; Sitting 2 UNSCHEDULED.
+§5 PATCH ARTIFACTS: three complete machine-generated cumulative patches (from UNIFY HEAD 4fd2d0a) written OUTSIDE the UNIFY repo at /Users/kevin/bspc-unify/_ruling05_patches/ — PATCH1-governance-runbooks.patch (06,13,16,17,18,README,NOTES), PATCH2-family-comms.patch (19), PATCH3-identity-sitting.patch (20). Untracked files (17,18,19,20) rendered as complete new-file patches. NOT added to the UNIFY repo. Byte sizes + SHA-256 reported to the Director in the return packet.
+20 (identity sitting) had NO Ruling-05 content change (its only 2026-06-22 is a genuine executor-event date; substance unaffected) but remains in PATCH 3 as a complete cumulative new-file patch from HEAD.
+
+FREEZE (Ruling 05): App + BSPC repos NOT modified (Coach 0c0f82b / BSPC 880aed8). All changes in the UNIFY working tree only: 06,13,16,NOTES,README modified; 17,18,19,20 new. Nothing staged. No commit. No push. No hosted target touched. No code implementation (documentation-only). Patch artifacts live outside the UNIFY repo.
+
+---
+
+## 2026-06-23 — DIRECTOR RULING 06 — PATCH CORRECTION ONLY (documentation-only; no code, no hosted target, no commit)
+
+ARTIFACT INTEGRITY ACCEPTED (Ruling 06): the three Ruling-05 patches matched their reported byte sizes + SHA-256. PATCH2-family-comms.patch is BLESSED AS DRAFT CONTENT and is NOT altered or regenerated (it is committed only after the corrected Commit 1 lands). Required corrections applied to PATCH1 (06,13,16,17,18,README,NOTES) and PATCH3 (20); two new cumulative artifacts returned from UNIFY HEAD 4fd2d0a — PATCH1-governance-runbooks-R06.patch + PATCH3-identity-sitting-R06.patch (byte size + SHA-256 + no-secret/PII confirmation in the return packet).
+
+PATCH1 CORRECTIONS:
+§1 IDENTITY PATH (13,16,17,18): removed every suggestion to use scripts/create-coach.ts, the app's add-coach/self-onboarding flow, a hand-minted Supabase admin/identity, or "probe-first-then-choose-any-seeding-path." Recorded the precise state: Kevin reports NO Firebase coach document exists for him; whether his Firebase Auth identity exists is NOT yet proven; the dedicated identity-remediation sitting (20) runs BEFORE §B0; Branch A (existing Firebase Auth identity + zero coach docs) = purpose-built create-only remediation only, after Director review of the script diff+tests; Branch B (no Firebase Auth identity) = immediate STOP + a separate identity-bootstrap proposal; no standalone super_admin and no alternative Supabase minting path.
+§2 STALE DECOMMISSION GUIDANCE (18): replaced the stale "ratify the 1093 math" reference with "canonical Coach client bar at decommission − 105." Audited all editable docs — live decommission guidance uses the −105 formula (06,13,18); the only remaining 1093/−106 references are explicitly labeled REJECTED (18 §5(b) audit trail), not live guidance.
+§3 SYNC CALENDAR FULLY DEFERRED (17): removed `firebase functions:secrets:set CALENDAR_ICS_URL` from the initial provisioning command sequence; removed CALENDAR_ICS_URL from the initial CI/config list; the §8a design list marks it follow-on only; no calendar config is provisioned/bound/deployed during the initial two-function launch; the §8b follow-on section describes the evidence required before syncCalendar may be implemented + deployed.
+§4 CI SECRET BOUNDARY (16,17): SUPABASE_SERVICE_ROLE_KEY remains in Firebase Secret Manager, bound through defineSecret to the permitted functions; its VALUE does NOT enter GitHub Actions secrets, workflow env, YAML, command arguments, logs, or files; CI carries deployment authentication only; SUPABASE_URL uses the approved non-secret parameter mechanism (defineString); if non-interactive CI needs parameter material, that mechanism is documented separately, never conflated with the service-role secret.
+§5 KEY-SAFETY LOGGING — SUPERSEDING GOVERNANCE NOTE: any prior instruction to paste tool output "verbatim" into NOTES is SUPERSEDED. Convention going forward (17 §KEY-SAFETY + §11; 06 §B0 probe-record note; README; 18 doc-map): inspect output for secrets, PII, account identifiers, roster data, and media metadata BEFORE recording anything; record SANITIZED output only; sensitive findings as path/category or count/status only; never place secrets, UID, email, minor data, or roster data in NOTES. Historical append-only entries remain UNTOUCHED; this is the superseding note.
+§6 FIREBASE SCHEDULED-FUNCTION PREREQUISITE (17 preflight + exit criteria): read-only confirmation that the existing Firebase project supports the two scheduled Functions + Cloud Scheduler; record billing-plan/status only (no billing identifiers); any billing-plan change requires Kevin's explicit founder approval + the normal target gate; no scheduled-function deployment until this prerequisite is proven.
+§7 CONSISTENCY (13): Milestone-1 heading ~1–2 wks -> ~2–3 wks (matches the governing ~2–3-weeks-to-closed-testing estimate).
+
+PATCH3 CORRECTIONS (20):
+§1 TARGET GATES reordered: Gate R (print Firebase project_id only + Kevin approves the read target; no approval = STOP) BEFORE every Phase-0 hosted read; Phase 0 read-only discovery; Gate W (print the same project_id + summarize the write as "one create-only coaches document" + Kevin approves the write; no approval = STOP) immediately before Phase 2.
+§2 BRANCH B unchanged (immediate STOP; no Auth creation; no coach-document write; separate identity-bootstrap proposal); removed the final ask that requested the Director pre-rule Branch B again.
+§3 SERVICE-ACCOUNT WORDING: replaced "never read the service-account file" with — the approved tool may load the credential from its approved local location; no human or tool output may inspect/display/paste/serialize/log/copy/persist its contents; no credential path or content appears in NOTES or chat.
+§4 EXACT PAYLOAD: notificationPrefs set to the exact source-proven value { dailyDigest:true, newNotes:true, attendanceAlerts:true, aiDraftsReady:true } (create-coach.ts:60-65; type firestore.types.ts:21-26). role turned into a Director choice between two evidence-backed options — role:'admin' (documented exact pre-cutover powers: firestore.rules update/delete OTHER coaches :25-26, write swimmers/{id}/medical :46, read-all + delete import_jobs :95/102; UI admin/import screens; services setStaffRole/setStaffGroups :92-114) vs least-privilege role:'coach' (sufficient for the remediation's sole purpose, since promotion is UID-based) — recommended on necessity grounds unless Kevin must perform admin-only actions in the live Firebase app before cutover. No real identity value in the packet.
+§5 DIRECTOR ASK reduced to: ratify the exact payload (incl. the role choice); review the remediation-script diff + tests; schedule the sitting only after those are blessed. Execution remains HELD.
+
+FREEZE (Ruling 06): App + BSPC repos NOT modified (Coach 0c0f82b / BSPC 880aed8). All changes in the UNIFY working tree only: 06,13,16,NOTES,README modified; 17,18,19,20 new. PATCH2 (19) content unchanged. Nothing staged. No commit. No push. No hosted target touched. No code implementation (documentation-only). Patch artifacts live outside the UNIFY repo.
+
+---
+
+## 2026-06-23 — DIRECTOR RULING 07 — FINAL INCREMENTAL DOCUMENT CORRECTIONS (documentation-only; no code, no hosted target, no commit)
+
+R06 artifact integrity ACCEPTED; HANDOFF.md stays in Commit 1; ruling dates remain 2026-06-23. The large R06 patches were NOT regenerated; PATCH2 remains frozen/unchanged.
+
+IDENTITY PAYLOAD — SETTLED (Director Ruling 07 §4):
+- role: 'coach' selected. role:'admin' is NOT authorized for this remediation (it needs no pre-cutover admin power; NM-1 promotion stays UID-based).
+- groups: [] selected (empty array; do not infer or guess practice groups).
+- notificationPrefs: { dailyDigest:true, newNotes:true, attendanceAlerts:true, aiDraftsReady:true } (source-compatible; aiDraftsReady is compatibility metadata only — it does NOT enable, invoke, or authorize AI processing).
+- fcmTokens: []. createdAt/updatedAt: server timestamps.
+
+PATCH1 INCREMENTAL CORRECTIONS (16,17,18,NOTES):
+- 16 §5 matrix: the initial Coach-Functions row now lists only SUPABASE_URL (non-secret param) + SUPABASE_SERVICE_ROLE_KEY (Firebase Secret Manager, source-bound); "Set where" = "Firebase parameterized config + Secret Manager; CI carries deployment authentication only" (the old "Firebase params/secrets + CI" removed). CALENDAR_ICS_URL removed from the initial v1 matrix and placed only in a separate follow-on note (later syncCalendar change only; not provisioned/bound/deployed initially; sensitive; bound only to syncCalendar; never logged).
+- 17 §1: heading changed from "(no hosted target yet — safe)" to "Pre-flight — local checks plus one target-gated, read-only Firebase prerequisite"; the scheduled-function prerequisite now prints project_id + Kevin-approve-or-STOP before the read, billing-plan/status only, no billing identifiers. "Paste the full push output" and "Paste deploy output" replaced with inspect-then-record-sanitized instructions; the whole doc audited so every live output-recording instruction is sanitized (inspect first; sanitized only; sensitive findings = path/category or count/status only).
+- 18: the open "Director choice" for the remediation role replaced with the settled role:'coach' (groups:[]; admin powers not authorized/needed).
+
+PATCH3 INCREMENTAL CORRECTIONS (20):
+- role:'coach' everywhere (payload cell, confirmation, role note, Director ask); role:'admin' explicitly NOT authorized.
+- groups: exactly [] (no inference/guessing).
+- notificationPrefs all-true + fcmTokens [] + server-timestamp createdAt/updatedAt preserved as source-compatible; aiDraftsReady stated to be compatibility metadata that does not enable/invoke/authorize AI.
+- role note rewritten to the settled decision (UID-based promotion; no pre-cutover admin power needed; role:'admin' not authorized).
+- P3.1 expanded to verify the complete written payload (docId/uid, email, displayName, role, groups, notificationPrefs, fcmTokens, createdAt+updatedAt presence/type), all redacted.
+- P3.2 corrected: pre-creation zero UID + zero case-insensitive email matches; post-creation exactly one UID match + exactly one case-insensitive email match, both the same newly-created document ("re-run P0.4" removed).
+- Final Director ask reduced to: review/bless the remediation-script diff + tests; schedule the sitting after that evidence is blessed. No payload/role choice requested.
+
+STATUS: Commit 1 (PATCH1) and Commit 3 (PATCH3) remain HELD for these narrow corrections; PATCH2 remains frozen; Sitting 2 remains UNSCHEDULED. Two small incremental delta patches returned (PATCH1-R07-delta = 16,17,18,NOTES; PATCH3-R07-delta = 20), generated against the current R06 working tree; byte size + SHA-256 + no-secret/PII confirmation in the return packet.
+
+FREEZE (Ruling 07): App + BSPC repos NOT modified (Coach 0c0f82b / BSPC 880aed8). UNIFY working tree only. Nothing staged. No commit. No push. No hosted target touched. No code implementation (documentation-only). Patch artifacts live outside the UNIFY repo.

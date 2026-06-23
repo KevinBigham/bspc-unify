@@ -227,8 +227,11 @@ handling rules apply), count and record:
 
 A small read-only probe script lands as scaffolding in the staging round
 (unit-tested pure parts only); console counts are acceptable for small
-sets. **The probe output table is preserved verbatim in UNIFY/NOTES.md as
-the cutover record** — it is also the D-J7 "whatever test chatter" record.
+sets. **The probe output table is recorded in UNIFY/NOTES.md as the
+cutover record — sanitized first** (inspect for secrets, PII, account
+identifiers, roster data, and media metadata; record sanitized output only,
+sensitive findings as path/category or count/status only) — it is also the
+D-J7 "whatever test chatter" record.
 If the project does not exist or a collection is EMPTY, every manifest
 over it resolves to a **named no-op** in that record; nothing else changes.
 
@@ -367,6 +370,10 @@ row, never a sender duplicate)."**
 
 ## §B4 — Env (the F/G banks + PART A §7 lines, consolidated)
 
+> **[Director Ruling 03 — v1 overlay, 2026-06-23]** The F/G-bank lines below are **historical provenance**, retained for the future media-AI / authenticated-HTTP phase — **they are NOT v1.** Repo-wide caller audit (Ruling 03 response, NOTES §6): the only consumers of `PROCESS_SHARED_SECRET` are the **deferred** `evaluateAttendanceRules` (`https/evaluateAttendance.ts:11`, Option C) and the **omitted** AI `processSession` (`https/processSession.ts:12`); the only consumers of `EXPO_PUBLIC_PROCESS_FUNCTIONS_BASE_URL` / `EXPO_PUBLIC_PROCESS_SHARED_SECRET` are the **removed** attendance kick (`attendancePipeline.ts:13,17`, Proposal D) and the **hard-disabled** AI media POST (`mediaPipeline.ts:14,18`, Proposal C). The v1 launch export surface (the **initial two** scheduled functions — `sweepAttendanceEvaluations` + `dailyDigest`) has **no** consumer of `PROCESS_SHARED_SECRET` → it is **future-only; do NOT set it for v1**, and the two `EXPO_PUBLIC_PROCESS_*` client lines **drop from the v1 env matrix.**
+>
+> **[Director Ruling 04 + 05 — RATIFIED, 2026-06-23]** The **initial** v1 Firebase-hosted export set is **exactly two scheduled functions** — `sweepAttendanceEvaluations` + `dailyDigest`. **Proposal A pins `functions/src/index.ts` to exactly those two** (a test asserts the exact two-name set), so the three portal callables (`redeemInvite`, `getParentPortalDashboard`, `getParentSwimmerPortalData`), the AI trio, and `evaluateAttendanceRules` are **removed from the v1 export surface — not merely left undeployed.** **`syncCalendar` is a conditionally approved follow-on** (Ruling 05 §1): it is **not** in the initial export set and must **not** ship as a self-skipping placeholder — it may be added only by a **later, separate change** once evidence establishes a real production calendar feed (public vs private/tokenized), its config is bound safely, its URL is never logged, its tests are green, and a target-gated deploy plan is reviewed. (This is the *v1 launch* surface; the §B6 step-3 ledger below is the separate *eventual full-decommission* retirement schedule — consistent: v1 ships **two** initially, `syncCalendar` is a later follow-on, and everything else retires when the Functions workspace dies.)
+
 - **F bank, quoted:** set `PROCESS_SHARED_SECRET` (functions env) +
   `EXPO_PUBLIC_PROCESS_FUNCTIONS_BASE_URL` /
   `EXPO_PUBLIC_PROCESS_SHARED_SECRET` (app env) **before the media
@@ -413,7 +420,7 @@ guardianships-only at this sweep, alongside checklist items 3/9.
    Kevin has sent the account announcement — the Kevin-owned comms line
    (ratified 2026-06-11, R-CLOSURE round): every coach and parent is told
    the account now lives on Supabase and how to set a password (the OD-6
-   paths: the landed forgot-password flow or an operator-sent invite).**
+   paths: the landed forgot-password flow or an operator-sent invite).** **[Director Ruling 05 §2]** This sign-in shutdown is **separately gated on the proven recovery path** (custom SMTP + send-rate capacity + redirect/deep-link + one synthetic end-to-end mobile recovery test) and on real recovery-email delivery being available; the announcement above may go out via the existing **verified team channel** beforehand, but Email/Password sign-in is **not** disabled until that recovery path is proven.
 2. **Firestore rules → deny-all;** data disposition per the §B2 keep/drop
    sheet record.
 3. **functions/ workspace retirement — LAST compute standing; the
@@ -438,11 +445,20 @@ guardianships-only at this sweep, alongside checklist items 3/9.
 4. **Repo config deletions — one named commit:** `firestore.rules`,
    `storage.rules` (already retired in force by §B1),
    `firestore.indexes.json`, `firebase.json`, `.firebaserc`.
-5. **scripts/ firebase seeds deletion** (create-coach, seed-demo-data,
-   seed-calendar, seed-meets, seed-roster) WITH
-   `scripts/__tests__/seed-demo-data.test.ts` → **Coach 1080 → 1076,
-   the pre-declared −4 event (FYI-E).** check-*.sh/.mjs +
-   sync-functions-shared.js survive (repo tooling, not firebase).
+5. **scripts/ firebase-admin tooling deletion — the CLIENT-bar decommission event** (Evidence Packet 01 §A; **supersedes the stale "Coach 1080 → 1076 / −4 (FYI-E)" line**, which counted only one suite against a long-obsolete `1080` baseline). Delete all nine firebase-admin scripts — the five seeds (`create-coach`, `seed-demo-data`, `seed-calendar`, `seed-meets`, `seed-roster`) **and** the four one-time cutover tools (`probe-firebase-inventory`, `provision-identities`, `backfill-identity-graph`, `backfill-roster`) — WITH their five Jest suites (counts Jest-confirmed):
+
+   | retiring suite | Jest tests | tool deleted |
+   |---|---|---|
+   | `seed-demo-data.test.ts` | 3 | `seed-demo-data.ts` |
+   | `probe-firebase-inventory-report.test.ts` | 14 | `probe-firebase-inventory{,-report}.ts` |
+   | `provision-identities-plan.test.ts` | 17 | `provision-identities{,-plan}.ts` |
+   | `backfill-identity-graph-plan.test.ts` | 20 | `backfill-identity-graph{,-plan}.ts` |
+   | `backfill-roster-plan.test.ts` | 51 (incl. the 8 Sitting-1 mediaConsent-coercion pins) | `backfill-roster{,-plan}.ts` |
+   | **Σ retirement delta** | **−105** | (create-coach/seed-calendar/seed-meets/seed-roster are untested → 0 tests) |
+
+   **Client floor at decommission = (canonical client bar at decommission) − 105.** Record the *formula*, not a fixed number: today the canonical bar is **1199**, so current arithmetic is **1199 − 105 = 1094**, but Director-approved pre-launch Coach changes (e.g. the media-no-AI client guard, Proposal C) may raise the canonical bar before this step runs. **[Director Ruling 03 §1 — the −105 delta is RATIFIED]** — accounting only; it does **not** authorize deletion now. **Coverage is clean** — zero `firebase-admin` in `src/`/`app/`, so no shipping behavior loses coverage; these are one-time migration tools whose audit record lives in NOTES at execution. `check-*.sh/.mjs` + `sync-functions-shared.js` survive (repo tooling, not firebase).
+
+   **Deletion precondition (Director Ruling 03 §1 — exact):** the **five source tools and their five test suites retire TOGETHER in ONE named decommission change** — never piecemeal — and that change may land **only after all required cutover *and* data verification is signed off.** It is a *repo* deletion commit gated on that sign-off — **not** on Firebase shutdown or final project deletion. Sequence: Sitting 2 + 05 §6.5 smoke verify → **cutover + data verification signed off** → §B6 step 1 (sign-in disabled, after Kevin's announcement) → … → **step 5 here = the single −105 client-bar decommission change** → step 7 (final Firebase project deletion). Kept strictly separate from the Functions-workspace `115 → 0` retirement (step 3 / C1–C6 above).
 6. **Portal residue end-state:** `lib/firebase.ts` + the
    `parentPortal.ts` callable transport die per 05 §6.2(vii)/§6.6 timing
    (with the bank on the small-gap verdict; at C1 otherwise).
