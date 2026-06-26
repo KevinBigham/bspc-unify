@@ -6843,3 +6843,48 @@ PATCH3 INCREMENTAL CORRECTIONS (20):
 STATUS: Commit 1 (PATCH1) and Commit 3 (PATCH3) remain HELD for these narrow corrections; PATCH2 remains frozen; Sitting 2 remains UNSCHEDULED. Two small incremental delta patches returned (PATCH1-R07-delta = 16,17,18,NOTES; PATCH3-R07-delta = 20), generated against the current R06 working tree; byte size + SHA-256 + no-secret/PII confirmation in the return packet.
 
 FREEZE (Ruling 07): App + BSPC repos NOT modified (Coach 0c0f82b / BSPC 880aed8). UNIFY working tree only. Nothing staged. No commit. No push. No hosted target touched. No code implementation (documentation-only). Patch artifacts live outside the UNIFY repo.
+
+=====BEGIN FRESH-LAUNCH FORK — DIRECTOR RULING 56 + 57 (2026-06-25)=====
+APPEND-ONLY logbook entry. Nothing above this marker is rewritten or deleted. All prior
+forward-looking cutover / Sitting-2 / identity-remediation / Firebase-probe language above is
+now HISTORICAL and SUPERSEDED by this entry.
+
+LAUNCH MODEL: Fresh Supabase launch · No Firebase migration · No Sitting 2 · No Firebase
+identity remediation · No R54 Firebase probe · No Gate R or Gate W. The two Firebase projects
+were attested empty by Kevin (operator attestation, NOT a repository proof); Ruling 57 does
+NOT authorize deleting either Firebase project.
+
+TOPOLOGY: 5070f877 = historical audit artifact, never merge · launch base = Coach main
+0c0f82b · future replay order = C then D · Proposals A and B = historical Firebase transition
+work. No branch creation or cherry-pick occurs under Ruling 57.
+
+BINDING ORDER: core governance reconciliation → Coach launch branch replay C → replay D →
+production Supabase Phase 1 → first-super-admin bootstrap → scheduler rehome → staff-assisted
+beta onboarding → device QA / closed beta → invite-redemption mobile UI → public-launch gates
+→ dead-code and Firebase cleanup.
+
+FIRST-ADMIN BOOTSTRAP (concept approved; exact SQL + hosted execution HELD): require public
+signup closed; exactly 1 auth user; exactly 1 profile; profile maps to that user; profile
+initially family/pending; zero coach_admin; zero super_admin; privileged non-user execution
+context; exactly 1 row updated; final exactly 1 approved super_admin; full counts rechecked
+before commit; no email or UUID literal in SQL/output.
+
+SCHEDULER REHOME (design-stage, none built): dailyDigest = SQL-Cron candidate;
+sweepAttendanceEvaluations = SQL-Cron vs scheduled Edge Function, undecided pending parity audit.
+
+ONBOARDING: closed beta = existing admin approval path (creates family, links profile, inserts
+swimmers, records approval log), accepted only after synthetic e2e proof + operator checklist +
+duplicate handling + rollback verification; staff NEVER redeem a parent invite. Public launch =
+mobile invite-redemption UI mandatory (RPC tested, no mobile caller yet).
+
+GATE 6: retire migrated-family + Firebase-shutdown messaging; retain Supabase email provider,
+SMTP/delivery proof, invite template, password-reset template, redirect/deep-link allow-list,
+synthetic invite/reset e2e proof.
+
+CLEANUP ACCOUNTING: −105 retired; −102 provisional; 1103 provisional. Exact cleanup paths and
+test bars require a later deletion diff and an actual test run.
+
+SCOPE OF THIS ENTRY (Ruling 57): documentation edits only, to exactly seven UNIFY paths
+(06, 13, 18, 20, HANDOFF, README, NOTES). No commit, no branch, no cherry-pick, no hosted or
+network action, no memory mutation. Coach 0c0f82b / 5070f877 and BSPC 880aed8 untouched.
+=====END FRESH-LAUNCH FORK — DIRECTOR RULING 56 + 57=====

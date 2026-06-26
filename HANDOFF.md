@@ -1,3 +1,88 @@
+# 🔄🔴 FRESH-LAUNCH FORK — DIRECTOR RULING 56 + 57 (2026-06-25)
+
+**READ FIRST. This supersedes the migration framing in the rest of this document.** Everything below that describes a Firebase→Supabase migration, Sitting 2, identity remediation, the R54 probe, or Gate R / Gate W is **HISTORICAL and SUPERSEDED — NON-EXECUTABLE.** No Executor may run any cutover, remediation tool, Firebase probe, or Firebase deployment.
+
+**Launch model**
+```text
+Fresh Supabase launch
+No Firebase migration
+No Sitting 2
+No Firebase identity remediation
+No R54 Firebase probe
+No Gate R or Gate W
+```
+The two Firebase projects were attested empty by Kevin — an **operator attestation, NOT a repository proof.** Ruling 57 does **not** authorize deletion of either Firebase project.
+
+**Repository topology**
+```text
+5070f877 = historical audit artifact; never merge
+launch base = Coach main 0c0f82b
+future replay order = C then D
+A and B = historical Firebase transition work
+```
+No branch creation or cherry-pick occurs under Ruling 57.
+
+**New binding order**
+```text
+core governance reconciliation
+→ Coach launch branch replay C
+→ Coach launch branch replay D
+→ production Supabase Phase 1
+→ first-super-admin bootstrap
+→ scheduler rehome
+→ staff-assisted beta onboarding
+→ device QA / closed beta
+→ invite-redemption mobile UI
+→ public-launch gates
+→ dead-code and Firebase cleanup
+```
+
+**First-super-admin bootstrap** — concept approved; **exact SQL and hosted execution are HELD.** The eventual transaction must require:
+```text
+public signup closed
+exactly 1 auth user
+exactly 1 profile
+profile maps to that user
+profile initially family/pending
+zero coach_admin
+zero super_admin
+privileged non-user execution context
+exactly 1 row updated
+final exactly 1 approved super_admin
+full counts rechecked before commit
+no email or UUID literal in SQL/output
+```
+
+**Scheduler rehome** — design-stage; neither implementation selected nor built:
+```text
+dailyDigest: SQL-Cron candidate
+sweepAttendanceEvaluations: SQL-Cron versus scheduled Edge Function — undecided pending parity audit
+```
+
+**Onboarding** — Closed beta: the **existing admin approval path** is the staff-assisted candidate (creates the family, links the profile, inserts swimmers, records an approval log); acceptable **only after** synthetic end-to-end proof, an operator checklist, duplicate handling, and rollback verification. **Staff never redeem a parent invite.** Public launch: the **mobile invite-redemption UI is mandatory** (the RPC is tested but has no mobile caller).
+
+**Gate 6** — Retire migrated-family and Firebase-shutdown messaging. Retain:
+```text
+Supabase email provider
+SMTP/delivery proof
+invite template
+password-reset template
+redirect and deep-link allow-list
+synthetic invite/reset end-to-end proof
+```
+
+**Cleanup accounting**
+```text
+−105 retired
+−102 provisional
+1103 provisional
+```
+Exact cleanup paths and test bars require a later deletion diff and an actual test run.
+
+**— End fresh-launch banner (Rulings 56 + 57). Historical content follows unchanged. —**
+
+---
+
 # HANDOFF — BSPC-UNIFY Migration
 
 **For: the next Claude Code session. Read this first, top to bottom, before touching anything.**
@@ -104,7 +189,9 @@ banked in `NOTES.md` (search `=====BEGIN SITTING-1 CLEAN RE-RUN READBACK=====`).
 
 ---
 
-## 4. WHAT'S NEXT — your job
+## 4. WHAT'S NEXT — your job ⛔ SUPERSEDED (Rulings 56 + 57)
+
+> **Historical / non-executable.** Sitting 2 is cancelled; there is no cutover. The current "what's next" is the fresh-launch binding order in the banner at the top of this file. Do **not** act on the Sitting-2 sequence below.
 
 **Do NOT start Sitting 2 yourself.** The sequence is:
 
@@ -149,7 +236,11 @@ These are not optional. They held all through the build and the dry-run; they ho
 
 ---
 
-## 6. The Sitting-2 spine (the REAL cutover — for when the director schedules it)
+## 6. The Sitting-2 spine ⛔ SUPERSEDED & NON-EXECUTABLE (Rulings 56 + 57 — no cutover; historical record only)
+
+> The cutover spine below must **not** be run. Fresh Supabase launch; no Sitting 2. Retained for the historical record.
+
+*(original heading:)* **6. The Sitting-2 spine (the REAL cutover — for when the director schedules it)**
 
 This is the operation, in order, per `06_FIREBASE_RUNBOOK.md` PART B. **Sitting 2 is NOT a dry-run — it
 touches real data. Maximum care, propose-and-wait on every step.**
