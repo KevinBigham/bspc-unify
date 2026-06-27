@@ -125,6 +125,8 @@ OD-6 imports **no passwords** — every real user does a forced reset/invite at 
 
 - [ ] **Enable Email provider** (Auth → Providers → Email): email+password ON.
 - [ ] **Password-reset + invite email templates** (Auth → Email Templates): set sender, copy, and the **redirect URL** (the app/portal deep-link that lands the reset). Stage both *reset* and *invite* templates.
+  - Staged template files: `auth-email-templates/reset-password.md` and `auth-email-templates/invite-user.md`.
+  - Synthetic recovery checklist: `scripts/synthetic-recovery-checklist.sh` prints the no-secrets device checklist and sanitized `NOTES.md` result template. Run it only against a Kevin-approved throwaway target; never with real family data.
 - [ ] **Site URL / redirect allow-list:** add the mobile deep-link schemes + the portal origin (once it has a host).
 - [ ] Confirm in `NOTES.md`: provider on, templates saved, redirect URL set (no secrets).
 
