@@ -149,7 +149,7 @@ cd /Users/kevin/bspc-unify/BSPC/ACTIVE && TZ=UTC npm test
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE && TZ=UTC npm run test:coverage   # 75% threshold
 
 # pgTAP RLS suite (bar = 343) — needs Supabase CLI + Docker running
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && supabase start
+cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm exec -- supabase --agent no start
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run test:rls   # npx supabase test db --local supabase/tests/database
 
 # quality gates
@@ -213,11 +213,11 @@ Execute these in order. Each is its own branch off `fresh-launch-cd` (Coach) or 
 **Goal:** A real, empty production Supabase project with the full canonical schema applied, RLS active on every table, storage buckets created with correct policies, auth + email templates configured, and a synthetic password-reset proven end-to-end. No real family data yet.
 
 **Concrete coding tasks:**
-- **Verify the migration set is clean and idempotent against an empty DB.** Run the full 13-migration push on a *throwaway* Supabase project first (`supabase db push` from `/Users/kevin/bspc-unify/BSPC/ACTIVE/supabase`). Fix any migration that fails on a truly-empty database (the schema was authored partly under the migration era — assert no migration silently assumes pre-existing Firebase-derived rows).
+- **Verify the migration set is clean and idempotent against an empty DB.** Run the full 13-migration push on a *throwaway* Supabase project first (`npm exec -- supabase --agent no db push` from `/Users/kevin/bspc-unify/BSPC/ACTIVE/supabase`). Fix any migration that fails on a truly-empty database (the schema was authored partly under the migration era — assert no migration silently assumes pre-existing Firebase-derived rows).
 - **Write a read-only schema/RLS/bucket audit script** (e.g. `BSPC/ACTIVE/scripts/audit-prod-schema.ts` or SQL in `supabase/tests/`) that asserts: 13 migrations present; RLS enabled on all `public` tables; the 4 storage buckets exist and are **private** with the documented size limits (media-audio 100 MB, media-video 500 MB, profile-photos 5 MB, practice-plans 25 MB); storage RLS policies present. This script is reused as the Phase-1 exit check.
 - **Stage (do not send) the auth email templates** — invite + password-reset — as files/text in the repo (and into `19_FAMILY_COMMS_DRAFTS.md`). Configuring them in the dashboard and setting the redirect/deep-link allow-list is a Kevin/runbook step.
 - **Write the synthetic end-to-end recovery test procedure** as a runnable checklist script: throwaway account → trigger reset (custom SMTP) → tap link on a real device → set password → sign in → confirm deep-link. Record pass/fail (sanitized) in `UNIFY/NOTES.md`.
-- **Deploy the 4 BSPC edge functions** (`send-notification`, `approve-family`, `cleanup-tokens`, `calendar-feed`) — drafted/tested locally; the live `supabase functions deploy` is a runbook step gated on Kevin's "go."
+- **Deploy the 4 BSPC edge functions** (`send-notification`, `approve-family`, `cleanup-tokens`, `calendar-feed`) — drafted/tested locally; the live `npm exec -- supabase --agent no functions deploy` runbook step is gated on Kevin's "go."
 
 **Human dependency:** Kevin creates the production Supabase project (US region, Postgres 17), provides URL + keys at run-time, configures the SMTP sender and dashboard auth settings, and gives "go" before any command runs against the real project. **Do not create the project or any secret.**
 

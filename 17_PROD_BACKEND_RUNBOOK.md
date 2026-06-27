@@ -55,22 +55,22 @@ Hard rules, no exceptions:
 
 ```bash
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE/supabase
-supabase login            # opens browser / pastes a CLI token — token is a SECRET, never echo it
-supabase link --project-ref <PROD_REF>
+npm exec -- supabase --agent no login            # opens browser / pastes a CLI token — token is a SECRET, never echo it
+npm exec -- supabase --agent no link --project-ref <PROD_REF>
 ```
 
-- [ ] Verify: `supabase projects list` shows the prod project as **linked** (●).
+- [ ] Verify: `npm exec -- supabase --agent no projects list` shows the prod project as **linked** (●).
 
 ---
 
 ## 3. Push the schema — this also creates the buckets
 
-`supabase db push` applies all **13** migrations to the linked remote. **Finding (verified):** migrations **`00007_phase_f_media.sql`** and **`00009_phase_h_calendar_meets_plans.sql`** contain `INSERT INTO storage.buckets …` and the `storage.objects` RLS policies — so **the push creates all four buckets and their access policies automatically.** There is **no** separate "create buckets" step.
+`npm exec -- supabase --agent no db push` applies all **13** migrations to the linked remote. **Finding (verified):** migrations **`00007_phase_f_media.sql`** and **`00009_phase_h_calendar_meets_plans.sql`** contain `INSERT INTO storage.buckets …` and the `storage.objects` RLS policies — so **the push creates all four buckets and their access policies automatically.** There is **no** separate "create buckets" step.
 
 🔒 **TARGET confirm (this WRITES to prod)**, then:
 
 ```bash
-supabase db push        # applies 00001 … 00013 in order
+npm exec -- supabase --agent no db push        # applies 00001 … 00013 in order
 ```
 
 The 13 migrations that must apply (confirm each in the output):
@@ -172,13 +172,13 @@ npm run audit:edge-functions
 
 ```bash
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE/supabase
-supabase functions deploy send-notification
-supabase functions deploy approve-family
-supabase functions deploy cleanup-tokens
-supabase functions deploy calendar-feed --no-verify-jwt     # public iCal subscription feed
+npm exec -- supabase --agent no functions deploy approve-family
+npm exec -- supabase --agent no functions deploy calendar-feed --no-verify-jwt     # public iCal subscription feed
+npm exec -- supabase --agent no functions deploy cleanup-tokens
+npm exec -- supabase --agent no functions deploy send-notification
 ```
 
-- [ ] Verify each shows **deployed** in the dashboard (Edge Functions list) and `supabase functions list` matches.
+- [ ] Verify each shows **deployed** in the dashboard (Edge Functions list) and `npm exec -- supabase --agent no functions list` matches.
 - [ ] `cleanup-tokens` is a sweeper → confirm/stage its **schedule** (cron) if it relies on one.
 - [ ] **Inspect the deploy output, then record only sanitized output → `NOTES.md`** (function names + deployed/failed status; no secret value or URL; sensitive findings as path/category or count/status only).
 
