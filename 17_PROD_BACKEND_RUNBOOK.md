@@ -55,22 +55,22 @@ Hard rules, no exceptions:
 
 ```bash
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE/supabase
-supabase login            # opens browser / pastes a CLI token — token is a SECRET, never echo it
-supabase link --project-ref <PROD_REF>
+npm exec -- supabase --agent no login            # opens browser / pastes a CLI token — token is a SECRET, never echo it
+npm exec -- supabase --agent no link --project-ref <PROD_REF>
 ```
 
-- [ ] Verify: `supabase projects list` shows the prod project as **linked** (●).
+- [ ] Verify: `npm exec -- supabase --agent no projects list` shows the prod project as **linked** (●).
 
 ---
 
 ## 3. Push the schema — this also creates the buckets
 
-`supabase db push` applies all **13** migrations to the linked remote. **Finding (verified):** migrations **`00007_phase_f_media.sql`** and **`00009_phase_h_calendar_meets_plans.sql`** contain `INSERT INTO storage.buckets …` and the `storage.objects` RLS policies — so **the push creates all four buckets and their access policies automatically.** There is **no** separate "create buckets" step.
+`npm exec -- supabase --agent no db push` applies all **13** migrations to the linked remote. **Finding (verified):** migrations **`00007_phase_f_media.sql`** and **`00009_phase_h_calendar_meets_plans.sql`** contain `INSERT INTO storage.buckets …` and the `storage.objects` RLS policies — so **the push creates all four buckets and their access policies automatically.** There is **no** separate "create buckets" step.
 
 🔒 **TARGET confirm (this WRITES to prod)**, then:
 
 ```bash
-supabase db push        # applies 00001 … 00013 in order
+npm exec -- supabase --agent no db push        # applies 00001 … 00013 in order
 ```
 
 The 13 migrations that must apply (confirm each in the output):
@@ -89,9 +89,18 @@ The 13 migrations that must apply (confirm each in the output):
 
 ---
 
-## 4. Verify schema · buckets · RLS (read-only checks in the SQL editor)
+## 4. Verify schema · buckets · RLS (read-only linked audit, then spot checks)
 
-Run these as read-only confirmations (Supabase Studio → SQL editor, or `supabase db` query):
+🔒 **TARGET confirm (this READS the linked hosted DB)**, then run the reusable Phase-1 audit from the BSPC repo. It checks the 13 migrations, RLS enabled on every `public` table, the four private buckets with size/MIME caps, and the four `storage.objects` policies. It uses the Supabase CLI linked project path and does **not** require a DB URL or password in argv/env/logs.
+
+```bash
+cd /Users/kevin/bspc-unify/BSPC/ACTIVE
+npm run audit:prod-schema -- --linked
+```
+
+- [ ] **Inspect the audit output, then record only sanitized output in `NOTES.md`** (pass/fail + count of migrations/buckets/policies; no secret, PII, roster value, DB URL, or account identifier). **If the audit fails, STOP** — do not continue to auth/demo/functions until the mismatch is understood.
+
+Use these SQL checks only as manual follow-up if the audit fails or Kevin wants a dashboard cross-check (Supabase Studio → SQL editor, read-only):
 
 - [ ] **Buckets exist, private, correct limits** (must return exactly these four):
 
@@ -150,19 +159,26 @@ where id = (select id from auth.users where email = '<the rotated demo-admin ema
 
 ## 7. BSPC edge functions (deploy 4)
 
-**Finding (verified):** all four functions read **only** `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` via `Deno.env.get()`. Supabase **auto-injects both** into every Edge Function as default secrets — so **no manual `supabase secrets set` is required** for these four. (Re-confirm by skimming each `index.ts` for any *other* `Deno.env.get(...)` before deploy.)
+**Finding (verified):** all four functions read **only** `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` via `Deno.env.get()`. Supabase **auto-injects both** into every Edge Function as default secrets — so **no manual `supabase secrets set` is required** for these four. BSPC `npm run audit:edge-functions` pins this local readiness check and the deploy-command list before any hosted deploy.
+
+Local precheck, no hosted target:
+
+```bash
+cd /Users/kevin/bspc-unify/BSPC/ACTIVE
+npm run audit:edge-functions
+```
 
 🔒 **TARGET confirm**, then:
 
 ```bash
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE/supabase
-supabase functions deploy send-notification
-supabase functions deploy approve-family
-supabase functions deploy cleanup-tokens
-supabase functions deploy calendar-feed     # if this serves a public iCal URL, it may need --no-verify-jwt — check its index.ts first
+npm exec -- supabase --agent no functions deploy approve-family
+npm exec -- supabase --agent no functions deploy calendar-feed --no-verify-jwt     # public iCal subscription feed
+npm exec -- supabase --agent no functions deploy cleanup-tokens
+npm exec -- supabase --agent no functions deploy send-notification
 ```
 
-- [ ] Verify each shows **deployed** in the dashboard (Edge Functions list) and `supabase functions list` matches.
+- [ ] Verify each shows **deployed** in the dashboard (Edge Functions list) and `npm exec -- supabase --agent no functions list` matches.
 - [ ] `cleanup-tokens` is a sweeper → confirm/stage its **schedule** (cron) if it relies on one.
 - [ ] **Inspect the deploy output, then record only sanitized output → `NOTES.md`** (function names + deployed/failed status; no secret value or URL; sensitive findings as path/category or count/status only).
 

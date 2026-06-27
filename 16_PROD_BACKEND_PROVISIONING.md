@@ -14,17 +14,18 @@ Development has run against **local** Supabase only — **there is no production
 ## 1. Production Supabase project
 
 - [ ] Create the prod Supabase project (org owned by Kevin; **US region**; Postgres 17 to match local `config.toml`). Capture the project ref + URL.
-- [ ] `supabase link` the CLI to the prod project.
-- [ ] `supabase db push` — apply the **13 BSPC migrations** `00001_initial_schema` → `00013_cutover_parent_read_gaps`.
-- [ ] Verify RLS is present (the 343 pgTAP tests cover it locally; spot-check the prod policies exist).
+- [ ] `npm exec -- supabase --agent no link` the CLI to the prod project.
+- [ ] `npm exec -- supabase --agent no db push` — apply the **13 BSPC migrations** `00001_initial_schema` → `00013_cutover_parent_read_gaps`.
+- [ ] Run `npm run audit:prod-schema -- --linked` from `BSPC/ACTIVE` to verify the 13 migrations, RLS on every `public` table, four private buckets, and storage policies on the linked hosted target (read-only; target-gated).
 - [ ] **Auth** — enable email/password. Stage the **password-reset email template + redirect URL** (required: OD-6 imports no passwords, so every user does a forced reset/invite at go-live). **[Director Ruling 04 §7 / Ruling 05 §2] Staging the template ≠ proven delivery.** Custom SMTP, confirmed send-rate capacity, a working redirect/deep-link, and **one synthetic end-to-end mobile recovery test** are prerequisites for **triggering real recovery-email delivery to families and for disabling Firebase Email/Password sign-in** — **not** for the pre-cutover announcement, which may go out through the existing **verified team channel** (`13` Gate 6 / `19`). **Net-new onboarding** (invite redemption) is a separate **public-launch** gate (`13` Gate 7 / `19`), not a Sitting-2 blocker.
   - Staged repo artifacts: `auth-email-templates/reset-password.md`, `auth-email-templates/invite-user.md`, and the throwaway-only recovery checklist `scripts/synthetic-recovery-checklist.sh`.
 - [ ] Seed the **2 demo accounts** (`demo-family` / `demo-admin`). Creds are in BSPC `CLAUDE.md` — **rotate them for prod** and have Kevin own the new ones; do not copy creds into any doc.
 
 ## 2. BSPC edge functions (4)
 
-- [ ] Deploy `send-notification`, `calendar-feed`, `approve-family`, `cleanup-tokens` (`supabase functions deploy`).
-- [ ] Set their server secrets in the Supabase functions env (`SUPABASE_SERVICE_ROLE_KEY`, any push/iCal config). Service-role key **never** ships to a client.
+- [ ] Run the local readiness audit first: `npm run audit:edge-functions` from `BSPC/ACTIVE` (no hosted target, no secrets).
+- [ ] Deploy `approve-family`, `calendar-feed`, `cleanup-tokens`, `send-notification` (`npm exec -- supabase --agent no functions deploy`; `calendar-feed` uses `--no-verify-jwt` because it serves the public iCal subscription URL).
+- [ ] Do **not** set manual Supabase function secrets for these four. They read only Supabase's auto-injected `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`; service-role key **never** ships to a client.
 
 ## 3. Storage buckets (4) — per `01_CANONICAL_SCHEMA.sql` Appendix A
 
