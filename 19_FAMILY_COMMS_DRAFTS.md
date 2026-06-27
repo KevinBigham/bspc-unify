@@ -61,6 +61,10 @@ Questions or trouble? Contact **[SUPPORT CONTACT]**.
 
 *Supabase → Authentication → Email Templates → **"Reset Password"** (recovery). This is the template body whether the reset is **family-triggered** (Forgot Password) or **operator-triggered** (pending a proven batch send mechanism — see the Flow-decision prerequisites; do **not** run a real mass send, and do **not** disable Firebase sign-in, until custom SMTP + send-rate capacity + redirect/deep-link + the synthetic end-to-end mobile recovery test are proven). Delivers `{{ .ConfirmationURL }}`.*
 
+**Staged file artifact:** `auth-email-templates/reset-password.md`
+
+**Recovery test artifact:** `scripts/synthetic-recovery-checklist.sh` prints the synthetic mobile reset checklist and sanitized `NOTES.md` result template. It is for a throwaway account only; do not run it with real family data.
+
 **Subject:** Set your [TEAM NAME] app password
 
 **Body (HTML or text):**
@@ -86,6 +90,8 @@ Questions or trouble? Contact **[SUPPORT CONTACT]**.
 ## Artifact 2b — Supabase INVITE email (net-new families only — INACTIVE until an onboarding path exists)
 
 *Supabase → Authentication → Email Templates → **"Invite user"**. For a family who was **not** in the migrated data (a genuinely new account). Delivers `{{ .ConfirmationURL }}`. Do **not** send to migrated families — they get Artifact 2a. **[Director Ruling 04 §8] HELD INACTIVE** until a net-new onboarding path exists (tested mobile invite redemption *or* tested, documented staff-assisted onboarding — a public-launch gate). Do not claim the net-new invite flow is operational until one exists.*
+
+**Staged file artifact:** `auth-email-templates/invite-user.md`
 
 **Subject:** You're invited to the [TEAM NAME] app
 

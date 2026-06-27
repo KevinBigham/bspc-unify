@@ -18,6 +18,7 @@ Development has run against **local** Supabase only — **there is no production
 - [ ] `supabase db push` — apply the **13 BSPC migrations** `00001_initial_schema` → `00013_cutover_parent_read_gaps`.
 - [ ] Verify RLS is present (the 343 pgTAP tests cover it locally; spot-check the prod policies exist).
 - [ ] **Auth** — enable email/password. Stage the **password-reset email template + redirect URL** (required: OD-6 imports no passwords, so every user does a forced reset/invite at go-live). **[Director Ruling 04 §7 / Ruling 05 §2] Staging the template ≠ proven delivery.** Custom SMTP, confirmed send-rate capacity, a working redirect/deep-link, and **one synthetic end-to-end mobile recovery test** are prerequisites for **triggering real recovery-email delivery to families and for disabling Firebase Email/Password sign-in** — **not** for the pre-cutover announcement, which may go out through the existing **verified team channel** (`13` Gate 6 / `19`). **Net-new onboarding** (invite redemption) is a separate **public-launch** gate (`13` Gate 7 / `19`), not a Sitting-2 blocker.
+  - Staged repo artifacts: `auth-email-templates/reset-password.md`, `auth-email-templates/invite-user.md`, and the throwaway-only recovery checklist `scripts/synthetic-recovery-checklist.sh`.
 - [ ] Seed the **2 demo accounts** (`demo-family` / `demo-admin`). Creds are in BSPC `CLAUDE.md` — **rotate them for prod** and have Kevin own the new ones; do not copy creds into any doc.
 
 ## 2. BSPC edge functions (4)
