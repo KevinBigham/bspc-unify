@@ -89,9 +89,18 @@ The 13 migrations that must apply (confirm each in the output):
 
 ---
 
-## 4. Verify schema · buckets · RLS (read-only checks in the SQL editor)
+## 4. Verify schema · buckets · RLS (read-only linked audit, then spot checks)
 
-Run these as read-only confirmations (Supabase Studio → SQL editor, or `supabase db` query):
+🔒 **TARGET confirm (this READS the linked hosted DB)**, then run the reusable Phase-1 audit from the BSPC repo. It checks the 13 migrations, RLS enabled on every `public` table, the four private buckets with size/MIME caps, and the four `storage.objects` policies. It uses the Supabase CLI linked project path and does **not** require a DB URL or password in argv/env/logs.
+
+```bash
+cd /Users/kevin/bspc-unify/BSPC/ACTIVE
+npm run audit:prod-schema -- --linked
+```
+
+- [ ] **Inspect the audit output, then record only sanitized output in `NOTES.md`** (pass/fail + count of migrations/buckets/policies; no secret, PII, roster value, DB URL, or account identifier). **If the audit fails, STOP** — do not continue to auth/demo/functions until the mismatch is understood.
+
+Use these SQL checks only as manual follow-up if the audit fails or Kevin wants a dashboard cross-check (Supabase Studio → SQL editor, read-only):
 
 - [ ] **Buckets exist, private, correct limits** (must return exactly these four):
 
