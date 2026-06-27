@@ -1210,6 +1210,21 @@ CREATE POLICY standards_staff        ON time_standards FOR ALL    TO authenticat
 CREATE POLICY feedback_insert_own    ON feedback FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
 CREATE POLICY feedback_select_staff  ON feedback FOR SELECT TO authenticated USING (is_staff());
 
+-- ---- App role table privileges ----
+-- RLS policies are the row wall; these grants make those policies reachable.
+-- Anonymous access stays narrow and is only exposed by explicit per-object grants.
+GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated, service_role;
+GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO authenticated, service_role;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+  GRANT SELECT ON TABLES TO anon;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO authenticated, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+  GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO authenticated, service_role;
+
 -- ============================================================================
 -- END — review against UNIFY/02_SCHEMA_REDTEAM.md + UNIFY/NOTES.md.
 -- ============================================================================
