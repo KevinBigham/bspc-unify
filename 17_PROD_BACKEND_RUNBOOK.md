@@ -150,7 +150,14 @@ where id = (select id from auth.users where email = '<the rotated demo-admin ema
 
 ## 7. BSPC edge functions (deploy 4)
 
-**Finding (verified):** all four functions read **only** `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` via `Deno.env.get()`. Supabase **auto-injects both** into every Edge Function as default secrets — so **no manual `supabase secrets set` is required** for these four. (Re-confirm by skimming each `index.ts` for any *other* `Deno.env.get(...)` before deploy.)
+**Finding (verified):** all four functions read **only** `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` via `Deno.env.get()`. Supabase **auto-injects both** into every Edge Function as default secrets — so **no manual `supabase secrets set` is required** for these four. BSPC `npm run audit:edge-functions` pins this local readiness check and the deploy-command list before any hosted deploy.
+
+Local precheck, no hosted target:
+
+```bash
+cd /Users/kevin/bspc-unify/BSPC/ACTIVE
+npm run audit:edge-functions
+```
 
 🔒 **TARGET confirm**, then:
 
@@ -159,7 +166,7 @@ cd /Users/kevin/bspc-unify/BSPC/ACTIVE/supabase
 supabase functions deploy send-notification
 supabase functions deploy approve-family
 supabase functions deploy cleanup-tokens
-supabase functions deploy calendar-feed     # if this serves a public iCal URL, it may need --no-verify-jwt — check its index.ts first
+supabase functions deploy calendar-feed --no-verify-jwt     # public iCal subscription feed
 ```
 
 - [ ] Verify each shows **deployed** in the dashboard (Edge Functions list) and `supabase functions list` matches.

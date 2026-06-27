@@ -23,8 +23,9 @@ Development has run against **local** Supabase only — **there is no production
 
 ## 2. BSPC edge functions (4)
 
-- [ ] Deploy `send-notification`, `calendar-feed`, `approve-family`, `cleanup-tokens` (`supabase functions deploy`).
-- [ ] Set their server secrets in the Supabase functions env (`SUPABASE_SERVICE_ROLE_KEY`, any push/iCal config). Service-role key **never** ships to a client.
+- [ ] Run the local readiness audit first: `npm run audit:edge-functions` from `BSPC/ACTIVE` (no hosted target, no secrets).
+- [ ] Deploy `send-notification`, `calendar-feed`, `approve-family`, `cleanup-tokens` (`supabase functions deploy`; `calendar-feed` uses `--no-verify-jwt` because it serves the public iCal subscription URL).
+- [ ] Do **not** set manual Supabase function secrets for these four. They read only Supabase's auto-injected `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`; service-role key **never** ships to a client.
 
 ## 3. Storage buckets (4) — per `01_CANONICAL_SCHEMA.sql` Appendix A
 
