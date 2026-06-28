@@ -1,7 +1,7 @@
 # 16 — PRODUCTION BACKEND PROVISIONING CHECKLIST
 
-**Status:** DRAFT checklist — prepared by the EXECUTOR seat, 2026-06-22. Pending DIRECTOR scheduling.
-**This document runs nothing.** It is the ordered plan for standing up the production backend. Every step is **Kevin-live**; the cutover itself (Sitting 2) is a **separate, director-gated** operation (`06` PART B).
+**Status:** DRAFT checklist — prepared by the EXECUTOR seat, 2026-06-22; refreshed for the fresh-launch path on 2026-06-28. `Mission.md` remains the current source of truth.
+**This document runs nothing.** It is the ordered plan for standing up the Supabase backend. Every hosted step is **Kevin-live**. Older Firebase migration / Sitting-2 language in this folder is historical under the fresh-launch decision.
 
 > **KEY-SAFETY:** before any command that targets a hosted project, print the target **Supabase URL** (and, for any Firebase touch, the **project_id** only — never secrets) and have Kevin confirm. Never read/print/commit `.env`, service-account, or key files. Never `git add .`.
 
@@ -9,22 +9,24 @@
 
 ## 0. Why this comes first
 
-Development has run against **local** Supabase only — **there is no production project yet.** The Sitting-2 cutover writes real data *into* the production Postgres, and all three app surfaces point at it. So this Phase 1 must complete **before** the director schedules Sitting 2. (The handoff's §6 spine assumes the target Postgres already exists; this doc fills that gap.)
+Development has run against **local** Supabase. The fresh-launch decision means there is **no Firebase data migration** and no Sitting-2 cutover to schedule. Phase 1 stands up a clean Supabase backend, proves the migrations and RLS on an empty hosted target, deploys the BSPC Edge Functions, and proves the auth recovery path with one throwaway account before any real family data is entered.
 
 ## 1. Production Supabase project
 
-- [ ] Create the prod Supabase project (org owned by Kevin; **US region**; Postgres 17 to match local `config.toml`). Capture the project ref + URL.
-- [ ] `npm exec -- supabase --agent no link` the CLI to the prod project.
-- [ ] `npm exec -- supabase --agent no db push` — apply the **13 BSPC migrations** `00001_initial_schema` → `00013_cutover_parent_read_gaps`.
-- [ ] Run `npm run audit:prod-schema -- --linked` from `BSPC/ACTIVE` to verify the 13 migrations, RLS on every `public` table, four private buckets, and storage policies on the linked hosted target (read-only; target-gated).
-- [ ] **Auth** — enable email/password. Stage the **password-reset email template + redirect URL** (required: OD-6 imports no passwords, so every user does a forced reset/invite at go-live). **[Director Ruling 04 §7 / Ruling 05 §2] Staging the template ≠ proven delivery.** Custom SMTP, confirmed send-rate capacity, a working redirect/deep-link, and **one synthetic end-to-end mobile recovery test** are prerequisites for **triggering real recovery-email delivery to families and for disabling Firebase Email/Password sign-in** — **not** for the pre-cutover announcement, which may go out through the existing **verified team channel** (`13` Gate 6 / `19`). **Net-new onboarding** (invite redemption) is a separate **public-launch** gate (`13` Gate 7 / `19`), not a Sitting-2 blocker.
+- [x] Throwaway hosted target created by Kevin for Phase-1 proof: `https://fqjfunuqbojouyuopnuv.supabase.co`.
+- [x] `npm exec -- supabase --agent no link --project-ref fqjfunuqbojouyuopnuv` completed after Kevin's per-command `go`.
+- [x] `npm exec -- supabase --agent no db push` completed after Kevin's per-command `go`; hosted DB reported up to date.
+- [x] `npm run audit:prod-schema -- --linked` passed on the linked throwaway target: 13 migrations, four private buckets, four storage policies.
+- [ ] If this throwaway project is **not** the final production project, Kevin creates the final Supabase project (org owned by Kevin; **US region**; Postgres 17 to match local `config.toml`) and the link/push/audit sequence repeats under the same one-command target gate.
+- [ ] **Auth** — enable email/password. Stage the **password-reset email template + redirect URL**. Staging the template is not the same as proven delivery: custom SMTP, confirmed send-rate capacity, a working redirect/deep-link, and **one synthetic end-to-end mobile recovery test** are prerequisites before any real recovery/invite email goes to families. The team announcement may still go through the existing verified team channel when Kevin approves the wording and timing.
   - Staged repo artifacts: `auth-email-templates/reset-password.md`, `auth-email-templates/invite-user.md`, and the throwaway-only recovery checklist `scripts/synthetic-recovery-checklist.sh`.
 - [ ] Seed the **2 demo accounts** (`demo-family` / `demo-admin`). Creds are in BSPC `CLAUDE.md` — **rotate them for prod** and have Kevin own the new ones; do not copy creds into any doc.
 
 ## 2. BSPC edge functions (4)
 
-- [ ] Run the local readiness audit first: `npm run audit:edge-functions` from `BSPC/ACTIVE` (no hosted target, no secrets).
-- [ ] Deploy `approve-family`, `calendar-feed`, `cleanup-tokens`, `send-notification` (`npm exec -- supabase --agent no functions deploy`; `calendar-feed` uses `--no-verify-jwt` because it serves the public iCal subscription URL).
+- [x] Run the local readiness audit first: `npm run audit:edge-functions` from `BSPC/ACTIVE` (no hosted target, no secrets).
+- [x] Deploy `approve-family`, `calendar-feed`, `cleanup-tokens`, `send-notification` to the throwaway target after four separate Kevin `go` confirmations (`calendar-feed` uses `--no-verify-jwt` because it serves the public iCal subscription URL).
+- [ ] If the final production project is a different Supabase project, redeploy the same four functions to that project under separate per-command target gates.
 - [ ] Do **not** set manual Supabase function secrets for these four. They read only Supabase's auto-injected `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`; service-role key **never** ships to a client.
 
 ## 3. Storage buckets (4) — per `01_CANONICAL_SCHEMA.sql` Appendix A
@@ -36,8 +38,9 @@ Development has run against **local** Supabase only — **there is no production
 | `profile-photos` | 5 MB | private |
 | `practice-plans` | 25 MB | private |
 
-- [ ] Create all four, private.
-- [ ] **Stay on the free tier for now** (`13 §8` decision 4 — no paid Supabase yet). The read-only **§B0 probe sizes the real media footprint first**; only revisit a paid tier if the actual bytes exceed free-tier headroom before the §B1 copy.
+- [x] Create all four, private, via the migration set on the throwaway target.
+- [ ] Repeat/confirm on the final production target if it is not the throwaway project already linked above.
+- [ ] **Stay on the free tier for now** (`13 §8` decision 4 — no paid Supabase yet). Revisit a paid tier only if the real media footprint or launch load exceeds free-tier headroom.
 - [ ] **Enforce media consent at the storage policy layer** (not just client code) — this is part of the Gate-1 fix (`14 §4`); lock `profile-photos` reads to authorized guardians/staff, not "any authenticated user."
 
 ## 4. Coach Functions → Supabase wiring (CI gap)
@@ -66,13 +69,13 @@ The Coach Cloud Functions now read/write **Supabase**, but `functions-deploy.yml
 
 ⚠️ **[Director Ruling 03]** `EXPO_PUBLIC_PROCESS_SHARED_SECRET` and `EXPO_PUBLIC_PROCESS_FUNCTIONS_BASE_URL` are **removed from the v1 matrix** — the repo-wide caller audit (NOTES §6) proves their only client consumers are the removed attendance kick (Proposal D, `attendancePipeline.ts:13,17`) and the hard-disabled AI media POST (Proposal C, `mediaPipeline.ts:14,18`). Historically the shared secret shipped in the client bundle and was effectively public; that exposure is now **moot for v1** (`evaluateAttendanceRules` deferred under Option C, no exported v1 function reads `PROCESS_SHARED_SECRET`). The secret is **future-only**, reinstated only if/when an authenticated HTTP endpoint ships post-v1.
 
-## 6. First admin / super_admin — NO bootstrap script needed
+## 6. First admin / super_admin
 
-**Verified 2026-06-22** (`backfill-identity-graph-plan.ts:249-264`): Kevin's `super_admin` is **not** created from scratch — the **cutover promotes his existing Firebase coach identity**. `--super-admin-uid` must match a coach that already exists in the live Firebase data (NM-1: "Kevin is the sole super_admin"); that identity gets `role: 'super_admin'`, every other coach gets `coach_admin`. A standalone "create admin" script would **collide** with this and bypass the deliberate NM-1 confirm-the-roster safeguard — so we do **not** write one.
+Under the fresh-launch path, there is no Firebase identity remediation and no cutover promotion. Milestone 2 owns a **Supabase-native** first-admin bootstrap: public signup closed, exactly one auth user/profile, zero existing staff, exactly one pending family profile promoted to approved `super_admin`, and sanitized output with no email or UUID literal.
 
-- [ ] **Pre-cutover smoke testing** → use the seeded **demo-admin** account (§1). No new admin needed before the cutover.
-- [ ] **Kevin's real super_admin uid** → captured by the read-only **§B0 probe** (his coach doc), confirmed by Kevin, passed to `backfill-identity-graph --super-admin-uid=` at Sitting 2.
-- [ ] **Kevin's identity (Director Ruling 06 — precise state):** Kevin reports **no Firebase coach document exists for him**; whether his **Firebase Auth identity** exists is **not yet proven**. This is settled by the **dedicated identity-remediation sitting (`20`), which runs BEFORE §B0** — **not** by `create-coach.ts`, the Coach app's add-coach/self-onboarding flow, or any hand-minted Supabase admin / alternative Supabase minting path (all removed). No standalone `super_admin` (the cutover mints it by UID match). **[Director Ruling 03 §4]** The remediation design (`20`) is **blessed in concept, not for execution**: Branch A (one existing Firebase Auth identity + zero matching coach docs) may proceed **only after the Director reviews the implementation evidence** — the remediation-script diff + its tests; Branch B (no Firebase Auth identity at all) = **immediate STOP + a separate bootstrap proposal.** **[Director Ruling 04 §6]** The write is further constrained: a **create-only operation (or transaction precondition)** that cannot overwrite a concurrently-created document (no unconditional `.set()`); Kevin's email + UID **never** in argv, shell history, output, NOTES, tests, or logs (collected interactively, never persisted); an **ambiguous write/network outcome = STOP, no blind delete**; reversal **only after** known-successful creation + deterministic verification. Execution stays **HELD** pending the script diff + tests.
+- [ ] Draft and test the guarded Supabase-native bootstrap procedure in Milestone 2.
+- [ ] Kevin creates his own auth account and gives a separate target-gated `go` before any live promotion.
+- [ ] No hand-minted fallback admin, no Firebase UID path, and no account identifiers in command output, notes, tests, or logs.
 
 ## 7. Observability + accounts
 
@@ -82,13 +85,13 @@ The Coach Cloud Functions now read/write **Supabase**, but `functions-deploy.yml
 
 ## 8. Ownership split
 
-- **Kevin-owned:** create accounts, billing/storage tier, all secrets/keys, store-account confirmation, running each command after KEY-SAFETY confirmation.
-- **Executor-preppable now (no prod access):** the `db push` / `functions deploy` / bucket command sequences, the Supabase bootstrap script (§6), the env matrix, the CI secret wiring patch (§4).
+- **Kevin-owned:** create accounts, billing/storage tier, all secrets/keys, SMTP sender, auth dashboard settings, store-account confirmation, his own super-admin login, and each hosted command approval after KEY-SAFETY confirmation.
+- **Executor-preppable now (no prod access):** the `db push` / `functions deploy` / bucket command sequences, the Supabase bootstrap script (§6), the env matrix, the CI secret wiring patch (§4), and sanitized status notes.
 
-## 9. Exit criteria (Phase 1 done → director may schedule Sitting 2)
+## 9. Exit criteria (Phase 1 done → Milestone 2 may begin)
 
-- [ ] Prod Supabase live: schema + RLS + 4 edge fns + 4 buckets + auth (reset template) + rotated demo accounts.
+- [ ] Final Supabase target live: schema + RLS + 4 edge fns + 4 buckets + auth (reset template) + rotated demo accounts.
 - [ ] Coach functions deploy with Supabase secrets present.
-- [ ] First `super_admin` minted; Kevin's real uid captured.
+- [ ] First `super_admin` minted by the Supabase-native bootstrap.
 - [ ] Env matrix populated across all surfaces; Sentry/PostHog live; BSPC wired into EAS.
 - [ ] Green bars re-confirmed read-only (BSPC `TZ=UTC`; Coach `--legacy-peer-deps`).
