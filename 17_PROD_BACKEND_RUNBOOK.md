@@ -1,19 +1,15 @@
 # 17 — PRODUCTION BACKEND RUNBOOK (executable command pack)
 
-**Status:** DRAFT — **NOT READY-TO-RUN.** Reconciled to **Director Ruling 05** (2026-06-23): the **initial v1 export set is RATIFIED at exactly TWO scheduled functions** (`sweepAttendanceEvaluations` + `dailyDigest`); **`syncCalendar` is a conditionally approved follow-on** (not an initial export, not a self-skipping placeholder); Option C and parameterized config selected; media-no-AI is a **hard client-disable, no re-enable switch, covering BOTH audio and video**; the four changes + identity script land in a **binding order A→B→C→D→identity, one at a time.** The blockers below must clear before any hosted command runs. Do not run any hosted command until the Director clears this doc.
+**Status:** DRAFT — refreshed for the fresh-launch path on 2026-06-28. The BSPC Supabase Phase 1 hosted commands have been proven on Kevin's throwaway target (`https://fqjfunuqbojouyuopnuv.supabase.co`): link, db push, linked schema audit, and the four BSPC Edge Function deploys. **Still not ready for real family data:** Supabase Auth/SMTP/templates/redirects and one synthetic recovery test remain Kevin-owned dashboard/device work.
 **Relationship to `16`:** `16_PROD_BACKEND_PROVISIONING.md` is the *checklist* (what must become true and why). **This doc is the *hands-on-keyboard command sequence*** that makes it true. Run them in order; each is **Kevin-live**.
-**This file is not the cutover.** Standing up the backend (this doc) is Phase 1. The Sitting-2 cutover (`06` PART B) is a separate, **director-scheduled** operation that runs *after* every exit criterion here is green.
+**This file is not a Firebase migration cutover.** Under `Mission.md`, the launch is fresh on Supabase: empty database, schema applied cleanly, then real families onboarded going forward.
 
-### ⛔ NOT READY-TO-RUN — blockers (Director Ruling 04; allow-list RATIFIED, implementations not landed)
+### Current stop points
 
-> **Binding order (Ruling 04):** the four changes + the identity script land **one at a time, each ratified + committed before the next: A → B → C → D → identity-remediation script.** This doc is documentation; **do not begin Proposal A yet.**
-
-1. **Functions config hardening not landed** (§8a) — design **selected** (Ruling 03 §3: `SUPABASE_URL` param, service-role Secret-Manager bound per-function, `CALENDAR_ICS_URL` sensitive, runtime-safe lazy init, **no placeholders**, **missing-config-stops-deploy**). **Proposal B** — frozen-repo, own commit. Not yet implemented/tested.
-2. **`evaluateAttendanceRules` — Option C selected** (Ruling 03 §2): do not export/deploy; **remove the client kick** (**Proposal D**); rely on the 5-min `sweepAttendanceEvaluations`. Not yet landed.
-3. **Media-no-AI not landed** — drop the 3 AI exports (**Proposal A**) **and** hard-disable the client with **no re-enable switch** (**Proposal C**, Ruling 03 §C — supersedes the earlier `EXPO_PUBLIC_MEDIA_AI_ENABLED` flag idea). Two separate frozen-repo commits.
-4. **v1 export surface not yet pinned** — the **initial export set is RATIFIED at exactly TWO** (Ruling 05 §1: `sweepAttendanceEvaluations` + `dailyDigest`; callable-auth audit, §8b / NOTES §6). But **Proposal A** (make `index.ts` export *exactly* those two; remove the eight non-v1 exports — AI trio, `evaluateAttendanceRules`, three portal callables, **and `syncCalendar`**; add a test asserting the **exact two-name export set** so a broad CI deploy cannot resurrect an excluded function) is **not yet implemented/committed.** `syncCalendar` is a **conditionally approved follow-on** (added only by a later separate change once a real production calendar feed is proven), never an initial export or self-skipping placeholder.
-5. **Kevin identity remediation not executed** (`20`) — **blessed in concept only** (Ruling 03 §4); Branch A needs Director review of the script diff+tests; Branch B = STOP + separate bootstrap proposal.
-6. **Production exit criteria not completed** (§11).
+1. **Auth/recovery is human-only and incomplete.** Kevin must configure Supabase Auth email/password, SMTP sender, reset/invite templates, redirect/deep-link allow-list, and one throwaway test account before the synthetic recovery proof can run.
+2. **No real family data yet.** The hosted target proof used an empty throwaway project and recorded sanitized evidence only.
+3. **Milestone 2 is next only after Milestone 1 exits.** First super-admin bootstrap is Supabase-native and belongs to Milestone 2; no Firebase identity-remediation path remains.
+4. **Coach scheduled Functions are later launch work.** Current Coach `main` already exports exactly `sweepAttendanceEvaluations` + `dailyDigest`, and Supabase runtime config hardening has landed; live Firebase secret/param provisioning and deploys remain separately target-gated.
 
 ---
 
@@ -33,16 +29,15 @@ Hard rules, no exceptions:
 
 ---
 
-## 1. Pre-flight — local checks plus one target-gated, read-only Firebase prerequisite
+## 1. Pre-flight
 
 - [ ] **Tooling:** `supabase --version` (CLI present), `firebase --version`, `eas --version`, `node --version`. Record the version strings in `NOTES.md` (version strings only — inspect first; no secrets).
-- [ ] **Accounts ready (Kevin-owned):** Supabase org, Firebase project (existing Coach project), Apple Dev ($99) + Google Play ($25) confirmed, Sentry + PostHog orgs creatable.
-- [ ] **Decisions in force:** free tier only · defer AI for **both video and audio** (Ruling 04 §4 — audio parity, no longer "recommended") · initial v1 surface = **exactly 2 schedulers RATIFIED** (`syncCalendar` a conditional follow-on) · launch the two mobile apps, portal fast-follow.
-- [ ] **Firebase scheduled-function prerequisite (Director Ruling 06 §6 / 07 — the one hosted touch in pre-flight; target-gated, read-only):** **before the read, print the Firebase `project_id` only; Kevin explicitly approves the read target; no approval = STOP.** Then confirm (read-only) the existing Firebase project **supports the two scheduled Functions + Cloud Scheduler**. Record **billing-plan/status only** (no billing identifiers). A **billing-plan change requires Kevin's explicit founder approval** and the normal target gate. **No scheduled-function deployment until this prerequisite is proven.**
-- [ ] **Source of truth paths** (verified 2026-06-22):
+- [ ] **Accounts ready (Kevin-owned):** Supabase org/project, Apple Dev ($99) + Google Play ($25) confirmed, Sentry + PostHog orgs creatable.
+- [ ] **Decisions in force:** free tier only · no audio/video AI analysis in v1 · initial Coach scheduled-function surface = exactly two schedulers (`sweepAttendanceEvaluations`, `dailyDigest`) · launch the two mobile apps, portal fast-follow.
+- [ ] **Source of truth paths:**
   - BSPC Supabase root → `/Users/kevin/bspc-unify/BSPC/ACTIVE/supabase`
   - Coach Functions root → `/Users/kevin/bspc-unify/BSPC-Coach-App/functions`
-  - Canonical schema → `/Users/kevin/bspc-unify/UNIFY/01_CANONICAL_SCHEMA.sql` (storage spec at **Appendix A**, lines 1218–1266)
+  - Canonical schema → `/Users/kevin/bspc-unify/UNIFY/01_CANONICAL_SCHEMA.sql`
 
 ---
 
@@ -54,12 +49,13 @@ Hard rules, no exceptions:
 🔒 **TARGET confirm**, then link the local CLI to the remote project:
 
 ```bash
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE/supabase
-npm exec -- supabase --agent no login            # opens browser / pastes a CLI token — token is a SECRET, never echo it
+cd /Users/kevin/bspc-unify/BSPC/ACTIVE
+npm exec -- supabase --agent no login            # if needed; CLI token is a SECRET, never echo it
 npm exec -- supabase --agent no link --project-ref <PROD_REF>
 ```
 
 - [ ] Verify: `npm exec -- supabase --agent no projects list` shows the prod project as **linked** (●).
+- [x] Throwaway proof target linked after Kevin `go`: `fqjfunuqbojouyuopnuv`.
 
 ---
 
@@ -86,6 +82,7 @@ The 13 migrations that must apply (confirm each in the output):
 ```
 
 - [ ] **Inspect the push output, then record only sanitized output in `NOTES.md`** (migration names + applied/failed status; sensitive findings as path/category or count/status only — no secret, PII, or roster value). **If any migration errors, STOP** — do not `--force`, do not hand-edit prod. Surface it.
+- [x] Throwaway proof: `db push` completed after Kevin `go`; remote reported up to date.
 
 ---
 
@@ -99,6 +96,7 @@ npm run audit:prod-schema -- --linked
 ```
 
 - [ ] **Inspect the audit output, then record only sanitized output in `NOTES.md`** (pass/fail + count of migrations/buckets/policies; no secret, PII, roster value, DB URL, or account identifier). **If the audit fails, STOP** — do not continue to auth/demo/functions until the mismatch is understood.
+- [x] Throwaway proof: linked schema audit passed with 13 migrations, four private buckets, and four storage policies.
 
 Use these SQL checks only as manual follow-up if the audit fails or Kevin wants a dashboard cross-check (Supabase Studio → SQL editor, read-only):
 
@@ -130,7 +128,7 @@ select tablename from pg_policies where schemaname='public' group by tablename o
 
 ## 5. Auth configuration (dashboard)
 
-OD-6 imports **no passwords** — every real user does a forced reset/invite at go-live — so the reset path must be staged now.
+Passwords are not migrated. Every real user sets a new password through the staged reset/invite path, so the reset path must be proven with a throwaway account before real recovery/invite delivery.
 
 - [ ] **Enable Email provider** (Auth → Providers → Email): email+password ON.
 - [ ] **Password-reset + invite email templates** (Auth → Email Templates): set sender, copy, and the **redirect URL** (the app/portal deep-link that lands the reset). Stage both *reset* and *invite* templates.
@@ -146,14 +144,14 @@ OD-6 imports **no passwords** — every real user does a forced reset/invite at 
 **Finding (verified):** demo accounts are **not** seeded by SQL. `seed.sql` seeds reference data only (glossary, team records); the demo creds live in its **comments** + BSPC `CLAUDE.md`. Accounts are created in the **Auth dashboard**, and the `handle_new_user()` trigger auto-creates the matching `profiles` row.
 
 - [ ] **Auth → Users → Add user**, twice — create `demo-family` and `demo-admin`. **Rotate the passwords for prod** (do not reuse the dev creds in `CLAUDE.md`; Kevin owns the new ones, stored in his password manager).
-- [ ] **Promote demo-admin to `coach_admin`** via the SQL editor (service role bypasses RLS — needed because the escalation guard only lets a *super_admin* change roles, and none exists pre-cutover):
+- [ ] **Promote demo-admin to `coach_admin`** via the SQL editor only after Kevin owns the rotated demo identity:
 
 ```sql
 update public.profiles set role = 'coach_admin'
 where id = (select id from auth.users where email = '<the rotated demo-admin email>');
 ```
 
-- [ ] **No `super_admin` bootstrap script** (verified `backfill-identity-graph-plan.ts:249-264`): Kevin's real `super_admin` is **minted by the cutover**, which *promotes an existing Firebase coach identity* (NM-1). Pre-cutover smoke testing uses **demo-admin**. Do **not** hand-mint a standalone admin in Supabase, and use **no alternative Supabase minting path** — it would collide with the NM-1 promotion. **Identity (Director Ruling 06 — precise state):** Kevin reports **no Firebase coach document exists for him**; whether his **Firebase Auth identity** exists is **not yet proven**. This is settled by the **dedicated identity-remediation sitting (`20`), which runs BEFORE §B0** — **not** by `create-coach.ts`, the Coach app's add-coach/self-onboarding flow, or any improvised seeding path (all removed). **Branch A** (existing Firebase Auth identity **and** zero coach docs) → a **purpose-built create-only remediation only, after Director review** of the script diff + tests; **Branch B** (no Firebase Auth identity) → **immediate STOP + a separate identity-bootstrap proposal.**
+- [ ] **First `super_admin` is not created here.** Milestone 2 owns a guarded Supabase-native bootstrap: public signup closed; exactly one auth user/profile; zero existing staff; exactly one pending family profile promoted to approved `super_admin`; no email or UUID literal in output. Do not hand-mint a fallback admin.
 
 ---
 
@@ -171,16 +169,17 @@ npm run audit:edge-functions
 🔒 **TARGET confirm**, then:
 
 ```bash
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE/supabase
-npm exec -- supabase --agent no functions deploy approve-family
-npm exec -- supabase --agent no functions deploy calendar-feed --no-verify-jwt     # public iCal subscription feed
-npm exec -- supabase --agent no functions deploy cleanup-tokens
-npm exec -- supabase --agent no functions deploy send-notification
+cd /Users/kevin/bspc-unify/BSPC/ACTIVE
+npm exec -- supabase --agent no functions deploy approve-family --use-api
+npm exec -- supabase --agent no functions deploy calendar-feed --use-api --no-verify-jwt     # public iCal subscription feed
+npm exec -- supabase --agent no functions deploy cleanup-tokens --use-api
+npm exec -- supabase --agent no functions deploy send-notification --use-api
 ```
 
 - [ ] Verify each shows **deployed** in the dashboard (Edge Functions list) and `npm exec -- supabase --agent no functions list` matches.
 - [ ] `cleanup-tokens` is a sweeper → confirm/stage its **schedule** (cron) if it relies on one.
 - [ ] **Inspect the deploy output, then record only sanitized output → `NOTES.md`** (function names + deployed/failed status; no secret value or URL; sensitive findings as path/category or count/status only).
+- [x] Throwaway proof: all four functions deployed after separate Kevin `go` confirmations.
 
 ---
 
@@ -188,11 +187,11 @@ npm exec -- supabase --agent no functions deploy send-notification
 
 The Coach Functions are **Firebase-hosted compute that now read/write Supabase**, but `functions-deploy.yml` currently provides **only `FIREBASE_TOKEN`**. They need the Supabase secrets, and the AI pipelines must be **left off** for v1.
 
-### 8a. Runtime configuration — parameterized (Director Ruling 03 §3 — REQUIRES Proposal B first)
+### 8a. Runtime configuration — parameterized
 
-> **Blocked until Proposal B lands.** Today the source reads **plain `process.env`** with **placeholder fallbacks** (`functions/src/config/supabase.ts:8-9`: `?? 'https://YOUR_PROJECT.supabase.co'` / `?? 'YOUR_SERVICE_ROLE_KEY'`) **at module load** — a misconfigured deploy boots **green and fails open.** Ruling 03 §3 requires removing that and adopting params/secrets with runtime-safe init. **Do not provision config against the unhardened source.**
+> **Source hardening landed on Coach `main` (`1bd4fd5`).** `functions/src/config/supabase.ts` uses `defineString('SUPABASE_URL')` and `defineSecret('SUPABASE_SERVICE_ROLE_KEY')`, reads values lazily, and rejects the retired placeholder values. Live Firebase parameter/secret provisioning remains Kevin-owned and target-gated.
 
-Selected design (implement in Proposal B, then provision):
+Selected design:
 - `SUPABASE_URL` — required **non-secret parameter** (`defineString`), **no default/placeholder**.
 - `SUPABASE_SERVICE_ROLE_KEY` — **Secret Manager** parameter (`defineSecret`), bound **only** to functions that use the service-role client.
 - `CALENDAR_ICS_URL` — **follow-on only; NOT provisioned, bound, or deployed during the initial two-function launch** (see the `syncCalendar` follow-on note in §8b). *When* the `syncCalendar` follow-on is later approved it binds as **sensitive** (`defineSecret`), to `syncCalendar` only, **never logged**.
@@ -209,13 +208,13 @@ firebase functions:secrets:set SUPABASE_SERVICE_ROLE_KEY    # PROD service-role 
 ```
 
 - [ ] **CI injects only `FIREBASE_TOKEN`** — the data-plane secret + param must exist in the runtime independent of CI. With `defineSecret`, a required-but-unbound secret makes the **deploy fail closed** (the desired behavior).
-- [ ] **Verify fail-closed:** after Proposal B, a deploy with the secret unbound must **refuse to deploy** (not boot green). Prove a real Supabase call succeeds before trusting any write.
+- [ ] **Verify fail-closed:** with the hardened source, a deploy with the secret unbound must **refuse to deploy** (not boot green). Prove a real Supabase call succeeds before trusting any write.
 
-### 8b. v1 launch export surface — the TWO scheduled functions (Director Ruling 05)
+### 8b. v1 launch export surface — the TWO scheduled functions
 
 **Canonical media statement (verbatim):** *V1 supports private audio and video capture, upload, storage, retrieval, and playback. V1 performs no audio or video AI analysis and sends no minors' media to an AI provider.*
 
-The Ruling-03 callable-auth audit (NOTES §6) closes the export question. A Firebase **callable's `request.auth` does not verify a Supabase token after cutover**, and no launching surface calls the callables anyway (coach mobile + the Supabase-native BSPC parent app use Supabase Auth and call none of them).
+The Ruling-03 callable-auth audit (NOTES §6) closes the export question. A Firebase **callable's `request.auth` does not verify a Supabase token after the Supabase Auth launch**, and no launching surface calls the callables anyway (coach mobile + the Supabase-native BSPC parent app use Supabase Auth and call none of them).
 
 - [ ] **Initial v1 DEPLOY set — exactly 2 scheduled functions (RATIFIED, Ruling 05 §1):** `sweepAttendanceEvaluations` + `dailyDigest`. Platform-triggered (Cloud Scheduler) → no client token → immune to the callable-auth problem. **`syncCalendar` is a conditionally approved follow-on — NOT in the initial deploy** (Ruling 05 §1): add it only by a later, separate, target-gated change once a real production calendar feed is proven (public vs private/tokenized, `CALENDAR_ICS_URL` bound safely + never logged, tests green). Never deploy it as a self-skipping placeholder.
   `--only functions:sweepAttendanceEvaluations,functions:dailyDigest`
@@ -224,7 +223,7 @@ The Ruling-03 callable-auth audit (NOTES §6) closes the export question. A Fire
   - `evaluateAttendanceRules` — **Option C** (Ruling 03 §2): deferred; the 5-min `sweepAttendanceEvaluations` runs the identical core; the client kick is **removed** (Proposal D).
   - `redeemInvite`, `getParentPortalDashboard`, `getParentSwimmerPortalData` — **parent-portal-only / fast-follow.** Mobile invite-redemption is the `auth.uid()`-gated Supabase RPC `redeem_parent_invite` (BSPC `00010_phase_i_parent_invites.sql`, pgTAP-tested); `redeemInvite` is already a thin shell over that RPC (`06 §B6` C2). **[Ruling 04/05] These three callables — plus `syncCalendar` — are *removed from the v1 export surface* (Proposal A exact-two), not merely undeployed.** The portal's own data lib already uses direct Supabase reads/RPC (`parent-portal/src/lib/parentPortal.ts:149/175/267`), so even the fast-follow portal does not call the Firebase callables; any future portal server endpoint is a separate authorization.
 - [ ] **Initial export set RATIFIED (Ruling 05 §1).** The initial v1 Firebase-hosted surface is exactly these **two** scheduled functions (`sweepAttendanceEvaluations` + `dailyDigest`); nothing else. `syncCalendar` is a conditionally approved follow-on.
-- [ ] **Exact-two export surface (Proposal A, Ruling 05 §1).** `functions/src/index.ts` must export **exactly** the two scheduled functions (`sweepAttendanceEvaluations` + `dailyDigest`) — the eight non-v1 exports (AI trio, `evaluateAttendanceRules`, three portal callables, **and `syncCalendar`**) **removed** — with a test asserting the **exact two-name export set** (not mere presence/absence) so a broad CI deploy **cannot resurrect** an excluded function. CI today deploys bare `--only functions --force` → whatever is exported deploys; pinning the export set is what makes the surface safe. **Existing hosted copies** of excluded functions need a **read-only inventory** now and a **later `project_id` + Kevin-go removal sitting** — **no hosted removal is authorized now.**
+- [x] **Exact-two export surface landed on Coach `main` (`e284b87`).** `functions/src/index.ts` exports exactly the two scheduled functions (`sweepAttendanceEvaluations` + `dailyDigest`) and `functions/src/__tests__/launchExportSurface.test.ts` asserts the two-name set. **Existing hosted copies** of excluded functions still need a **read-only inventory** and a later `project_id` + Kevin-go removal sitting — no hosted removal is authorized here.
 - [ ] **`PROCESS_SHARED_SECRET` NOT required for v1** (Ruling 03 §2) — no exported v1 function consumes it (future-only). Vertex / `GCLOUD_PROJECT` not needed.
 - [ ] **Client media-no-AI = HARD-DISABLED, no switch — BOTH audio and video (Proposal C, Ruling 04 §4).** The app auto-fires the AI POST on every upload (`src/services/mediaPipeline.ts:14`, via `audio.ts:209` / `video.ts:438` + offline replay in `app/(tabs)/index.tsx`). v1 must inventory and address **every** path for **both** media types — capture, upload, automatic processing request, offline processing replay, status/loading view, notification/deep-link entry, AI review/results entry, retrieval, playback. **Acceptance:** audio **and** video capture/upload/storage/retrieval/playback work; **neither** invokes processing; **no background path can restart AI**; **uploaded** is an honest terminal v1 state (no "AI analysis starting"/analyzing/permanent-loading copy); all AI review/results entry points hidden or honestly unavailable; **no `EXPO_PUBLIC` re-enable switch**; **no test deletion**; the exact client count **holds or rises.**
 - [ ] **Compliance:** minors' audio/video *are* captured at launch → media-consent + disclosure (`14`/`15`) stays fully in scope.
@@ -265,20 +264,21 @@ eas init --id   # creates/links the EAS project; writes projectId
 
 ---
 
-## 11. Exit criteria — Phase 1 done → director may schedule Sitting 2
+## 11. Exit criteria — Phase 1 done → Milestone 2 may begin
 
-(Mirrors `16 §9`; tick all before greenlighting the cutover.)
+(Mirrors `16 §9`; tick all before moving beyond Milestone 1.)
 
-- [ ] Prod Supabase live: 13 migrations applied · RLS present · 4 buckets verified (private, correct limits) · 4 edge fns deployed · Email auth + reset/invite templates staged · **rotated** demo accounts (demo-admin promoted).
-- [ ] Coach Functions: **Proposal B config hardening landed** (parameterized, fail-closed, no placeholders); **`index.ts` exports exactly the 2 schedulers** (Proposal A; AI trio + `evaluateAttendanceRules` + 3 portal callables + `syncCalendar` removed from the export surface, two-name pin test green); `syncCalendar` added only later as the approved follow-on once its calendar source is proven; secrets **bound** & verified in logs; deploy **fails closed** when a bound secret is unset.
-- [ ] **Firebase scheduled-function prerequisite proven (Director Ruling 06 §6):** read-only confirmation the existing Firebase project supports the two scheduled Functions + Cloud Scheduler; **billing-plan/status recorded (no billing identifiers)**; any plan change had Kevin's explicit founder approval + target gate. **No scheduled-function deploy occurred before this was proven.**
+- [ ] Final Supabase target live: 13 migrations applied · RLS present · 4 buckets verified (private, correct limits) · 4 edge fns deployed · Email auth + reset/invite templates staged · **rotated** demo accounts if used.
+- [x] Throwaway Supabase proof target: link · db push · linked schema audit · four Edge Function deploys completed with sanitized evidence in `NOTES.md`.
+- [ ] Synthetic recovery proof: custom SMTP + redirect/deep-link + one throwaway test account completes reset on a real device; sanitized result recorded.
+- [ ] Coach Functions source posture: config hardening landed; `index.ts` exports exactly the 2 schedulers; `syncCalendar` added only later as the approved follow-on once its calendar source is proven. Live Firebase secret/param provisioning and scheduled deploys are separate target-gated work.
 - [ ] Env matrix populated across BSPC + Coach (portal deferred); Sentry/PostHog live; BSPC wired into EAS.
 - [ ] No secret value ever printed/committed; every command's output **inspected for secrets/PII/account-identifiers/roster/media-metadata and recorded *sanitized*** in `NOTES.md` (sensitive findings as path/category or count/status only).
-- [ ] Green bars re-confirmed read-only (BSPC `TZ=UTC` → 835 jest / 343 pgTAP · Coach `--legacy-peer-deps` → the **then-current blessed Coach baseline** — 1199 / 115 today, adjusted by the Proposals A–D commits once blessed).
+- [ ] Green bars re-confirmed read-only: BSPC Jest, BSPC pgTAP, Coach client Jest, Coach Functions Jest, and Coach isolated `date.test`.
 
 ---
 
 ## 12. Guardrails recap (the do-NOT list)
 
-- ❌ No paid Supabase tier. ❌ No `processVideoSession` / `processAudioSession` / `sweepStuckSessions` deploy or secrets (media-no-AI, **audio + video**). ❌ No `evaluateAttendanceRules` or portal-callable deploy in v1 (Option C / fast-follow). ❌ `index.ts` must export **exactly** the 2 schedulers (`sweepAttendanceEvaluations` + `dailyDigest`) — never re-export an excluded function (Proposal A two-name pin test). ❌ `syncCalendar` is NOT in the initial set — add it only via the later target-gated follow-on once a real calendar feed is proven; never as a self-skipping placeholder. ❌ No placeholder config fallbacks — deploy must **fail closed**. ❌ Never log `CALENDAR_ICS_URL`. ❌ No **real recovery-email delivery** and **no Firebase sign-in shutdown** until the recovery path is proven (custom SMTP + send-rate capacity + redirect/deep-link + one synthetic e2e mobile recovery test); the pre-cutover announcement may still go out through the existing verified team channel. ❌ Do not begin Proposals A/B/C/D out of order — binding order **A→B→C→D→identity**, one at a time, each ratified + committed first. ❌ No standalone `super_admin` bootstrap (the cutover mints it). ❌ No `git add .`. ❌ No secret values in files/logs/chat. ❌ No `--force` migration edits on prod. ❌ Do not start Sitting 2 — that's director-scheduled, after these exit criteria.
+- ❌ No paid Supabase tier unless Kevin explicitly approves billing. ❌ No `processVideoSession` / `processAudioSession` / `sweepStuckSessions` deploy or secrets (media-no-AI, **audio + video**). ❌ No `evaluateAttendanceRules` or portal-callable deploy in v1 (Option C / fast-follow). ❌ `syncCalendar` is NOT in the initial set — add it only via the later target-gated follow-on once a real calendar feed is proven; never as a self-skipping placeholder. ❌ No placeholder config fallbacks — deploy must **fail closed**. ❌ Never log `CALENDAR_ICS_URL`. ❌ No real recovery/invite email delivery until the recovery path is proven (custom SMTP + send-rate capacity + redirect/deep-link + one synthetic e2e mobile recovery test); the announcement may still go out through the existing verified team channel after Kevin approves it. ❌ No hand-minted fallback `super_admin`; use the guarded Supabase-native Milestone 2 bootstrap. ❌ No `git add .`. ❌ No secret values in files/logs/chat. ❌ No `--force` migration edits on prod.
 - ✅ Print target + confirm before every hosted command. ✅ One command at a time, **sanitized** output → `NOTES.md`. ✅ Surface every surprise; never silently fix prod.
