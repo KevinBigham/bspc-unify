@@ -109,6 +109,7 @@ This repository is the canonical unification plan for two **separate** applicati
 - **18_DIRECTOR_ONBOARDING.md** — bootstrap brief to hand a new DIRECTOR seat the role.
 - **19_FAMILY_COMMS_DRAFTS.md** — ⚠ **amended (Rulings 56 + 57):** migrated-family + Firebase sign-in-shutdown messaging **retired**; retained are the fresh-launch Gate-6 controls (Supabase email provider, SMTP/delivery proof, invite template, password-reset template, redirect/deep-link allow-list, synthetic invite/reset e2e proof). Original (now historical): pre-cutover family announcement + recovery/invite email templates, revised per Director Ruling 05 (no automatic-blast promise; recovery-email **delivery** + Firebase sign-in shutdown gated on a proven recovery path — SMTP + send-rate + redirect/deep-link + synthetic e2e mobile reset — while the announcement may use the existing team channel; invite template held inactive until a net-new onboarding path exists).
 - **20_IDENTITY_REMEDIATION_SITTING.md** — ⛔ **superseded & non-executable** (Rulings 56 + 57): the Firebase identity-remediation sitting is retired; Kevin becomes first super_admin via the Supabase first-admin bootstrap. Kept as historical material, not deleted.
+- **21_SUPABASE_AUTH_DASHBOARD_CHECKLIST.md** — Kevin-owned Supabase dashboard checklist for email/password Auth, SMTP, reset/invite templates, redirect/deep-link allow-list, and the one throwaway recovery-test account.
 
 **Program records**
 - **HANDOFF.md** — program handoff.

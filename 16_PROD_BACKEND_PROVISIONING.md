@@ -19,7 +19,7 @@ Development has run against **local** Supabase. The fresh-launch decision means 
 - [x] `npm run audit:prod-schema -- --linked` passed on the linked throwaway target: 13 migrations, four private buckets, four storage policies.
 - [ ] If this throwaway project is **not** the final production project, Kevin creates the final Supabase project (org owned by Kevin; **US region**; Postgres 17 to match local `config.toml`) and the link/push/audit sequence repeats under the same one-command target gate.
 - [ ] **Auth** — enable email/password. Stage the **password-reset email template + redirect URL**. Staging the template is not the same as proven delivery: custom SMTP, confirmed send-rate capacity, a working redirect/deep-link, and **one synthetic end-to-end mobile recovery test** are prerequisites before any real recovery/invite email goes to families. The team announcement may still go through the existing verified team channel when Kevin approves the wording and timing.
-  - Staged repo artifacts: `auth-email-templates/reset-password.md`, `auth-email-templates/invite-user.md`, and the throwaway-only recovery checklist `scripts/synthetic-recovery-checklist.sh`.
+  - Staged repo artifacts: `auth-email-templates/reset-password.md`, `auth-email-templates/invite-user.md`, the Kevin-owned dashboard checklist `21_SUPABASE_AUTH_DASHBOARD_CHECKLIST.md`, and the throwaway-only recovery checklist `scripts/synthetic-recovery-checklist.sh`.
 - [ ] Seed the **2 demo accounts** (`demo-family` / `demo-admin`). Creds are in BSPC `CLAUDE.md` — **rotate them for prod** and have Kevin own the new ones; do not copy creds into any doc.
 
 ## 2. BSPC edge functions (4)
