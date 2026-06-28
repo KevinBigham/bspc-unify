@@ -1,5 +1,34 @@
 # 19 — FAMILY COMMUNICATIONS (drafts for Director review)
 
+## Fresh-launch status (active)
+
+**Status:** Fresh-launch overlay added 2026-06-28. `Mission.md` is the source of
+truth: there is no Firebase data migration, no Sitting 2, no migrated-family
+recovery blast, and no Firebase sign-in shutdown sequence. The older
+migration-era copy below is retained only as historical drafting context unless
+a section explicitly says it is active for the fresh-launch path.
+
+**Active Milestone 1 artifacts:**
+- `auth-email-templates/reset-password.md` — staged Supabase Reset Password
+  template. Use only after SMTP, redirect/deep-link configuration, and one
+  throwaway end-to-end recovery test are proven.
+- `auth-email-templates/invite-user.md` — staged Supabase Invite User template.
+  Keep inactive for real families until net-new onboarding is tested.
+- `21_SUPABASE_AUTH_DASHBOARD_CHECKLIST.md` — Kevin-owned dashboard checklist
+  for Supabase Email Auth, SMTP, templates, redirect/deep-link allow-list, and
+  one throwaway recovery-test account.
+- `scripts/synthetic-recovery-checklist.sh` — no-secrets checklist for the
+  throwaway reset proof.
+
+**Current communication rule:** do not send recovery or invite email to real
+families yet. First prove the throwaway reset flow on a real device, record only
+sanitized pass/fail status in `NOTES.md`, and keep legal/privacy/store-account
+publication decisions with Kevin and counsel.
+
+---
+
+## Historical migration-era draft (superseded unless explicitly referenced above)
+
 **Status:** DRAFT — prepared by the EXECUTOR seat; **revised per Director Ruling 05**, 2026-06-23. Sanitized; **no real family/swimmer/email/account data**. All variable content is a placeholder in `[BRACKETS]` (human-filled) or a Supabase template token `{{ .Like_This }}` (system-filled).
 **Not sent. Not scheduled.** Paste-ready drafts only; sending is a go-live step gated by the Director and the cutover schedule.
 
