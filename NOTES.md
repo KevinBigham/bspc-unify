@@ -6888,3 +6888,42 @@ SCOPE OF THIS ENTRY (Ruling 57): documentation edits only, to exactly seven UNIF
 (06, 13, 18, 20, HANDOFF, README, NOTES). No commit, no branch, no cherry-pick, no hosted or
 network action, no memory mutation. Coach 0c0f82b / 5070f877 and BSPC 880aed8 untouched.
 =====END FRESH-LAUNCH FORK — DIRECTOR RULING 56 + 57=====
+
+---
+
+## 2026-06-28 — Milestone 1 throwaway Supabase status (sanitized)
+
+Fresh-launch Phase 1 proof ran against Kevin's throwaway Supabase target:
+`https://fqjfunuqbojouyuopnuv.supabase.co`. This is a target URL only; no keys,
+passwords, tokens, emails, UUIDs, roster data, or real family/minor data are
+recorded here.
+
+Hosted operations completed only after separate Kevin `go` confirmations:
+- CLI link completed for project ref `fqjfunuqbojouyuopnuv`.
+- `db push` completed; the remote database reported up to date.
+- Linked schema audit passed: 13 migrations, four private storage buckets, four
+  storage policies.
+- Four BSPC Edge Functions deployed: `approve-family`, `calendar-feed`,
+  `cleanup-tokens`, `send-notification`.
+
+Local verification re-confirmed after the hosted operations:
+- BSPC schema audit: pass, 13 migrations / four private buckets / four storage
+  policies.
+- BSPC edge-function audit: pass, four functions ready.
+- BSPC Jest: 119 suites / 841 tests passed under `TZ=UTC`.
+- BSPC pgTAP: 15 files / 343 assertions passed.
+- Coach client Jest: 108 suites / 1103 tests passed.
+- Coach isolated `date.test`: 17 tests passed.
+- Coach Functions Jest: 14 suites / 128 tests passed.
+
+Known caveat: one Coach client run with `TZ=UTC` occurred at
+2026-06-28 00:41 UTC and hit the documented 00:00-01:59 UTC `date.test` flake;
+the repo's primary Coach command and the isolated date gate both passed
+immediately afterward.
+
+Remaining Milestone 1 human-only work before the synthetic recovery proof:
+- Kevin configures Supabase Auth email/password, SMTP sender, reset/invite email
+  templates, and redirect/deep-link allow-list in the dashboard.
+- Kevin creates one throwaway test account using an inbox he controls.
+- Then the synthetic recovery checklist can be run against the throwaway account
+  only, with sanitized pass/fail recorded here.
