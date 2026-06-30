@@ -31,7 +31,8 @@ Hard rules, no exceptions:
 
 ## 1. Pre-flight
 
-- [ ] **Tooling:** `supabase --version` (CLI present), `firebase --version`, `eas --version`, `node --version`. Record the version strings in `NOTES.md` (version strings only — inspect first; no secrets).
+- [x] **Tooling evidence recorded, 2026-06-30:** local `node --version`, `npm --version`, and `npm exec -- supabase --version` outputs are recorded in `NOTES.md` (version strings only; no secrets).
+- [ ] **Tooling gap before Firebase/EAS steps:** `firebase --version` and `eas --version` are not available on PATH in this Codex shell, and no project-local Firebase/EAS binaries were found. Install or expose those CLIs before any Firebase Functions deploy or EAS initialization step.
 - [ ] **Accounts ready (Kevin-owned):** Supabase org/project, Apple Dev ($99) + Google Play ($25) confirmed, Sentry + PostHog orgs creatable.
 - [ ] **Decisions in force:** free tier only · no audio/video AI analysis in v1 · initial Coach scheduled-function surface = exactly two schedulers (`sweepAttendanceEvaluations`, `dailyDigest`) · launch the two mobile apps, portal fast-follow.
 - [ ] **Source of truth paths:**

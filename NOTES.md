@@ -6961,3 +6961,27 @@ Remaining Milestone 1 gates before real family data:
   pass/fail here.
 - Delete the throwaway test user after the recovery proof passes.
 - Kevin cleans the malformed duplicate root SPF TXT record in DNS.
+
+---
+
+## 2026-06-30 — Local tooling pre-flight (sanitized)
+
+No hosted command ran for this update. Version strings only; no keys, passwords,
+tokens, service-account files, account identifiers, roster data, or real
+family/minor data are recorded here.
+
+Observed local tooling:
+- Node: `v24.13.1`
+- npm: `11.8.0`
+- Supabase CLI: `2.108.0` via `npm exec -- supabase --version` from
+  `BSPC/ACTIVE`
+
+Tooling gaps before later hosted steps:
+- `firebase --version` is not available on PATH in this Codex shell.
+- `eas --version` is not available on PATH in this Codex shell.
+- No project-local `firebase` or `eas` binaries were found in the checked
+  `node_modules/.bin` locations.
+
+Action required before Firebase Functions deploy or BSPC EAS initialization:
+install or expose the Firebase CLI and EAS CLI in the operator environment, then
+record version strings here before any target-gated hosted command.
