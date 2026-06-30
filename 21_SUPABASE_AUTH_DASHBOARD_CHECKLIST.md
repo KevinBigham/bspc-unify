@@ -28,7 +28,8 @@ checklist on the final project before any real family data is entered.
 1. Open Supabase Dashboard for the approved target.
 2. Go to **Authentication → Providers → Email**.
 3. Enable email/password sign-in.
-4. Configure the SMTP sender in Supabase Auth.
+4. Go to **Authentication → Emails** (or **Email notifications**) and configure
+   the custom SMTP sender.
    - Kevin owns the SMTP provider, credentials, sender identity, and any billing.
    - Confirm the provider can send enough messages for the expected roster size.
    - Do not record SMTP credential values anywhere in this repo.
@@ -45,7 +46,9 @@ checklist on the final project before any real family data is entered.
      path is tested.
 7. Go to **Authentication → URL Configuration**.
    - Set the Site URL to the approved app or reset surface.
-   - Add every approved mobile deep-link and web reset URL to Redirect URLs.
+   - For the current mobile reset proof, the approved redirect URLs are
+     `bspc-swim://reset-password` and `bspc-swim:///reset-password`.
+   - Add future web reset URLs only after the portal/reset host exists.
    - Do not add broad wildcard URLs unless Kevin explicitly approves that risk.
 8. Create exactly one throwaway test user in **Authentication → Users**.
    - Kevin controls the inbox.
@@ -67,7 +70,7 @@ Then, with Kevin operating the real device and inbox, the synthetic flow is:
 2. Open the reset email on a real device.
 3. Tap the reset link.
 4. Confirm it opens the approved app/reset surface.
-5. Set a new password.
+5. Set a new password in the BSPC app reset screen.
 6. Sign in.
 7. Cold-start the app.
 8. Record only sanitized pass/fail status in `NOTES.md`.

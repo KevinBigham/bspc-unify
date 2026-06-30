@@ -1,12 +1,12 @@
 # 17 — PRODUCTION BACKEND RUNBOOK (executable command pack)
 
-**Status:** DRAFT — refreshed for the fresh-launch path on 2026-06-28. The BSPC Supabase Phase 1 hosted commands have been proven on Kevin's throwaway target (`https://fqjfunuqbojouyuopnuv.supabase.co`): link, db push, linked schema audit, and the four BSPC Edge Function deploys. **Still not ready for real family data:** Supabase Auth/SMTP/templates/redirects and one synthetic recovery test remain Kevin-owned dashboard/device work.
+**Status:** DRAFT — refreshed for the fresh-launch path on 2026-06-28; auth status refreshed 2026-06-30. The BSPC Supabase Phase 1 hosted commands were proven on Kevin's throwaway target (`https://fqjfunuqbojouyuopnuv.supabase.co`): link, db push, original linked schema audit, and the four BSPC Edge Function deploys. **Still not ready for real family data:** the current linked schema audit must be re-run after the auth handoff, and one synthetic recovery test must pass on a real device.
 **Relationship to `16`:** `16_PROD_BACKEND_PROVISIONING.md` is the *checklist* (what must become true and why). **This doc is the *hands-on-keyboard command sequence*** that makes it true. Run them in order; each is **Kevin-live**.
 **This file is not a Firebase migration cutover.** Under `Mission.md`, the launch is fresh on Supabase: empty database, schema applied cleanly, then real families onboarded going forward.
 
 ### Current stop points
 
-1. **Auth/recovery is human-only and incomplete.** Kevin must configure Supabase Auth email/password, SMTP sender, reset/invite templates, redirect/deep-link allow-list, and one throwaway test account before the synthetic recovery proof can run.
+1. **Auth/recovery is partially done, but not proven.** Supabase Auth email/password, custom SMTP, reset/invite subjects, redirect allow-list, and one throwaway test account are configured. BSPC PR #16 landed the app-side reset handler. Still pending: current hosted schema audit, one throwaway real-device recovery proof, throwaway-user cleanup, and DNS SPF cleanup.
 2. **No real family data yet.** The hosted target proof used an empty throwaway project and recorded sanitized evidence only.
 3. **Milestone 2 is next only after Milestone 1 exits.** First super-admin bootstrap is Supabase-native and belongs to Milestone 2; no Firebase identity-remediation path remains.
 4. **Coach scheduled Functions are later launch work.** Current Coach `main` already exports exactly `sweepAttendanceEvaluations` + `dailyDigest`, and Supabase runtime config hardening has landed; live Firebase secret/param provisioning and deploys remain separately target-gated.
@@ -95,8 +95,9 @@ cd /Users/kevin/bspc-unify/BSPC/ACTIVE
 npm run audit:prod-schema -- --linked
 ```
 
-- [ ] **Inspect the audit output, then record only sanitized output in `NOTES.md`** (pass/fail + count of migrations/buckets/policies; no secret, PII, roster value, DB URL, or account identifier). **If the audit fails, STOP** — do not continue to auth/demo/functions until the mismatch is understood.
-- [x] Throwaway proof: linked schema audit passed with 13 migrations, four private buckets, and four storage policies.
+- [ ] **Inspect the audit output, then record only sanitized output in `NOTES.md`** (pass/fail + count of migrations/buckets/policies/auth-contract status; no secret, PII, roster value, DB URL, or account identifier). **If the audit fails, STOP** — do not continue to demo/live-family work until the mismatch is understood.
+- [x] Throwaway proof: original linked schema audit passed with 13 migrations, four private buckets, and four storage policies.
+- [ ] Re-run the current linked schema audit after the auth handoff. The current audit additionally verifies `profiles` and `public.handle_new_user()`, which matters because the auth setup temporarily made `handle_new_user()` tolerant while `profiles` was reported missing.
 
 Use these SQL checks only as manual follow-up if the audit fails or Kevin wants a dashboard cross-check (Supabase Studio → SQL editor, read-only):
 
@@ -130,12 +131,14 @@ select tablename from pg_policies where schemaname='public' group by tablename o
 
 Passwords are not migrated. Every real user sets a new password through the staged reset/invite path, so the reset path must be proven with a throwaway account before real recovery/invite delivery.
 
-- [ ] **Enable Email provider** (Auth → Providers → Email): email+password ON.
-- [ ] **Password-reset + invite email templates** (Auth → Email Templates): set sender, copy, and the **redirect URL** (the app/portal deep-link that lands the reset). Stage both *reset* and *invite* templates.
+- [x] **Enable Email provider** (Auth → Providers → Email): email+password ON.
+- [x] **Custom SMTP** (Authentication → Emails / Email notifications): sender configured through Resend for `auth.bspowercats.com`; no credential values recorded.
+- [x] **Password-reset + invite email templates** (Auth → Email Templates): subjects branded; bodies retain Supabase's `{{ .ConfirmationURL }}` link. Optional polished HTML remains in `auth-setup-handoff.md` for a later human paste/API update.
   - Staged template files: `auth-email-templates/reset-password.md` and `auth-email-templates/invite-user.md`.
   - Synthetic recovery checklist: `scripts/synthetic-recovery-checklist.sh` prints the no-secrets device checklist and sanitized `NOTES.md` result template. Run it only against a Kevin-approved throwaway target; never with real family data.
-- [ ] **Site URL / redirect allow-list:** add the mobile deep-link schemes + the portal origin (once it has a host).
-- [ ] Confirm in `NOTES.md`: provider on, templates saved, redirect URL set (no secrets).
+- [x] **Temporary Site URL / redirect allow-list:** `bspc-swim://reset-password` plus `bspc-swim:///reset-password` are allow-listed for the mobile reset flow.
+- [x] **App-side reset handler:** BSPC PR #16 registers `bspc-swim`, handles recovery tokens, establishes the Supabase session, and saves the new password.
+- [ ] **Synthetic real-device proof:** throwaway account opens the email link, lands in the app reset screen, sets a new password, signs in, and survives cold start. Record only sanitized pass/fail in `NOTES.md`.
 
 ---
 
@@ -270,7 +273,7 @@ eas init --id   # creates/links the EAS project; writes projectId
 
 - [ ] Final Supabase target live: 13 migrations applied · RLS present · 4 buckets verified (private, correct limits) · 4 edge fns deployed · Email auth + reset/invite templates staged · **rotated** demo accounts if used.
 - [x] Throwaway Supabase proof target: link · db push · linked schema audit · four Edge Function deploys completed with sanitized evidence in `NOTES.md`.
-- [ ] Synthetic recovery proof: custom SMTP + redirect/deep-link + one throwaway test account completes reset on a real device; sanitized result recorded.
+- [ ] Synthetic recovery proof: custom SMTP + redirect/deep-link + one throwaway test account completes reset on a real device; sanitized result recorded; throwaway user deleted afterward.
 - [ ] Coach Functions source posture: config hardening landed; `index.ts` exports exactly the 2 schedulers; `syncCalendar` added only later as the approved follow-on once its calendar source is proven. Live Firebase secret/param provisioning and scheduled deploys are separate target-gated work.
 - [ ] Env matrix populated across BSPC + Coach (portal deferred); Sentry/PostHog live; BSPC wired into EAS.
 - [ ] No secret value ever printed/committed; every command's output **inspected for secrets/PII/account-identifiers/roster/media-metadata and recorded *sanitized*** in `NOTES.md` (sensitive findings as path/category or count/status only).
