@@ -96,9 +96,9 @@ cd /Users/kevin/bspc-unify/BSPC/ACTIVE
 npm run audit:prod-schema -- --linked
 ```
 
-- [ ] **Inspect the audit output, then record only sanitized output in `NOTES.md`** (pass/fail + count of migrations/buckets/policies/auth-contract status; no secret, PII, roster value, DB URL, or account identifier). **If the audit fails, STOP** — do not continue to demo/live-family work until the mismatch is understood.
+- [x] **Inspect the audit output, then record only sanitized output in `NOTES.md`** (pass/fail + count of migrations/buckets/policies/auth-contract status; no secret, PII, roster value, DB URL, or account identifier). Current linked audit passed on 2026-06-30.
 - [x] Throwaway proof: original linked schema audit passed with 13 migrations, four private buckets, and four storage policies.
-- [ ] Re-run the current linked schema audit after the auth handoff. The current audit additionally verifies `profiles` and `public.handle_new_user()`, which matters because the auth setup temporarily made `handle_new_user()` tolerant while `profiles` was reported missing.
+- [x] Re-run the current linked schema audit after the auth handoff. The current audit additionally verifies `profiles` and `public.handle_new_user()`, which matters because the auth setup temporarily made `handle_new_user()` tolerant while `profiles` was reported missing.
 
 Use these SQL checks only as manual follow-up if the audit fails or Kevin wants a dashboard cross-check (Supabase Studio → SQL editor, read-only):
 

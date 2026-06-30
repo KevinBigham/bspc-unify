@@ -133,7 +133,7 @@ No other DB objects were created, dropped, or altered. The `on_auth_user_created
 
 ## 7. Action items for Codex (in priority order)
 
-1. **Re-run the current linked schema audit** against project `fqjfunuqbojouyuopnuv`. The audit now verifies the original Phase-1 checks plus the auth profile contract: `profiles` exists with compatible columns/enums, and `public.handle_new_user()` inserts into `profiles` without hiding non-`undefined_table` errors. This is a hosted read-only command and still needs Kevin's per-command `go`.
+1. **Current linked schema audit passed, 2026-06-30.** The hosted audit verified the original Phase-1 checks plus the auth profile contract: `profiles` exists with compatible columns/enums, and `public.handle_new_user()` inserts into `profiles` without hiding non-`undefined_table` errors.
 2. **Verify the mobile password-reset deep link on a real device.** Code is merged in BSPC PR #16: the app registers `bspc-swim`, sends reset emails with `bspc-swim://reset-password`, handles recovery links with either `access_token`/`refresh_token` or `token_hash` + `type=recovery`, establishes the session, and calls `supabase.auth.updateUser({ password })`. The remaining proof is the actual "tap link → set new password → sign in → cold-start" synthetic flow.
 3. **Replace the temporary Site URL.** `bspc-swim://reset-password` is a placeholder. Once a real web/app landing host exists, set Site URL appropriately and keep the deep-link redirect URLs in the allow-list.
 4. **Delete the throwaway test user** (Authentication → Users) once the recovery test passes.
