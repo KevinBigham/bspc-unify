@@ -3,9 +3,11 @@
 **Audience:** Codex (coding agent continuing the BSPC Unify app)
 **Author:** Claude (Cowork), browser-driven setup session
 **Date:** 2026-06-29
-**Scope:** Wired up transactional auth email (password reset + invite) for the `bspc-unify` Supabase project using Resend as the SMTP provider, on the sending domain `auth.bspowercats.com`. Also made one reversible DB change to unblock user creation. The app-side reset-link flow is **not** done — see Action Items.
+**Scope:** Wired up transactional auth email (password reset + invite) for the `bspc-unify` Supabase project using Resend as the SMTP provider, on the sending domain `auth.bspowercats.com`. Also made one reversible DB change to unblock user creation.
 
-> **For reviewers:** this handoff is intended to live on branch `docs/auth-email-handoff` of `KevinBigham/bspc-unify`. It was prepared in a sandbox that couldn't push, so a human needs to run the publish commands in **§10** (one copy-paste block).
+**Codex update, 2026-06-30:** the app-side reset-link flow is now implemented and merged in BSPC PR #16. The remaining proof is not code-only: re-run the current linked schema audit against the hosted target, then complete one throwaway real-device recovery test before any real family email.
+
+> **Historical note:** this handoff was first prepared for branch `docs/auth-email-handoff` and has since been published/merged. Section §10 is retained only as provenance, not as a current operator step.
 
 ---
 
@@ -13,7 +15,7 @@
 
 - Email pipeline is **live and verified**: Supabase Auth → Resend SMTP → `auth.bspowercats.com` (Squarespace DNS). Password-reset and invite emails will send.
 - I made **one reversible change to `public.handle_new_user()`** so signups stop failing (the `profiles` table doesn't exist yet). It **auto-heals** once you apply the schema. Details + revert in §6. **Read this before touching auth.**
-- Still TODO (yours): apply the canonical schema so `profiles` exists, implement/verify the mobile deep-link reset handler (`bspc-swim://reset-password`), delete the throwaway test user, and clean a malformed root SPF record. See §7.
+- Still TODO (yours): re-run the current linked schema audit so `profiles` and `public.handle_new_user()` are proven on the hosted target, complete one throwaway real-device recovery test, delete the throwaway test user, and clean a malformed root SPF record. See §7.
 - Secrets (Resend API key, test-user email/password) are **not** in this doc by design. They live in Resend / Supabase dashboards.
 
 ---
@@ -131,8 +133,8 @@ No other DB objects were created, dropped, or altered. The `on_auth_user_created
 
 ## 7. Action items for Codex (in priority order)
 
-1. **Apply the canonical schema** (`UNIFY/01_CANONICAL_SCHEMA.sql` per `UNIFY/03_MIGRATION_PLAYBOOK.md`) to project `fqjfunuqbojouyuopnuv` so `profiles` (+ dependencies like `families`) exist. Verify `profiles` has the columns the trigger writes: `user_id, email, full_name, role, account_status`, and that `role='family'` and `account_status='pending'` satisfy any CHECK constraints. The trigger does NOT set `family_id`, so ensure `profiles.family_id` is nullable (or update the trigger). After this, optionally restore the strict `handle_new_user` (§6).
-2. **Implement/verify the mobile password-reset deep link.** Supabase sends `{{ .ConfirmationURL }}` which redirects to `bspc-swim://reset-password` (also allow-listed `bspc-swim:///reset-password`). The app must: register the `bspc-swim` URL scheme, handle the recovery deep link, parse the tokens (recovery flow → `access_token`/`refresh_token` or `token_hash` + `type=recovery` depending on flow), establish the session, and call `supabase.auth.updateUser({ password })`. This is the "tap link → set new password" flow Kevin flagged as possibly needing a code patch. **This is the main remaining work to make the recovery proof pass.**
+1. **Re-run the current linked schema audit** against project `fqjfunuqbojouyuopnuv`. The audit now verifies the original Phase-1 checks plus the auth profile contract: `profiles` exists with compatible columns/enums, and `public.handle_new_user()` inserts into `profiles` without hiding non-`undefined_table` errors. This is a hosted read-only command and still needs Kevin's per-command `go`.
+2. **Verify the mobile password-reset deep link on a real device.** Code is merged in BSPC PR #16: the app registers `bspc-swim`, sends reset emails with `bspc-swim://reset-password`, handles recovery links with either `access_token`/`refresh_token` or `token_hash` + `type=recovery`, establishes the session, and calls `supabase.auth.updateUser({ password })`. The remaining proof is the actual "tap link → set new password → sign in → cold-start" synthetic flow.
 3. **Replace the temporary Site URL.** `bspc-swim://reset-password` is a placeholder. Once a real web/app landing host exists, set Site URL appropriately and keep the deep-link redirect URLs in the allow-list.
 4. **Delete the throwaway test user** (Authentication → Users) once the recovery test passes.
 5. **Clean up the malformed root SPF record** (§3) for Gmail deliverability.
@@ -146,6 +148,7 @@ No other DB objects were created, dropped, or altered. The `on_auth_user_created
 - Resend domain page shows **Verified** ("ready to send emails").
 - Supabase SMTP saved (password stored/encrypted); Email provider enabled; URL config shows Site URL + 2 redirect URLs (Total URLs: 2, no wildcards); template subjects updated.
 - After the `handle_new_user` patch, the throwaway test user was created successfully (confirms the signup path is unblocked end-to-end).
+- BSPC PR #16 merged the app-side recovery handler and tests. Local BSPC auth tests cover redirect target, recovery token parsing, session establishment, password update, and authenticated recovery-route behavior.
 
 ## 9. Related docs
 - `UNIFY/auth-setup-handoff.md` — operator-facing summary + polished email-template HTML + revert SQL.
@@ -154,9 +157,11 @@ No other DB objects were created, dropped, or altered. The `on_auth_user_created
 
 ---
 
-## 10. Publishing this handoff (branch for review)
+## 10. Publishing this handoff (historical)
 
-This doc and `auth-setup-handoff.md` are saved in the `bspc-unify` repo working tree but were **not auto-committed/pushed**. The setup ran in a sandbox that is read-only for git internals (it can create files but can't do the rename/unlink that `git commit`/`push` require), so the commit couldn't be completed there. That sandbox also left a stale `.git/index.lock` that must be cleared first.
+This section is historical provenance from the original auth-email handoff. The docs have since been published and merged, so do not re-run this block as a current step.
+
+Original note: this doc and `auth-setup-handoff.md` were saved in the `bspc-unify` repo working tree but were **not auto-committed/pushed**. The setup ran in a sandbox that is read-only for git internals (it can create files but can't do the rename/unlink that `git commit`/`push` require), so the commit couldn't be completed there. That sandbox also left a stale `.git/index.lock` that had to be cleared first.
 
 To publish for review, run these in the `bspc-unify` repo (the `UNIFY/` folder) on a machine with push access:
 

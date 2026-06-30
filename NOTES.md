@@ -6927,3 +6927,37 @@ Remaining Milestone 1 human-only work before the synthetic recovery proof:
 - Kevin creates one throwaway test account using an inbox he controls.
 - Then the synthetic recovery checklist can be run against the throwaway account
   only, with sanitized pass/fail recorded here.
+
+---
+
+## 2026-06-30 — Milestone 1 auth/recovery status refresh (sanitized)
+
+No hosted command ran for this update. No keys, passwords, tokens, email
+addresses, UUIDs, roster data, or real family/minor data are recorded here.
+
+Current local/repo evidence:
+- BSPC PR #16 merged the app-side password-recovery handler for
+  `bspc-swim://reset-password`; local auth tests cover redirect target,
+  recovery-token parsing, session establishment, password update, and
+  authenticated recovery-route behavior.
+- Coach PR #11 merged a test-only fix for the documented UTC midnight
+  `date.test` boundary. Current Coach `main` is clean.
+- Current local BSPC schema audit passed: 13 migrations, four private buckets,
+  four storage policies, and the auth profile contract verified.
+- Current local BSPC edge-function audit passed: four functions ready.
+
+Current green bars:
+- Coach client Jest: 108 suites / 1103 tests passed under `TZ=UTC`.
+- Coach isolated `date.test`: 17 tests passed.
+- Coach Functions Jest: 14 suites / 128 tests passed.
+- BSPC Jest: 120 suites / 850 tests passed under `TZ=UTC`.
+- BSPC pgTAP: 15 files / 343 assertions passed.
+
+Remaining Milestone 1 gates before real family data:
+- Re-run the current hosted linked audit against
+  `https://fqjfunuqbojouyuopnuv.supabase.co` after Kevin's explicit per-command
+  `go`; this audit now verifies `profiles` and `public.handle_new_user()`.
+- Complete one throwaway real-device recovery test and record sanitized
+  pass/fail here.
+- Delete the throwaway test user after the recovery proof passes.
+- Kevin cleans the malformed duplicate root SPF TXT record in DNS.

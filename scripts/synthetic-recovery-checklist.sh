@@ -9,6 +9,7 @@ Purpose: prove the password-reset path end-to-end with one throwaway account bef
 Human-only prerequisites:
 - Kevin has created the throwaway Supabase project or approved the target.
 - Kevin has configured SMTP sender, redirect/deep-link allow-list, and dashboard email templates.
+- The BSPC app build on the test device includes the reset handler merged in PR #16.
 - A real test device is available.
 
 Target gate before any hosted command:
@@ -21,7 +22,7 @@ Procedure:
 2. Trigger a password reset for that throwaway account only.
 3. Open the reset email on a real device.
 4. Tap the reset link and confirm it opens the app or approved reset surface.
-5. Set a new password.
+5. Set a new password in the BSPC app reset screen.
 6. Sign in with the new password.
 7. Confirm the session survives app cold start.
 8. Confirm the app lands on the expected post-login route.

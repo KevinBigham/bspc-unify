@@ -16,10 +16,14 @@ Development has run against **local** Supabase. The fresh-launch decision means 
 - [x] Throwaway hosted target created by Kevin for Phase-1 proof: `https://fqjfunuqbojouyuopnuv.supabase.co`.
 - [x] `npm exec -- supabase --agent no link --project-ref fqjfunuqbojouyuopnuv` completed after Kevin's per-command `go`.
 - [x] `npm exec -- supabase --agent no db push` completed after Kevin's per-command `go`; hosted DB reported up to date.
-- [x] `npm run audit:prod-schema -- --linked` passed on the linked throwaway target: 13 migrations, four private buckets, four storage policies.
+- [x] Original `npm run audit:prod-schema -- --linked` passed on the linked throwaway target: 13 migrations, four private buckets, four storage policies.
+- [ ] Re-run the **current** linked audit after the auth handoff. It now additionally verifies the auth profile contract (`profiles` + `public.handle_new_user()`) and is the next hosted read-only gate.
 - [ ] If this throwaway project is **not** the final production project, Kevin creates the final Supabase project (org owned by Kevin; **US region**; Postgres 17 to match local `config.toml`) and the link/push/audit sequence repeats under the same one-command target gate.
-- [ ] **Auth** — enable email/password. Stage the **password-reset email template + redirect URL**. Staging the template is not the same as proven delivery: custom SMTP, confirmed send-rate capacity, a working redirect/deep-link, and **one synthetic end-to-end mobile recovery test** are prerequisites before any real recovery/invite email goes to families. The team announcement may still go through the existing verified team channel when Kevin approves the wording and timing.
+- [x] **Auth email plumbing** — email/password, custom SMTP, sender identity, reset/invite subjects, and redirect allow-list were configured on the throwaway target by Kevin/Claude handoff; no secret values are recorded in repo docs.
+- [x] **App reset handler** — BSPC PR #16 implemented the `bspc-swim://reset-password` recovery flow and password-update screen.
+- [ ] **Synthetic recovery proof** — one throwaway account must complete the real-device flow before any real recovery/invite email goes to families. The team announcement may still go through the existing verified team channel when Kevin approves the wording and timing.
   - Staged repo artifacts: `auth-email-templates/reset-password.md`, `auth-email-templates/invite-user.md`, the Kevin-owned dashboard checklist `21_SUPABASE_AUTH_DASHBOARD_CHECKLIST.md`, and the throwaway-only recovery checklist `scripts/synthetic-recovery-checklist.sh`.
+- [ ] After the recovery proof passes, delete the throwaway test user and clean the malformed duplicate root SPF TXT record in DNS.
 - [ ] Seed the **2 demo accounts** (`demo-family` / `demo-admin`). Creds are in BSPC `CLAUDE.md` — **rotate them for prod** and have Kevin own the new ones; do not copy creds into any doc.
 
 ## 2. BSPC edge functions (4)
