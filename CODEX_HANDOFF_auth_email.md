@@ -23,12 +23,12 @@
 | System | Identifier | Notes |
 |---|---|---|
 | Supabase project | `bspc-unify`, ref `fqjfunuqbojouyuopnuv` | org `KevinB`, Free, **production** branch `main`. API URL `https://fqjfunuqbojouyuopnuv.supabase.co` |
-| Sending domain | `auth.bspowercats.com` | Resend region `us-east-1`; Resend domain id `8b03fe75-c047-4eed-b014-0ced90834350`; status **Verified** |
-| Email provider (SMTP) | Resend account `tkb1230@gmail.com` | |
+| Sending domain | `auth.bspowercats.com` | Resend region `us-east-1`; status **Verified** |
+| Email provider (SMTP) | Resend | Account owner stays out of repo docs. |
 | DNS host | **Squarespace** (NOT Google Cloud) | Registrar = ex-Google Domains; live nameservers `ns-cloud-a1..a4.googledomains.com`. Records are edited in the Squarespace domain DNS panel. |
 | Root domain mail | Google Workspace | Existing apex MX/SPF/DKIM for Gmail — left untouched. |
 
-> Note for future DNS work: I checked all three GCP projects under the `bspowercats.com` org (`kevinos-500323`, `blue-springs-power-cats`, `bspc-coach-app`) — **none** use Cloud DNS. Don't go hunting in GCP; DNS is 100% in Squarespace.
+> Note for future DNS work: Cloud DNS was checked and is not the live DNS host. Don't go hunting in GCP; DNS is 100% in Squarespace.
 
 ---
 
