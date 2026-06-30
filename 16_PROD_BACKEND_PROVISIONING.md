@@ -17,7 +17,7 @@ Development has run against **local** Supabase. The fresh-launch decision means 
 - [x] `npm exec -- supabase --agent no link --project-ref fqjfunuqbojouyuopnuv` completed after Kevin's per-command `go`.
 - [x] `npm exec -- supabase --agent no db push` completed after Kevin's per-command `go`; hosted DB reported up to date.
 - [x] Original `npm run audit:prod-schema -- --linked` passed on the linked throwaway target: 13 migrations, four private buckets, four storage policies.
-- [ ] Re-run the **current** linked audit after the auth handoff. It now additionally verifies the auth profile contract (`profiles` + `public.handle_new_user()`) and is the next hosted read-only gate.
+- [x] Current `npm run audit:prod-schema -- --linked` passed after the auth handoff: 13 migrations, four private buckets, four storage policies, and the auth profile contract verified.
 - [ ] If this throwaway project is **not** the final production project, Kevin creates the final Supabase project (org owned by Kevin; **US region**; Postgres 17 to match local `config.toml`) and the link/push/audit sequence repeats under the same one-command target gate.
 - [x] **Auth email plumbing** — email/password, custom SMTP, sender identity, reset/invite subjects, and redirect allow-list were configured on the throwaway target by Kevin/Claude handoff; no secret values are recorded in repo docs.
 - [x] **App reset handler** — BSPC PR #16 implemented the `bspc-swim://reset-password` recovery flow and password-update screen.

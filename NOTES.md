@@ -6954,9 +6954,6 @@ Current green bars:
 - BSPC pgTAP: 15 files / 343 assertions passed.
 
 Remaining Milestone 1 gates before real family data:
-- Re-run the current hosted linked audit against
-  `https://fqjfunuqbojouyuopnuv.supabase.co` after Kevin's explicit per-command
-  `go`; this audit now verifies `profiles` and `public.handle_new_user()`.
 - Complete one throwaway real-device recovery test and record sanitized
   pass/fail here.
 - Delete the throwaway test user after the recovery proof passes.
@@ -6985,3 +6982,28 @@ Tooling gaps before later hosted steps:
 Action required before Firebase Functions deploy or BSPC EAS initialization:
 install or expose the Firebase CLI and EAS CLI in the operator environment, then
 record version strings here before any target-gated hosted command.
+
+---
+
+## 2026-06-30 — Hosted schema audit after auth handoff (sanitized)
+
+Target: `https://fqjfunuqbojouyuopnuv.supabase.co`
+
+Kevin gave explicit per-command `go`; Codex ran exactly:
+`npm run audit:prod-schema -- --linked`
+
+Sanitized result:
+- Phase 1 schema audit passed.
+- 13 migrations verified.
+- Four private storage buckets verified.
+- Four storage policies verified.
+- Auth profile contract verified (`profiles` + `public.handle_new_user()`).
+
+No keys, passwords, tokens, email addresses, UUIDs, roster data, real
+family/minor data, or private account identifiers were printed or recorded.
+
+Remaining Milestone 1 gates before real family data:
+- Complete one throwaway real-device recovery test and record sanitized
+  pass/fail here.
+- Delete the throwaway test user after the recovery proof passes.
+- Kevin cleans the malformed duplicate root SPF TXT record in DNS.
