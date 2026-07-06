@@ -6961,6 +6961,31 @@ Remaining Milestone 1 gates before real family data:
 
 ---
 
+## 2026-07-06 - GOAT Launch Wave 2 prod probe preflight (sanitized)
+
+No hosted command ran for this update. No prod connection was opened. No keys,
+passwords, tokens, email addresses, UUIDs, roster data, real family/minor data,
+or private account identifiers were printed or recorded.
+
+Read-only review of `BSPC/ACTIVE/scripts/audit-prod-schema.ts` passed:
+- Query paths are metadata/read-only `SELECT` statements.
+- No SQL mutation path was found.
+- Script output/error handling redacts database URLs, JWT-shaped values, email
+  addresses, and UUIDs.
+
+Wave 2 blocker:
+- Required prod Postgres env vars were absent in this Codex shell.
+- `psql` was not available on `PATH`.
+- Supabase CLI was installed but not authenticated.
+- `BSPC/ACTIVE/.env.local` contained only public app Supabase variables.
+
+Mission stopped before Wave 3 because this run has no GREEN/YELLOW/RED prod
+classification. See `UNIFY/audits/PROD_PROBE_RESULTS.md`,
+`UNIFY/audits/GOAT_LAUNCH_W2_STATUS.md`, and
+`UNIFY/audits/GOAT_LAUNCH_FINAL_STATUS.md`.
+
+---
+
 ## 2026-06-30 — Local tooling pre-flight (sanitized)
 
 No hosted command ran for this update. Version strings only; no keys, passwords,
