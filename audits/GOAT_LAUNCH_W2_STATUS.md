@@ -6,7 +6,7 @@ Status: STOPPED - PRE-RUN BLOCKER
 
 ## Summary
 
-The Wave 2 prod probe was pre-authorized as read-only, and the script was verified read-only before any prod access. The live probe did not run because this environment still lacks the required prod Postgres connection env vars.
+The Wave 2 prod probe was pre-authorized as read-only, and the script was verified read-only before prod access. After Kevin provided `~/.bspc-prod.env`, the probe reached `psql` but failed authentication before audit queries completed.
 
 ## Read-Only Script Review
 
@@ -18,23 +18,27 @@ The Wave 2 prod probe was pre-authorized as read-only, and the script was verifi
 
 ## Blocker
 
-- Required prod DB env vars are absent.
+- `~/.bspc-prod.env` exists, has mode `600`, and is outside all git worktrees.
 - `psql` was initially absent; Homebrew `libpq` was installed during continuation, and `psql` is now available at `/opt/homebrew/opt/libpq/bin/psql`.
-- Re-running the script with the `libpq` PATH prefix stopped before connection on missing `BSPC_PROD_PGHOST`.
-- Supabase CLI is installed but not authenticated in this shell.
-- Only public app Supabase variables are present in `BSPC/ACTIVE/.env.local`.
+- The script now accepts `BSPC_PROD_DATABASE_URL` as a first-class alternative to split `BSPC_PROD_PG*` vars and preserves libpq URL query parameters.
+- Running the probe with `source ~/.bspc-prod.env` reaches `psql` but fails authentication before the audit emits JSON.
 
 ## Probe Result
 
-- Prod connection opened: no.
-- Prod read performed: no.
+- Prod connection attempted: yes, via the read-only probe script.
+- Prod read completed: no; authentication failed before audit queries completed.
 - Prod write performed: no.
-- GREEN/YELLOW/RED classification: unavailable because the probe did not run.
+- GREEN/YELLOW/RED classification: unavailable because the probe did not complete.
 
 ## Tooling Changes
 
 - Installed Homebrew `libpq` to provide the read-only probe's `psql` dependency.
 - No repository dependency was added or changed.
+
+## BSPC Commits
+
+- `25cebbe` - Harden prod schema audit database URL env
+- `a4c8861` - Preserve prod audit URL connection params
 
 ## Files Written
 

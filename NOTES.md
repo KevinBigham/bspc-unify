@@ -6993,6 +6993,18 @@ Continuation update:
   `BSPC_PROD_PGHOST`.
 - Prod Postgres credential env vars and `SUPABASE_ACCESS_TOKEN` remain absent.
 
+Unblock attempt:
+- Kevin provided `~/.bspc-prod.env`; Codex confirmed it is outside git
+  worktrees and mode `600` before sourcing.
+- BSPC commits `25cebbe` and `a4c8861` hardened
+  `scripts/audit-prod-schema.ts` for single-URL prod connection strings.
+- Typecheck and lint passed after the script changes.
+- Re-verified the script SQL paths are read-only.
+- Ran the probe via `source ~/.bspc-prod.env` with the `libpq` PATH prefix.
+- The probe reached `psql` but failed authentication before audit queries
+  completed. No audit JSON was emitted, so there is still no GREEN/YELLOW/RED
+  production classification.
+
 ---
 
 ## 2026-06-30 — Local tooling pre-flight (sanitized)

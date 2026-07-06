@@ -41,21 +41,33 @@ Continuation update:
 - The script stopped before any prod connection with `Missing required env var BSPC_PROD_PGHOST.`
 - Prod DB credential env vars and `SUPABASE_ACCESS_TOKEN` remain absent in this shell.
 
+Unblock attempt:
+
+- Kevin provided `~/.bspc-prod.env`; confirmed the file exists, has mode `600`, and is outside all git workspace roots before sourcing.
+- Modified and pushed `BSPC/ACTIVE/scripts/audit-prod-schema.ts` so `BSPC_PROD_DATABASE_URL` is a first-class alternative to the split `BSPC_PROD_PG*` vars:
+  - `25cebbe` - harden the database URL env path.
+  - `a4c8861` - preserve libpq URL query parameters for pooler URLs.
+- Re-verified the script's SQL paths are read-only after the changes.
+- Ran the probe with `source ~/.bspc-prod.env` and captured output to a temp file.
+- Sanitized scan of the temp output found no database URL, JWT-shaped value, email address, or UUID.
+- The probe did not emit JSON and did not complete audit queries; `psql` failed authentication before the audit could run.
+
 ## Prod Access
 
-- Prod read attempted: no.
+- Prod connection attempted: yes, through the read-only probe script.
+- Prod read completed: no; authentication failed before audit queries completed.
 - Prod write attempted: no.
-- Prod mutation possible from this run: no, because no prod connection was opened.
+- Prod mutation possible from this run: no SQL mutation path exists in the script.
 
 ## Classification
 
-No GREEN/YELLOW/RED database classification is available because the probe did not connect to production.
+No GREEN/YELLOW/RED database classification is available because the probe did not complete authentication and did not produce audit JSON.
 
 Mission state: STOPPED under the global hard rule for a Wave 2 blocker. Waves 3+ must not build on an unverified production foundation.
 
 ## Required Operator Inputs To Resume
 
 - Use the installed `psql` with `PATH="/opt/homebrew/opt/libpq/bin:$PATH"` or expose that directory on `PATH`.
-- Provide either `BSPC_PROD_DATABASE_URL` or the individual `BSPC_PROD_PGHOST`, `BSPC_PROD_PGUSER`, and `BSPC_PROD_PGPASSWORD` variables in the same shell.
+- Correct the prod connection string/password in `~/.bspc-prod.env`, or provide working individual `BSPC_PROD_PGHOST`, `BSPC_PROD_PGUSER`, and `BSPC_PROD_PGPASSWORD` variables in the same shell.
 - Optionally provide `BSPC_PROD_THROWAWAY_EMAIL` or `BSPC_PROD_THROWAWAY_USER_ID` if the throwaway existence check should target the known account.
 - Re-run Wave 2 with `CONFIRM_PROD_SCHEMA_AUDIT=go`.

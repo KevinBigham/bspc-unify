@@ -5,9 +5,9 @@ Status: STOPPED AT WAVE 2 - PROD PROBE BLOCKED BEFORE CONNECTION
 
 ## Result
 
-The mission completed Waves 0 and 1, then stopped in Wave 2 before any production access because the environment did not have the required prod Postgres credentials. The initial missing `psql` tooling gap was fixed during continuation by installing Homebrew `libpq`.
+The mission completed Waves 0 and 1, then stopped in Wave 2 because the read-only production probe cannot authenticate with the provided connection string. The initial missing `psql` tooling gap was fixed during continuation by installing Homebrew `libpq`.
 
-This is not a RED/YELLOW/GREEN production classification. The live database was not reached.
+This is not a RED/YELLOW/GREEN production classification. The audit did not complete.
 
 ## Completed Waves
 
@@ -52,13 +52,13 @@ Read-only verification passed:
 - No SQL mutation statements were found in query paths.
 - Output/error redaction exists for database URLs, JWT-shaped values, emails, and UUIDs.
 
-Probe did not run:
+Probe did not complete:
 
-- Required prod DB env vars were absent.
+- Kevin provided `~/.bspc-prod.env`; it was confirmed outside git worktrees and mode `600` before sourcing.
+- The BSPC probe script was hardened and pushed to accept `BSPC_PROD_DATABASE_URL` as a first-class alternative to split `BSPC_PROD_PG*` vars.
 - `psql` was initially unavailable, then installed via Homebrew `libpq` and verified at `/opt/homebrew/opt/libpq/bin/psql`.
-- Re-running the script with that PATH prefix stopped before connection on missing `BSPC_PROD_PGHOST`.
-- Supabase CLI was installed but not authenticated.
-- No prod read occurred.
+- Running the probe with `source ~/.bspc-prod.env` reaches `psql` but fails authentication before audit queries complete.
+- No prod audit read completed.
 - No prod write occurred.
 
 Because Wave 2 did not produce a verified production classification, Waves 3-7 were not executed.
@@ -68,7 +68,7 @@ Because Wave 2 did not produce a verified production classification, Waves 3-7 w
 Immediate unblocker:
 
 - Use the installed `psql` with `PATH="/opt/homebrew/opt/libpq/bin:$PATH"` or expose that directory on `PATH`.
-- Provide either `BSPC_PROD_DATABASE_URL` or the individual prod Postgres env vars expected by `scripts/audit-prod-schema.ts`.
+- Correct the prod connection string/password in `~/.bspc-prod.env`, or provide working individual prod Postgres env vars expected by `scripts/audit-prod-schema.ts`.
 - Optionally provide `BSPC_PROD_THROWAWAY_EMAIL` or `BSPC_PROD_THROWAWAY_USER_ID`.
 - Resume at Wave 2 with `CONFIRM_PROD_SCHEMA_AUDIT=go`.
 
