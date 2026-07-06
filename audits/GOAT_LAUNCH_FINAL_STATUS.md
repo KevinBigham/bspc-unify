@@ -1,7 +1,7 @@
 # GOAT Launch Final Status
 
 Date: 2026-07-06
-Status: STOPPED AT WAVE 2 - PROD PROBE BLOCKED BEFORE CONNECTION
+Status: STOPPED AT WAVE 2 - PROD PROBE AUTHENTICATION BLOCKER
 
 ## Result
 
@@ -44,7 +44,7 @@ Measured Wave 1 bars:
 
 ### Wave 2 - Prod Truth Probe
 
-Status: STOPPED - PRE-RUN BLOCKER
+Status: STOPPED - AUTHENTICATION BLOCKER
 
 Read-only verification passed:
 

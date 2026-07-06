@@ -2,7 +2,7 @@
 
 Date: 2026-07-06
 Wave: 2 - Prod truth probe
-Status: STOPPED - PRE-RUN BLOCKER
+Status: STOPPED - AUTHENTICATION BLOCKER
 
 ## Summary
 
