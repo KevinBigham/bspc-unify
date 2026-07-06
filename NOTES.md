@@ -6984,6 +6984,15 @@ classification. See `UNIFY/audits/PROD_PROBE_RESULTS.md`,
 `UNIFY/audits/GOAT_LAUNCH_W2_STATUS.md`, and
 `UNIFY/audits/GOAT_LAUNCH_FINAL_STATUS.md`.
 
+Continuation update:
+- Installed Homebrew `libpq`; `psql` is available at
+  `/opt/homebrew/opt/libpq/bin/psql` and reports PostgreSQL 18.4.
+- Re-ran the read-only probe with the `libpq` PATH prefix and
+  `CONFIRM_PROD_SCHEMA_AUDIT=go`.
+- The script stopped before any prod connection on missing
+  `BSPC_PROD_PGHOST`.
+- Prod Postgres credential env vars and `SUPABASE_ACCESS_TOKEN` remain absent.
+
 ---
 
 ## 2026-06-30 — Local tooling pre-flight (sanitized)

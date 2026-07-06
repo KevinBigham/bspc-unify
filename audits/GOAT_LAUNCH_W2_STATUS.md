@@ -6,7 +6,7 @@ Status: STOPPED - PRE-RUN BLOCKER
 
 ## Summary
 
-The Wave 2 prod probe was pre-authorized as read-only, and the script was verified read-only before any prod access. The live probe did not run because this environment lacks the required prod Postgres connection env vars and lacks `psql`.
+The Wave 2 prod probe was pre-authorized as read-only, and the script was verified read-only before any prod access. The live probe did not run because this environment still lacks the required prod Postgres connection env vars.
 
 ## Read-Only Script Review
 
@@ -19,7 +19,8 @@ The Wave 2 prod probe was pre-authorized as read-only, and the script was verifi
 ## Blocker
 
 - Required prod DB env vars are absent.
-- `psql` is not installed or exposed on `PATH`.
+- `psql` was initially absent; Homebrew `libpq` was installed during continuation, and `psql` is now available at `/opt/homebrew/opt/libpq/bin/psql`.
+- Re-running the script with the `libpq` PATH prefix stopped before connection on missing `BSPC_PROD_PGHOST`.
 - Supabase CLI is installed but not authenticated in this shell.
 - Only public app Supabase variables are present in `BSPC/ACTIVE/.env.local`.
 
@@ -29,6 +30,11 @@ The Wave 2 prod probe was pre-authorized as read-only, and the script was verifi
 - Prod read performed: no.
 - Prod write performed: no.
 - GREEN/YELLOW/RED classification: unavailable because the probe did not run.
+
+## Tooling Changes
+
+- Installed Homebrew `libpq` to provide the read-only probe's `psql` dependency.
+- No repository dependency was added or changed.
 
 ## Files Written
 

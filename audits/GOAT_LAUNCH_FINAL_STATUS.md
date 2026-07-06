@@ -5,7 +5,7 @@ Status: STOPPED AT WAVE 2 - PROD PROBE BLOCKED BEFORE CONNECTION
 
 ## Result
 
-The mission completed Waves 0 and 1, then stopped in Wave 2 before any production access because the environment did not have the required prod Postgres credentials or `psql`.
+The mission completed Waves 0 and 1, then stopped in Wave 2 before any production access because the environment did not have the required prod Postgres credentials. The initial missing `psql` tooling gap was fixed during continuation by installing Homebrew `libpq`.
 
 This is not a RED/YELLOW/GREEN production classification. The live database was not reached.
 
@@ -55,7 +55,8 @@ Read-only verification passed:
 Probe did not run:
 
 - Required prod DB env vars were absent.
-- `psql` was not available on `PATH`.
+- `psql` was initially unavailable, then installed via Homebrew `libpq` and verified at `/opt/homebrew/opt/libpq/bin/psql`.
+- Re-running the script with that PATH prefix stopped before connection on missing `BSPC_PROD_PGHOST`.
 - Supabase CLI was installed but not authenticated.
 - No prod read occurred.
 - No prod write occurred.
@@ -66,7 +67,7 @@ Because Wave 2 did not produce a verified production classification, Waves 3-7 w
 
 Immediate unblocker:
 
-- Expose `psql` on `PATH`.
+- Use the installed `psql` with `PATH="/opt/homebrew/opt/libpq/bin:$PATH"` or expose that directory on `PATH`.
 - Provide either `BSPC_PROD_DATABASE_URL` or the individual prod Postgres env vars expected by `scripts/audit-prod-schema.ts`.
 - Optionally provide `BSPC_PROD_THROWAWAY_EMAIL` or `BSPC_PROD_THROWAWAY_USER_ID`.
 - Resume at Wave 2 with `CONFIRM_PROD_SCHEMA_AUDIT=go`.

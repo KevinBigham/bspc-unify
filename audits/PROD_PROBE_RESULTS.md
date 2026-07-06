@@ -21,7 +21,7 @@ Verified read-only properties:
 
 The live probe could not be run from this Codex environment.
 
-Sanitized preflight result:
+Initial sanitized preflight result:
 
 - `BSPC_PROD_DATABASE_URL`: absent.
 - `BSPC_PROD_PGHOST`: absent.
@@ -32,6 +32,14 @@ Sanitized preflight result:
 - `psql`: not found on `PATH`; no bundled `psql` binary was found in common local locations.
 - Supabase CLI is installed, but `supabase projects list` failed with "Access token not provided."
 - `BSPC/ACTIVE/.env.local` contains public app Supabase variables only; no service-role, database, or password-shaped env names were present.
+
+Continuation update:
+
+- Installed Homebrew `libpq` to make `psql` available at `/opt/homebrew/opt/libpq/bin/psql`.
+- Verified `psql (PostgreSQL) 18.4`.
+- Re-ran the script with `PATH="/opt/homebrew/opt/libpq/bin:$PATH"` and `CONFIRM_PROD_SCHEMA_AUDIT=go`.
+- The script stopped before any prod connection with `Missing required env var BSPC_PROD_PGHOST.`
+- Prod DB credential env vars and `SUPABASE_ACCESS_TOKEN` remain absent in this shell.
 
 ## Prod Access
 
@@ -47,7 +55,7 @@ Mission state: STOPPED under the global hard rule for a Wave 2 blocker. Waves 3+
 
 ## Required Operator Inputs To Resume
 
-- Expose `psql` on `PATH`.
+- Use the installed `psql` with `PATH="/opt/homebrew/opt/libpq/bin:$PATH"` or expose that directory on `PATH`.
 - Provide either `BSPC_PROD_DATABASE_URL` or the individual `BSPC_PROD_PGHOST`, `BSPC_PROD_PGUSER`, and `BSPC_PROD_PGPASSWORD` variables in the same shell.
 - Optionally provide `BSPC_PROD_THROWAWAY_EMAIL` or `BSPC_PROD_THROWAWAY_USER_ID` if the throwaway existence check should target the known account.
 - Re-run Wave 2 with `CONFIRM_PROD_SCHEMA_AUDIT=go`.
