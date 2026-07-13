@@ -1,8 +1,10 @@
 # Scheduler-home decision memo
 
 - Date: 2026-07-12
-- Status: awaiting Director/Kevin ruling
-- Recommendation: keep the two launch schedulers on Firebase Functions for v1; do not export `syncCalendar`.
+- Status: superseded by Director Ruling 65
+- Decision: replace the Firebase-v1 recommendation with a Supabase-native scheduler design; keep `syncCalendar` disabled pending an approved feed.
+
+> Ruling 65 rejected this memo's recommendation. The disagreement was surfaced before scheduler implementation. The table below is retained as historical decision input, not current direction.
 
 | Job | V1 recommendation | Evidence / tradeoff |
 |---|---|---|

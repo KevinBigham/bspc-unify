@@ -71,3 +71,12 @@ Mission state: STOPPED under the global hard rule for a Wave 2 blocker. Waves 3+
 - Correct the prod connection string/password in `~/.bspc-prod.env`, or provide working individual `BSPC_PROD_PGHOST`, `BSPC_PROD_PGUSER`, and `BSPC_PROD_PGPASSWORD` variables in the same shell.
 - Optionally provide `BSPC_PROD_THROWAWAY_EMAIL` or `BSPC_PROD_THROWAWAY_USER_ID` if the throwaway existence check should target the known account.
 - Re-run Wave 2 with `CONFIRM_PROD_SCHEMA_AUDIT=go`.
+
+## 2026-07-12 authorized retry
+
+- The Director authorized one read-only production probe and explicitly withheld migration-apply authority.
+- The initial invocation stopped locally because `psql` was not on `PATH`; no connection occurred.
+- The retry used the already-installed Homebrew libpq client and reached the database endpoint, but authentication failed before any query completed.
+- No production read completed, no write was attempted, and no migration was applied.
+- Classification remains **UNCLASSIFIED / STOP**. The expected ledger gap cannot be labeled YELLOW until an authenticated read proves it.
+- Unblock: correct the protected database credential, then issue a new per-command authorization for the read-only probe.

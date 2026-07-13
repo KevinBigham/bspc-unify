@@ -4,7 +4,7 @@
 **Scope:** all 100 numbered items in `BSPC_GOAT_AUDIT.md` §12, executed in the order prescribed by `BSPC_GOAT_EXECUTION_ORDER.md`.
 **Status law:** `DONE` requires a durable artifact plus verification. `PARTIAL` means useful work exists but at least one acceptance clause is unproven. `OWNER` requires Kevin/Director identity, a physical device, a paid/external account, legal advice, or an explicit product ruling.
 
-Fresh local bars: Family 920 tests / 132 suites plus pgTAP 437 / 19 files; Coach 1,210 / 128; Functions 191 / 16; portal production build green. Both application roots typecheck on Node 22.23.1. These bars are evidence, not substitutes for production, device, or owner gates.
+Fresh local bars: Family 924 tests / 132 suites plus pgTAP 437 / 19 files; Coach 1,212 / 129; Functions 191 / 16; portal production build green pending its Ruling-64 retirement mission. Both application roots typecheck on Node 22.23.1. These bars are evidence, not substitutes for production, device, or owner gates.
 
 | # | State | Acceptance evidence or exact remaining gate |
 |---:|:---:|---|
@@ -16,7 +16,7 @@ Fresh local bars: Family 920 tests / 132 suites plus pgTAP 437 / 19 files; Coach
 | 6 | DONE | `STATE_OF_THE_UNION.md` exists; update it at every subsequent mission close. |
 | 7 | DONE | `rulings/INDEX.md`, template, and Rulings 56–58 are indexed. |
 | 8 | DONE | Append-only `NOTES.md` template adopted and new entries appended chronologically. |
-| 9 | OWNER | Production credentials and a sanitized GREEN/YELLOW/RED production probe are required. |
+| 9 | OWNER | The authorized retry reached the endpoint but failed authentication before any query; classification remains UNCLASSIFIED/STOP pending corrected credentials and a new per-command `go`. |
 | 10 | OWNER | Production `db push` needs probe GREEN and Kevin's explicit go; migration history must then be captured. |
 | 11 | OWNER | A separate prod-shaped remote shadow project is not provisioned; local Supabase is green but is not credited as the remote shadow. |
 | 12 | OWNER | Strict function is pinned/tested locally; production definition still requires read-only verification. |
@@ -27,9 +27,9 @@ Fresh local bars: Family 920 tests / 132 suites plus pgTAP 437 / 19 files; Coach
 | 17 | OWNER | Backup/PITR plan selection and a real shadow restore rehearsal remain. |
 | 18 | OWNER | Staging project, credentials, and end-to-end staging release check remain. |
 | 19 | OWNER | Physical iPhone and Android recovery matrix with real email is required. |
-| 20 | DONE | All recovery token/error shapes and expired UX are covered; current Family bar is 920. |
+| 20 | DONE | All recovery token/error shapes and expired UX are covered; current Family bar is 924. |
 | 21 | PARTIAL | Placeholder scanner/allowlist exists; live demo accounts still need rotation/disable and tracked history proof. |
-| 22 | DONE | `decisions/OD3_APPROVAL_POLICY.md`; all new family accounts require staff approval, invite redemption never auto-approves, and atomic approval RPC is tested. |
+| 22 | DONE | Ruling 63 ratifies ADMIN-APPROVE; invite redemption never auto-approves, and the atomic approval RPC is tested. |
 | 23 | OWNER | Bootstrap guards exist; shadow dry-run and Kevin's live sole-super-admin execution remain. |
 | 24 | DONE | Cold restore, refresh failure, inactive lockout, and pending-account scope have named tests. |
 | 25 | PARTIAL | Client exponential backoff and abuse posture are tested/documented; hosted rate-limit confirmation and signup-burst alert remain. |
@@ -49,7 +49,7 @@ Fresh local bars: Family 920 tests / 132 suites plus pgTAP 437 / 19 files; Coach
 | 39 | DONE | Family CI resets local Supabase and runs the 437-assertion pgTAP suite. |
 | 40 | DONE | Family and Coach enforce local contract drift; UNIFY cross-repository run 29215889421 checked all three launch lines against canonical SQL and passed. |
 | 41 | DONE | Coach typecheck, knip, strict-type, randomness, process, and circular-dependency gates are green. |
-| 42 | DONE | Node 22 is pinned in engines, `.nvmrc`, Functions, portal, and CI; Node 22.23.1 verification is green. |
+| 42 | DONE | Ruling 61 ratifies Node 22; engines, `.nvmrc`, Functions, portal, and CI are aligned and verified. |
 | 43 | PARTIAL | `LAUNCH_GATE_DASHBOARD.md` consolidates non-owner release checks; public policy/store/device values remain owner-gated. |
 | 44 | OWNER | Family EAS project initialization/projectId needs the Expo account owner. |
 | 45 | PARTIAL | 9-group copy is corrected; screenshot regeneration and store-form drafts/final values remain. |
@@ -68,7 +68,7 @@ Fresh local bars: Family 920 tests / 132 suites plus pgTAP 437 / 19 files; Coach
 | 58 | DONE | Family has an executable exact 24-route loading/error/empty matrix plus a readable audit; the sweep added a retryable notification-preference failure state. |
 | 59 | DONE | Today reads recent `schedule_change_log` summaries and renders neutral New/Changed/Back-on badges with API/component tests. |
 | 60 | DONE | Shared date/time utilities and deterministic timezone tests are in both app trees. |
-| 61 | DONE | Urgent/normal/FYI have distinct tested presentation; urgency never bypasses opt-out and all push observes the encoded 21:00–07:00 CT quiet window. |
+| 61 | DONE | Ruling 60 is implemented locally: urgent bypasses the 21:00–07:00 CT time window, normal/FYI remain suppressed, and opt-out blocks every tier; Family bar is 924/132. |
 | 62 | DONE | Commit prevents in-app navigation, uses `Linking.openURL`, tracks failure, and returns with a useful toast under named tests. |
 | 63 | DONE | Glossary search/filter/empty states and horizontally safe standards filters/table exist; a named AR-1 test proves free-text standards render. |
 | 64 | DONE | One shared hundredths parser/formatter is used by both apps with round-trip coverage. |
@@ -83,8 +83,8 @@ Fresh local bars: Family 920 tests / 132 suites plus pgTAP 437 / 19 files; Coach
 | 73 | DONE | AST tests prove AI upload/navigation affordances unreachable; consent is prominent and service-enforced; signed uploads target Supabase Storage. |
 | 74 | DONE | Coach generate/share/status/revoke parent-invite flow and tests exist. |
 | 75 | DONE | `docs/aggregation-contract.md` maps every screen/service to pgTAP-014 views; tests pin mappings, source refresh, and all fresh-club empty cases. |
-| 76 | OWNER | Memo recommends retiring portal, but explicit owner ruling is required before destructive removal. |
-| 77 | PARTIAL | Memo recommends two Firebase schedulers with `syncCalendar` disabled and exports enforce that shape; explicit owner ruling remains. |
+| 76 | PARTIAL | Ruling 64 decides retirement; the baseline-changing Coach removal mission is queued behind the strict-types remediation PR. |
+| 77 | PARTIAL | Ruling 65 rejects the Firebase-v1 recommendation and mandates Supabase-native scheduling; replacement design, implementation, and parity proof remain. |
 | 78 | PARTIAL | Daily-digest canonical-table parity unit tests are green; remote shadow execution remains. |
 | 79 | PARTIAL | Sweep idempotency logic/tests are green; run-twice proof on remote shadow remains. |
 | 80 | PARTIAL | UID/nullable-coach and mutated-feed tests now prove timing refresh preserves coach-authored fields; remote-shadow proof remains and runtime export stays disabled. |
@@ -101,8 +101,8 @@ Fresh local bars: Family 920 tests / 132 suites plus pgTAP 437 / 19 files; Coach
 | 91 | OWNER | A complete 3–5-family, 14-day script and exit criteria exist; elapsed beta evidence cannot be simulated. |
 | 92 | OWNER | Timed launch-day staging rehearsal depends on staging and store accounts. |
 | 93 | DONE | Coach README/ROADMAP/CODEBASE_GUIDE and templates are Supabase-native, Node-22/launch-line accurate; both READMEs name launch lines. |
-| 94 | DONE | Ruling 59 retains `ACTIVE/migration/` as historical-only with a root banner, no runtime/CI execution, and measured zero bar delta. |
-| 95 | PARTIAL | Runtime export guard limits deployed schedulers; Firebase files/imports/env remnants await item-76/77 rulings and cleanup proof. |
+| 94 | DONE | Rulings 59 and 62 retain `ACTIVE/migration/` as historical-only with a root banner, no runtime/CI execution, and measured zero bar delta. |
+| 95 | PARTIAL | Rulings 64/65 now settle portal and scheduler direction; portal retirement and Supabase-native scheduler replacement must land before the zero-Firebase cleanup proof. |
 | 96 | DONE | Coach `shared/domain` plus drift-checked Family copy contain groups/courses/standards/time truth. |
 | 97 | DONE | `M9_MONOREPO_PLAN.md` defines target tree, subtree history preservation, parity checks, rollback, and post-tag gate. |
 | 98 | OWNER | Usage alerts require Supabase/Sentry/PostHog owner access; paid-trigger policy remains documentable. |

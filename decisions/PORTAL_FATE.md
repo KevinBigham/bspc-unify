@@ -1,8 +1,8 @@
 # Parent portal fate decision memo
 
 - Date: 2026-07-12
-- Status: awaiting Director/Kevin ruling
-- Recommendation: retire the Next.js parent portal before beta and make the family mobile app the only family-facing product.
+- Status: decided — retire under Director Ruling 64
+- Decision: retire the Next.js parent portal before beta and make the family mobile app the only family-facing product.
 
 The portal already uses direct Supabase reads/RPC rather than the retired Firebase callables, but it duplicates authentication, family authorization review, release hosting, accessibility, incident response, and policy-link obligations. The mobile app now includes invite redemption and the intended family surfaces.
 

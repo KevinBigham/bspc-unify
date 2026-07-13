@@ -97,10 +97,10 @@ The supplied workspace is an exported snapshot with no `.git` directories. Branc
 
 | Repo / suite | Bar | How counted |
 |---|---|---|
-| Coach client jest | **1,210 tests / 128 suites** | `npm test -- --runInBand` |
+| Coach client jest | **1,212 tests / 129 suites** | `npm test -- --runInBand` |
 | Coach Functions jest | **191 tests / 16 suites** | `npm --prefix functions test -- --runInBand` |
 | Coach isolated `date.test` | **17 tests** | runs inside the client suite; see UTC gate below |
-| BSPC client jest | **920 tests / 132 suites** | `npm test -- --runInBand` |
+| BSPC client jest | **924 tests / 132 suites** | `npm test -- --runInBand` |
 | BSPC pgTAP | **437 assertions / 19 files** | clean local reset, then `npm run test:rls` |
 
 **Coach Functions launch export surface** (confirmed by code and exact-set test): `sweepAttendanceEvaluations` and `dailyDigest` only. Other handlers remain source modules until scheduler/portal/media decisions authorize their final disposition.
@@ -141,7 +141,7 @@ cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run ios
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run android
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run web
 
-# jest (bar = 920)
+# jest (bar = 924)
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm test
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run test:coverage   # 75% threshold
 
@@ -171,7 +171,7 @@ cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm start                       # C
 cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm --prefix parent-portal run dev   # portal → localhost:3000
 cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm --prefix functions run serve     # Functions emulator
 
-# jest — Coach client (bar = 1,210 / 128). Mind the 00:00–01:59 UTC date flake.
+# jest — Coach client (bar = 1,212 / 129)
 cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm test -- --runInBand
 cd /Users/kevin/bspc-unify/BSPC-Coach-App && TZ=UTC npm test -- --runInBand        # force UTC if near the boundary
 
