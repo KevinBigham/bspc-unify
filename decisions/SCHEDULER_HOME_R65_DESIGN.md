@@ -1,7 +1,7 @@
-# Ruling 65 scheduler design — proposed for Director decision
+# Ruling 65 scheduler design — approved by Director Ruling 66
 
 - Date: 2026-07-12
-- Status: proposed; **no implementation authorized**
+- Status: approved for local/shadow implementation; **no schedule authorized**
 - Governing ruling: Director Ruling 65
 - Goal: remove Firebase scheduling from the launch end state while preserving
   digest consent/parity, attendance-sweep idempotency, and calendar safety.
@@ -30,6 +30,19 @@ Primary references:
 - [Securing service-to-service Edge Function calls](https://supabase.com/docs/guides/functions/auth)
 - [`pg_net` behavior and response retention](https://supabase.com/docs/guides/database/extensions/pg_net)
 - [Edge Function runtime limits](https://supabase.com/docs/guides/functions/limits)
+
+## Ruling 66 extension-availability rider
+
+Before any schedule object is created in any environment, a read-only
+throwaway/staging check must prove both `pg_cron` and `pg_net` are available and
+record their installed/available versions plus the sanitized target class here.
+The check must not call `cron.schedule`, write Vault secrets, deploy a function,
+or mutate application data. A missing extension, insufficient permission, or
+unknown version is a STOP and returns to the Director before implementation can
+advance to schedule creation.
+
+Availability record: **PENDING — staging project is Kevin-owned and not yet
+authorized for this check. Zero schedule objects may be created while pending.**
 
 ## Why the jobs split
 
@@ -193,15 +206,16 @@ home is settled; do not mix its schema/admin UI into the first rehome PR.
 
 `syncCalendar` follows a later, separate activation path after feed approval.
 
-## Director decisions requested
+## Director decisions — approved in Ruling 66
 
-1. Ratify direct SQL for `dailyDigest` and an Edge Function for
+1. Direct SQL for `dailyDigest` and an Edge Function for
    `sweepAttendanceEvaluations`.
-2. Ratify the shared `scheduler_runs` reliability foundation.
-3. Ratify Edge Sentry coverage as required scope of the first Edge scheduler
+2. The shared `scheduler_runs` reliability foundation.
+3. Edge Sentry coverage as required scope of the first Edge scheduler
    implementation, with live DSN configuration still separately gated.
-4. Ratify push retry/DLQ as a preserved but separate Family follow-on.
-5. Keep `syncCalendar` dark pending a feed-specific ruling.
+4. Push retry/DLQ as a preserved but separate Family follow-on.
+5. `syncCalendar` stays dark pending a feed-specific ruling.
 
-No code, migration, secret, schedule, deploy, or production command is
-authorized by this document.
+Ruling 66 authorizes local/shadow implementation only. No extension check,
+secret, schedule, deploy, feed, or production command is authorized by this
+document.

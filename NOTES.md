@@ -7152,3 +7152,11 @@ Remaining Milestone 1 gates before real family data:
 - Production probe remains held pending the Director's exact future authorization phrase; no production command was run
 - Protected next-train PRs: Coach 14, Family 21, and UNIFY 16 are open as drafts with hosted checks green at their current heads
 - Approved legacy BSPC sweep completed: PRs 3, 5, 6, 7, 8, 9, 10, and 15 received one-line capture/ruling links and were closed; no other PR state changed
+
+## 2026-07-12 — Director Ruling 66
+
+- Approved the Ruling 65 execution split, scheduler reliability foundation, Edge Sentry scope, separate push retry/DLQ follow-on, and dark `syncCalendar` posture
+- Rider: `pg_cron` and `pg_net` availability/version must be verified read-only on throwaway/staging and recorded before any schedule object exists
+- Current availability record: PENDING; no staging target authorization has been provided and zero schedule objects are authorized
+- Family implementation authority is local/shadow only: foundation + digest SQL + sweep Edge Function/Sentry, dark-deployable, zero schedules
+- Production probe, bootstrap, migration apply, secret creation, deployments, and all schedule activation remain separately Kevin-gated
