@@ -102,7 +102,7 @@ Fresh local bars: Family 924 tests / 132 suites plus pgTAP 437 / 19 files; Coach
 | 92 | OWNER | Timed launch-day staging rehearsal depends on staging and store accounts. |
 | 93 | DONE | Coach README/ROADMAP/CODEBASE_GUIDE and templates are Supabase-native, Node-22/launch-line accurate; both READMEs name launch lines. |
 | 94 | DONE | Rulings 59 and 62 retain `ACTIVE/migration/` as historical-only with a root banner, no runtime/CI execution, and measured zero bar delta. |
-| 95 | PARTIAL | Rulings 64/65 now settle portal and scheduler direction; portal retirement and Supabase-native scheduler replacement must land before the zero-Firebase cleanup proof. |
+| 95 | PARTIAL | Ruling 64 portal retirement is implemented on the protected Coach train; Ruling 65's Supabase-native per-job design is drafted for Director decision, with implementation still held. |
 | 96 | DONE | Coach `shared/domain` plus drift-checked Family copy contain groups/courses/standards/time truth. |
 | 97 | DONE | `M9_MONOREPO_PLAN.md` defines target tree, subtree history preservation, parity checks, rollback, and post-tag gate. |
 | 98 | OWNER | Usage alerts require Supabase/Sentry/PostHog owner access; paid-trigger policy remains documentable. |

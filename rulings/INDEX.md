@@ -14,6 +14,7 @@ Rulings are immutable decision records. Corrections or superseding decisions rec
 | [63](RULING_63_admin_approve.md) | 2026-07-12 | Require admin approval for parent accounts | In force |
 | [64](RULING_64_retire_parent_portal.md) | 2026-07-12 | Retire the Next.js parent portal and two callables | In force |
 | [65](RULING_65_supabase_native_schedulers.md) | 2026-07-12 | Rehome schedulers to Supabase-native infrastructure | In force |
+| [66](RULING_66_scheduler_design_approval.md) | 2026-07-12 | Approve the per-job Ruling 65 design and extension-verification rider | In force |
 
 Use [TEMPLATE.md](TEMPLATE.md) for new rulings.
 

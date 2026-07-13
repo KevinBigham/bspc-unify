@@ -7140,3 +7140,23 @@ Remaining Milestone 1 gates before real family data:
 - Coach bars: client 1,212/129; Functions 191/16; Functions build, portal build, typecheck, lint, madge, knip, strict-types, randomness, and process gates green
 - Read-backs: pgTAP 008 tightens anon access to no SELECT grant; all eight Gitleaks false-positive fingerprints are enumerated in `rulings/MISSION_PR_RATIFICATION_2026-07-12.md`
 - Merge policy: no self-merges; local commits await protected-branch PR publication and explicit Director merge approval
+
+## 2026-07-12 — Ordered merges and next-train design
+
+- Ordered merges completed after ready-for-review and hosted-green head checks: Coach PR 13 → `28f2303`; Family PR 20 → `d769aa1`; UNIFY PR 15 → `935bdda`
+- Launch-line proof: each final merge tree matched its hosted-green merge candidate exactly
+- Coach post-Ruling-64 local bar: client 1,205/127; Functions 171/15; Functions build, scheduler-only export pin, knip, madge, strict-types, randomness, and process gates green; no hosted resource action
+- Family M2 local bar: 928/133 Jest; typecheck/lint/credential scan green; bootstrap pgTAP 6/6 and overall floor 443/20; no linked or production execution
+- Ruling 65 proposal: `dailyDigest` direct pg_cron SQL; attendance sweep scheduled Edge Function; `syncCalendar` Edge Function held dark pending feed approval
+- Capture 2 preserved: scheduler-run retry/dead state folds into the scheduler foundation; push-delivery retry/DLQ remains a separate Family candidate; sanitized Edge Function Sentry coverage is proposed with the first Edge scheduler implementation
+- Production probe remains held pending the Director's exact future authorization phrase; no production command was run
+- Protected next-train PRs: Coach 14, Family 21, and UNIFY 16 are open as drafts with hosted checks green at their current heads
+- Approved legacy BSPC sweep completed: PRs 3, 5, 6, 7, 8, 9, 10, and 15 received one-line capture/ruling links and were closed; no other PR state changed
+
+## 2026-07-12 — Director Ruling 66
+
+- Approved the Ruling 65 execution split, scheduler reliability foundation, Edge Sentry scope, separate push retry/DLQ follow-on, and dark `syncCalendar` posture
+- Rider: `pg_cron` and `pg_net` availability/version must be verified read-only on throwaway/staging and recorded before any schedule object exists
+- Current availability record: PENDING; no staging target authorization has been provided and zero schedule objects are authorized
+- Family implementation authority is local/shadow only: foundation + digest SQL + sweep Edge Function/Sentry, dark-deployable, zero schedules
+- Production probe, bootstrap, migration apply, secret creation, deployments, and all schedule activation remain separately Kevin-gated

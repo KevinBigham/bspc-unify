@@ -49,7 +49,7 @@ Three independent git repos under `/Users/kevin/bspc-unify/`. They are NOT a mon
 |---|---|---|---|---|
 | **UNIFY** | `/Users/kevin/bspc-unify/UNIFY` | Design source-of-truth + **canonical Postgres schema** + migration logbook | — | Markdown + SQL |
 | **BSPC** | `/Users/kevin/bspc-unify/BSPC` (live code in `ACTIVE/`) | Swimmer/family app **and the Supabase backend** (migrations + pgTAP) | Supabase/Postgres | Expo SDK 54 / RN 0.81 / Expo Router 6 |
-| **BSPC-Coach-App** | `/Users/kevin/bspc-unify/BSPC-Coach-App` | Coach Expo app + Next.js parent portal + Firebase-hosted schedulers | Supabase canonical data | Expo SDK 54 + Next 15 + Functions (Node 22) |
+| **BSPC-Coach-App** | `/Users/kevin/bspc-unify/BSPC-Coach-App` | Coach Expo app + temporarily Firebase-hosted schedulers pending Ruling 65 rehome; portal retired | Supabase canonical data | Expo SDK 54 + Functions (Node 22) |
 
 **The canonical schema is law:** `/Users/kevin/bspc-unify/UNIFY/01_CANONICAL_SCHEMA.sql`. Both apps' table shapes derive from it. If app code needs a column or table the schema lacks, you **propose a migration** — you never hack around the schema.
 
@@ -103,7 +103,7 @@ The supplied workspace is an exported snapshot with no `.git` directories. Branc
 | BSPC client jest | **924 tests / 132 suites** | `npm test -- --runInBand` |
 | BSPC pgTAP | **437 assertions / 19 files** | clean local reset, then `npm run test:rls` |
 
-**Coach Functions launch export surface** (confirmed by code and exact-set test): `sweepAttendanceEvaluations` and `dailyDigest` only. Other handlers remain source modules until scheduler/portal/media decisions authorize their final disposition.
+**Coach Functions launch export surface** (confirmed by code and exact-set test): `sweepAttendanceEvaluations` and `dailyDigest` only. Ruling 64 deleted the two portal callables; other deferred handlers remain source modules until their specific disposition is authorized. Ruling 65 requires both schedulers to leave Firebase before launch closure.
 
 These bars were freshly measured locally on 2026-07-12 after restoring the public launch branches. Production, staging, device, legal, DNS, store, beta, and hosted Git state remain separate gates; local green bars do not imply launch readiness.
 

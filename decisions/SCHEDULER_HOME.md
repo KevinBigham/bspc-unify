@@ -6,6 +6,9 @@
 
 > Ruling 65 rejected this memo's recommendation. The disagreement was surfaced before scheduler implementation. The table below is retained as historical decision input, not current direction.
 
+Replacement proposal awaiting Director decision:
+[`SCHEDULER_HOME_R65_DESIGN.md`](SCHEDULER_HOME_R65_DESIGN.md).
+
 | Job | V1 recommendation | Evidence / tradeoff |
 |---|---|---|
 | `dailyDigest` | Firebase scheduled Function | Already reads canonical Supabase tables, honors `digest_enabled`, has parity tests, and is in the exact-two export surface. Rehoming adds launch risk without changing data ownership. |
