@@ -722,3 +722,4 @@ already canonical in the live BSPC DB.
 *Next action after your review: lock OD-1…OD-6, then (if approved) implement
 commit 0 (the additive BSPC schema migration + pgTAP tests) — the smallest green
 step. No code until you sign off on the sequence.*
+> ⚠️ HISTORICAL — superseded by the fresh-launch model in Director Rulings 56/57; retain the ratified identity contracts, but do not execute migration/backfill steps.

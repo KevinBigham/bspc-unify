@@ -49,11 +49,11 @@ Three independent git repos under `/Users/kevin/bspc-unify/`. They are NOT a mon
 |---|---|---|---|---|
 | **UNIFY** | `/Users/kevin/bspc-unify/UNIFY` | Design source-of-truth + **canonical Postgres schema** + migration logbook | — | Markdown + SQL |
 | **BSPC** | `/Users/kevin/bspc-unify/BSPC` (live code in `ACTIVE/`) | Swimmer/family app **and the Supabase backend** (migrations + pgTAP) | Supabase/Postgres | Expo SDK 54 / RN 0.81 / Expo Router 6 |
-| **BSPC-Coach-App** | `/Users/kevin/bspc-unify/BSPC-Coach-App` | Coach Expo app + Next.js parent portal + Firebase Cloud Functions | Supabase (being re-pointed) | Expo SDK 54 + Next 15 + Functions (Node 20) |
+| **BSPC-Coach-App** | `/Users/kevin/bspc-unify/BSPC-Coach-App` | Coach Expo app + Next.js parent portal + Firebase-hosted schedulers | Supabase canonical data | Expo SDK 54 + Next 15 + Functions (Node 22) |
 
 **The canonical schema is law:** `/Users/kevin/bspc-unify/UNIFY/01_CANONICAL_SCHEMA.sql`. Both apps' table shapes derive from it. If app code needs a column or table the schema lacks, you **propose a migration** — you never hack around the schema.
 
-**Where the schema physically lives & ships:** the executable migrations are in `/Users/kevin/bspc-unify/BSPC/ACTIVE/supabase/migrations/` — 13 files, `00001_initial_schema.sql` … `00013_cutover_parent_read_gaps.sql`. The pgTAP suite that proves the RLS walls is in `/Users/kevin/bspc-unify/BSPC/ACTIVE/supabase/tests/database/` — 15 files, `001-family-access.test.sql` … `015-swimmer-parent-reads.test.sql`. **The BSPC repo is the one that owns the database.** The Coach app and parent portal are clients of that same database.
+**Where the schema physically lives & ships:** the executable migrations are in `/Users/kevin/bspc-unify/BSPC/ACTIVE/supabase/migrations/` — 21 files, `00001_initial_schema.sql` … `00021_family_approval_audit_and_collision.sql`. The pgTAP suite that proves the RLS walls is in `/Users/kevin/bspc-unify/BSPC/ACTIVE/supabase/tests/database/` — 19 files through `019-meet-import-idempotency.test.sql`. **The BSPC repo is the one that owns the database.** The Coach app and parent portal are clients of that same database.
 
 **Connection diagram:**
 
@@ -86,29 +86,26 @@ Three independent git repos under `/Users/kevin/bspc-unify/`. They are NOT a mon
 
 ## Current state
 
-**Branches & heads (as of this handoff):**
-- **Coach** — active branch `fresh-launch-cd` @ `ba71612`. This is `main` (`0c0f82b`) **plus**: Proposal C (client hard-disables audio/video AI), Proposal D (client removes the attendance-evaluation kick), and the scripts cleanup that deleted the four obsolete Firebase cutover tools. `main` and the `proposals` branches (A–D) still exist; `fresh-launch-cd` is where you build.
-- **BSPC** — green baseline; `880aed8` frozen at RC-1. Schema = 13 migrations, all phases landed.
-- **UNIFY** — living; latest.
+**Launch lines and heads verified from the public remotes on 2026-07-12:**
+- **BSPC family app:** `demo/expo-go-compat` @ `a4c8861` (Ruling 58 launch line), with open PR 19 based at `7bc9680` and this local mission layered on it. The local migration ledger is now `00001`–`00021` with a 19-file pgTAP suite.
+- **Coach app:** `demo/device-build` @ `9405fec` (Ruling 58 launch line). It contains the Wave-A product work, Functions hardening, and the closed dead-code gate.
+- **UNIFY:** `main` @ `37b20a7` before this roadmap execution pass.
 
-**On GitHub (`github.com/KevinBigham`, all three repos pushed 2026-06-27):**
-- **Coach** (`BSPC-Coach-App`) — `main` = **`ba71612`**: the fresh-launch line (C + D + cleanup) is now the official `main`. `fresh-launch-cd` plus the `proposal-a-launch-export-surface`, `proposal-b-config-hardening`, `proposal-c-media-no-ai`, `proposal-d-attendance-kick-removal`, and `identity-remediation-create-only` branches are pushed as backups. Pre-existing `codex/*` sprint branches are also on the remote. **Note:** Proposals **A** (launch export surface) and **B** (Functions config hardening) are *not* yet in `main` — they live only on their branches and feed Milestone 3 (scheduler rehome) / Milestone 1 (prod backend). Pick them up there.
-- **UNIFY** (`bspc-unify`) — `main` carries the governance docs and **this `Mission.md`**.
-- **BSPC** (`BSPC`) — `main` = `880aed8`, in sync.
+The supplied workspace is an exported snapshot with no `.git` directories. Branch promotion, PR merges, protection rules, and tags must be performed in real Git clones; local evidence here must never be presented as proof that those hosted actions occurred.
 
 **GREEN test bars — these are the bar. Never advance with any of these red:**
 
 | Repo / suite | Bar | How counted |
 |---|---|---|
-| Coach client jest | **1103 tests / 108 suites** | `npm test -- --runInBand` |
-| Coach Functions jest | **115 tests / 12 suites** | `npm --prefix functions test -- --runInBand` |
+| Coach client jest | **1,210 tests / 128 suites** | `npm test -- --runInBand` |
+| Coach Functions jest | **191 tests / 16 suites** | `npm --prefix functions test -- --runInBand` |
 | Coach isolated `date.test` | **17 tests** | runs inside the client suite; see UTC gate below |
-| BSPC client jest | **835 tests** | `TZ=UTC npm test` (TZ=UTC is mandatory) |
-| BSPC pgTAP | **343 assertions** (15 files) | `npm run test:rls` (local Supabase running) |
+| BSPC client jest | **920 tests / 132 suites** | `npm test -- --runInBand` |
+| BSPC pgTAP | **437 assertions / 19 files** | clean local reset, then `npm run test:rls` |
 
-**Coach functions currently exported** (from `functions/src/index.ts`, confirmed): `processAudioSession`, `processVideoSession` (media-AI, never invoked client-side after Proposal C), `sweepStuckSessions`, `evaluateAttendanceRules`, `sweepAttendanceEvaluations`, `dailyDigest`, `redeemInvite`, `getParentPortalDashboard`, `getParentSwimmerPortalData`, `syncCalendar`.
+**Coach Functions launch export surface** (confirmed by code and exact-set test): `sweepAttendanceEvaluations` and `dailyDigest` only. Other handlers remain source modules until scheduler/portal/media decisions authorize their final disposition.
 
-The product is **code-complete and locally green.** The remaining work is operational: stand up real infrastructure and ship — carefully.
+These bars were freshly measured locally on 2026-07-12 after restoring the public launch branches. Production, staging, device, legal, DNS, store, beta, and hosted Git state remain separate gates; local green bars do not imply launch readiness.
 
 ---
 
@@ -120,7 +117,7 @@ The product is **code-complete and locally green.** The remaining work is operat
 4. **Stage explicitly, never `git add -A` / `git add .`.** Add files by exact path. This prevents accidentally committing `.env`, secrets, generated junk, or PII.
 5. **Never touch real secrets or PII.** Never read, print, paste, or commit `.env`, `.env.local`, service-account JSON, private keys, or any real swimmer/family/minor data. Before any command that could emit such data, inspect output for secrets/PII first; record only **sanitized** summaries (path/category/count/status) in `UNIFY/NOTES.md`.
 6. **Commit-message convention.** Terse, accurate, present-tense subject. Body explains the "why" if non-obvious. **Branch first — never commit straight to `main`; open a PR for review.** End every commit message with a `Co-Authored-By:` trailer attributing the agent. The repo's prior convention (while Claude did the work) was `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`; as **Codex**, use your own equivalent (e.g. `Co-Authored-By: Codex <noreply@openai.com>`) rather than impersonating another agent.
-7. **UTC date-flake gate.** The Coach `date.test` has a known flake when the wall clock is between **00:00 and 01:59 UTC**. Do **not** run the full Coach suite or `date.test` in that window; if you must, force `TZ=UTC`. BSPC's suite **always** runs `TZ=UTC` (its 835 bar is only green under UTC).
+7. **Timezone determinism gate.** Relative-date tests pin a safe midday clock or construct local calendar dates. Run both suites in the runner's normal timezone; a boundary-hour failure is a defect to fix, not a window to avoid.
 8. **Husky / lint-staged is normal.** `npm install` runs `prepare` → `husky`. On `git commit`, a pre-commit hook runs `lint-staged` (ESLint `--fix` + Prettier on staged files). If the hook fails, the commit does not land — fix, re-stage, commit again. **Do not use `--no-verify`** unless explicitly told.
 9. **Snapshots must stay unchanged.** Jest snapshot diffs are a deliberate gate. Never run `-u` to paper over a real change — investigate first. A snapshot change must be intentional and called out in the commit.
 10. **zsh caveat.** This shell does not word-split unquoted variables the way bash does, and `=====` can trigger globbing/expansion surprises. Quote arguments; avoid bare `=====` in commands.
@@ -144,13 +141,13 @@ cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run ios
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run android
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run web
 
-# jest — TZ=UTC is MANDATORY (bar = 835)
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && TZ=UTC npm test
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && TZ=UTC npm run test:coverage   # 75% threshold
+# jest (bar = 920)
+cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm test
+cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run test:coverage   # 75% threshold
 
 # pgTAP RLS suite (bar = 343) — needs Supabase CLI + Docker running
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm exec -- supabase --agent no start
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run test:rls   # npx supabase test db --local supabase/tests/database
+cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run test:rls   # bar = 437 / 19
 
 # quality gates
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run typecheck
@@ -174,11 +171,11 @@ cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm start                       # C
 cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm --prefix parent-portal run dev   # portal → localhost:3000
 cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm --prefix functions run serve     # Functions emulator
 
-# jest — Coach client (bar = 1103 / 108). Mind the 00:00–01:59 UTC date flake.
+# jest — Coach client (bar = 1,210 / 128). Mind the 00:00–01:59 UTC date flake.
 cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm test -- --runInBand
 cd /Users/kevin/bspc-unify/BSPC-Coach-App && TZ=UTC npm test -- --runInBand        # force UTC if near the boundary
 
-# jest — Functions (bar = 115 / 12)
+# jest — Functions (bar = 191 / 16)
 cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm --prefix functions test -- --runInBand
 
 # typecheck / lint / build

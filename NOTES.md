@@ -1,5 +1,17 @@
 # UNIFY — NOTES
 
+> Append-only rule: never rewrite or reorder an existing entry. Append corrections and new evidence at the end of the file. Every new entry uses the template below and contains sanitized results only.
+
+```markdown
+## YYYY-MM-DD — short title
+
+- Target: local | shadow project name | staging project name | production target host (no credentials)
+- Command: exact command, with secret-bearing arguments replaced by `${NAME}`
+- Sanitized result: PASS | FAIL | BLOCKED, followed by counts/status only
+- Bar delta: unchanged | old → new, with intended reason
+- Follow-up/owner: next action and its owner
+```
+
 Running log of tradeoffs/decisions made while drafting, per the project rule
 "write the tradeoff here and ask rather than guess." Each item is tagged so you
 can scan: **[DECIDE]** = wants your call · **[FYI]** = choice made, flagging it ·
@@ -6959,8 +6971,6 @@ Remaining Milestone 1 gates before real family data:
 - Delete the throwaway test user after the recovery proof passes.
 - Kevin cleans the malformed duplicate root SPF TXT record in DNS.
 
----
-
 ## 2026-07-06 - GOAT Launch Wave 2 prod probe preflight (sanitized)
 
 No hosted command ran for this update. No prod connection was opened. No keys,
@@ -7053,3 +7063,45 @@ Remaining Milestone 1 gates before real family data:
   pass/fail here.
 - Delete the throwaway test user after the recovery proof passes.
 - Kevin cleans the malformed duplicate root SPF TXT record in DNS.
+
+---
+
+## 2026-07-12 — Launch-line restoration and local truth baseline
+
+- Target: local exported workspace restored from public launch branches `demo/expo-go-compat@a4c8861` and `demo/device-build@9405fec`
+- Command: clean installs; family typecheck/lint/Jest; clean local Supabase reset + pgTAP; Coach typecheck/lint/Jest; Functions Jest/build; knip
+- Sanitized result: PASS — family Jest 864/120; family pgTAP 377/16; Coach Jest 1,199/123; Functions Jest 190/16; Functions build and Coach knip pass
+- Bar delta: replaces stale snapshot bars; no expected-output update or test deletion
+- Follow-up/owner: agent closes repository-owned roadmap work; Kevin retains hosted, credentialed, legal, device, DNS, account, and elapsed-beta gates
+
+## 2026-07-12 — Recovery-link coverage verification (#20)
+
+- Target: local family launch line
+- Command: `TZ=UTC npm test -- --runInBand`
+- Sanitized result: PASS — recovery coverage includes fragment tokens, query tokens, `token_hash`, PKCE `code`, `error_code`/description, expired-link UX, and non-recovery rejection
+- Bar delta: unchanged at 864 family Jest tests / 120 suites
+- Follow-up/owner: Kevin + agent execute the real iPhone and Android recovery checklist (#19) using internal builds; local tests do not substitute for that proof
+
+## 2026-07-12 — Phase-3 repository proof close
+
+- Target: local Family/Coach/Functions/portal launch-line mission
+- Command: Family typecheck/lint/Jest/clean-reset pgTAP/critical audit; Coach domain drift/full quality/knip; Node 22 targeted builds
+- Sanitized result: PASS — Family Jest 918/131 and pgTAP 437/19; Coach Jest 1,210/128; Functions 191/16; portal production build, madge, knip, strict-types, process/randomness, and critical audit gates green
+- Bar delta: +54 Family Jest, +60 pgTAP, +11 Coach Jest, +1 Functions Jest from the restored public launch baseline; additions cover launch behavior and no tests were deleted
+- Follow-up/owner: publish review branches and hosted CI; Kevin retains production, remote shadow/staging, legal, account, device, beta-duration, and final-launch evidence
+
+## 2026-07-12 — Route-state and hosted-CI repair close
+
+- Target: Family 24-route state contract and all three draft PRs
+- Command: Family typecheck/lint/coverage; exact route inventory; local-date boundary regression; hosted CI inspection
+- Sanitized result: PASS locally — Family Jest 920/132, 10 snapshots; coverage 86.27/82.31/83.42/87.34; notification settings now has a retryable query failure state
+- Bar delta: +2 Family Jest and +1 suite; no test or snapshot deletion
+- Hosted evidence: Family PR 19, Coach PR 12, and UNIFY PR 12 are open; CI repairs include explicit Gitleaks pull-request tokens and deterministic date fixtures
+- Follow-up/owner: merge only after hosted checks are green; Kevin retains production, remote shadow/staging, legal, account, device, beta-duration, and final-launch evidence
+
+## 2026-07-12 — Launch-line mission merges
+
+- Target: Family PR 19 and Coach PR 12
+- Sanitized result: PASS — all Family and Coach hosted checks green; Family merged to `demo/expo-go-compat` as `5abf21b`, Coach merged to `demo/device-build` as `3b5269f`
+- Safety: no direct `main` promotion; item 5 continues to wait for the item 9 production GREEN and item 21 live-account rotation gates
+- Follow-up/owner: bootstrap and observe UNIFY cross-repository CI, then present the consolidated owner gate pack

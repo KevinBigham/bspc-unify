@@ -11,7 +11,8 @@
 --
 -- Ratified decisions (see UNIFY/00_TERRAIN.md §6):
 --   #1  Swim times stored as HUNDREDTHS of a second everywhere (was time_ms).
---   #2  Single 8-value practice_group enum (adds Masters + Swim Lessons).
+--   #2  Single 9-value practice_group enum (adds Masters, Swim Lessons,
+--       and BSHS; ratified from executable migration 00014).
 --   #3  One identity model: profiles (coaches/parents collapsed); coach role
 --       map admin->super_admin, coach->coach_admin; coaches.groups[] -> coach_groups.
 --   #4  Relational households kept (families); + see D-A.
@@ -57,8 +58,15 @@
 -- DEFERRED P2s (with reason):
 --   P2-1/P2-2 (parent sees own-child media_consent / coach_id on meets&calendar):
 --     RLS cannot hide columns; resolved by parent-facing VIEWS in the APP migration.
---   P2-5 aggregations recompute, P2-8 enum hygiene, P2-9 recurring expansion,
---     P2-10 ratings JSONB key rewrite, P2-6 name/location relaxation: BACKFILL/APP.
+--   P2-5 aggregations recompute: RE-DEFERRED to owner staleness ruling (#83);
+--     parents must not be shown an unruled freshness promise.
+--   P2-8 enum hygiene: CLOSED for fresh launch — canonical constraints plus the
+--     shared nine-group/course/standard contract reject legacy/mis-cased values;
+--     Rulings 56/57 removed the cancelled legacy-data backfill.
+--   P2-9 recurring expansion: RE-DEFERRED for v1 — deployed syncCalendar is
+--     disabled and the Family app reads effective schedule_events; expansion is
+--     required before any recurring calendar_events feed is exposed to families.
+--   P2-10 ratings JSONB key rewrite, P2-6 name/location relaxation: BACKFILL/APP.
 --   P2-11 template_source_id cycle guard: low priority, deferred.
 -- Intentionally OMITTED (declared-but-unimplemented in Firestore): messages,
 -- coach_chat, workout_library, and meet relays/live_events/splits.
@@ -78,9 +86,9 @@ CREATE TYPE urgency_level   AS ENUM ('urgent', 'normal', 'fyi');
 CREATE TYPE attendance_status AS ENUM
   ('present', 'absent', 'excused', 'sick', 'injured', 'left_early');
 
--- [#2] Single 8-value practice-group set.
+-- [#2] Single 9-value practice-group set (00014 ratified).
 CREATE TYPE practice_group AS ENUM
-  ('Bronze', 'Silver', 'Gold', 'Advanced', 'Platinum', 'Diamond', 'Masters', 'Swim Lessons');
+  ('Bronze', 'Silver', 'Gold', 'Advanced', 'Platinum', 'Diamond', 'Masters', 'Swim Lessons', 'BSHS');
 
 CREATE TYPE course           AS ENUM ('SCY', 'SCM', 'LCM');
 CREATE TYPE gender           AS ENUM ('M', 'F');
@@ -188,6 +196,17 @@ CREATE TABLE guardianships (
   is_primary BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (guardian_profile_id, swimmer_id)
+);
+
+-- Staff-only audit for the atomic approve_family onboarding boundary (#82).
+CREATE TABLE family_approval_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  profile_id UUID NOT NULL UNIQUE REFERENCES profiles(id) ON DELETE RESTRICT,
+  family_id UUID NOT NULL REFERENCES families(id) ON DELETE RESTRICT,
+  approved_by UUID NOT NULL REFERENCES profiles(id) ON DELETE RESTRICT,
+  created_swimmer_count INTEGER NOT NULL CHECK (created_swimmer_count >= 0),
+  linked_swimmer_count INTEGER NOT NULL CHECK (linked_swimmer_count >= 0),
+  approved_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- swimmer_coach_profile — [SCOPE] coach assessments. Strict staff-only.
@@ -404,6 +423,7 @@ CREATE TABLE swim_results (
   date DATE,                                       -- [P0-5] nullable
   is_personal_best BOOLEAN NOT NULL DEFAULT FALSE,
   source swim_time_source NOT NULL DEFAULT 'manual',
+  import_fingerprint TEXT,                         -- [#71] SDIF/HY3 replay identity
   created_by UUID REFERENCES profiles(id) ON DELETE SET NULL,  -- [P1-3]
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -974,6 +994,7 @@ CREATE INDEX idx_meet_entries_meet         ON meet_entries(meet_id);
 CREATE INDEX idx_meet_entries_swimmer      ON meet_entries(swimmer_id);
 CREATE INDEX idx_swim_results_swimmer      ON swim_results(swimmer_id);
 CREATE INDEX idx_swim_results_meet         ON swim_results(meet_id);
+CREATE UNIQUE INDEX swim_results_import_fingerprint_unique ON swim_results(import_fingerprint);
 CREATE INDEX idx_personal_bests_swimmer    ON personal_bests(swimmer_id);
 CREATE INDEX idx_goals_swimmer             ON goals(swimmer_id);
 CREATE INDEX idx_swimmer_notes_swimmer     ON swimmer_notes(swimmer_id, practice_date DESC);
@@ -1030,6 +1051,7 @@ ALTER TABLE profiles                ENABLE ROW LEVEL SECURITY;
 ALTER TABLE coach_groups            ENABLE ROW LEVEL SECURITY;
 ALTER TABLE swimmers                ENABLE ROW LEVEL SECURITY;
 ALTER TABLE guardianships           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE family_approval_log     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE swimmer_coach_profile   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE swimmer_medical         ENABLE ROW LEVEL SECURITY;
 ALTER TABLE parent_invites          ENABLE ROW LEVEL SECURITY;
@@ -1095,6 +1117,8 @@ CREATE POLICY guardianships_select_own ON guardianships FOR SELECT TO authentica
   USING (guardian_profile_id = auth_profile_id() OR is_staff());
 CREATE POLICY guardianships_staff_write ON guardianships FOR ALL TO authenticated
   USING (is_staff()) WITH CHECK (is_staff());
+CREATE POLICY family_approval_log_staff_select ON family_approval_log FOR SELECT TO authenticated
+  USING (is_staff());
 
 CREATE POLICY scp_staff_all          ON swimmer_coach_profile FOR ALL TO authenticated USING (is_staff()) WITH CHECK (is_staff());
 
@@ -1238,7 +1262,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 -- DDL: BSPC migrations 00007 (Phase F) and 00009 (Phase H §9).]
 -- ============================================================================
 --
--- FOUR canonical buckets exist. All four are PRIVATE (public = false);
+-- FIVE canonical buckets exist. All five are PRIVATE (public = false);
 -- nothing is ever served unauthenticated. There is NO imports bucket and
 -- never will be (D-H2b: no import file was ever uploaded; absence is
 -- parity).
@@ -1268,6 +1292,11 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 --      practice-plans/{auth.users.id}/... via migration_identity_map AND
 --      the practice_plans rows' storage-path values are rewritten — both
 --      halves together close the D-K2 pre-H 404 caveat.
+--   5. meet-schedule-photos — 10MB cap (10485760), MIME image/*.
+--      Wall: is_staff() AND owner path segment on USING and WITH CHECK
+--      (meet_schedule_photos_owner). These are per-coach source documents;
+--      only an explicit review/approve action may create canonical meet rows.
+--      This bucket and wall are ratified from executable migration 00015.
 --
 -- Legacy Firebase path map (the 06 PART B §B1 copy table, restated):
 --   /audio/**           -> media-audio     (keys 1:1, no row rewrites)

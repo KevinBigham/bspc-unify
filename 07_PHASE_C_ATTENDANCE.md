@@ -278,3 +278,4 @@ makes the family-arm view predicate insufficient.
   (§3.6). Canonical already embraces SECURITY DEFINER functions (RLS
   helpers; redeemInvite planned for I); this is the same pattern for the
   one write PostgREST cannot express safely. **Recommend ratify.**
+> ⚠️ HISTORICAL — superseded by the fresh-launch model in Director Rulings 56/57; retain the attendance contracts, but do not execute migration/backfill steps.

@@ -136,3 +136,4 @@ was stored on each `group_notes` doc; the table has no such column — it lives 
 ## Done so far
 - ✅ `groupNotes.ts` — `group_notes`. Commit 1 (inert client) + commit 2 (swap).
   962 → 965 tests (added 3 lifecycle tests). Pattern proven.
+> ⚠️ HISTORICAL — superseded by the fresh-launch model in Director Rulings 56/57; this Firebase-to-Supabase migration playbook is non-executable.

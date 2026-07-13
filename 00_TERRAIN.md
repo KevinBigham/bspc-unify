@@ -378,3 +378,4 @@ These are the decisions the canonical schema bakes in. **Per the project rules, 
 10. **Standards/age-group enums (🟡).** Promote `StandardLevel`/`AgeGroup` to enums or keep `time_standards` free-text. → *Lean: keep free-text columns, validate in app.*
 
 **Recommended next artifact:** once you ratify §6, I'll draft `UNIFY/01_CANONICAL_SCHEMA.sql` as *BSPC's schema, extended* — additive coach-side tables + the reconciled core (identity, swimmers, times, attendance, meets) — with a companion migration-mapping note. No app code changes until the schema is law and both test suites have a green baseline.
+> ⚠️ HISTORICAL — superseded by the fresh-launch model in Director Rulings 56/57; retain as design evidence, not executable migration instructions.

@@ -329,3 +329,4 @@ stop rather than guess); anything erroring twice.
    NULLS-LAST with created_at tiebreak; `created_by` parent-visibility
    stays in the accepted P2-1/P2-2 bucket; analytics adopts the D-C5
    absent-exclusion as a correctness rule (RD-4).
+> ⚠️ HISTORICAL — superseded by the fresh-launch model in Director Rulings 56/57; retain the time-data contracts, but do not execute migration/backfill steps.

@@ -1,0 +1,5 @@
+{
+  "practiceGroups": ["Bronze", "Silver", "Gold", "Advanced", "Platinum", "Diamond", "Masters", "Swim Lessons", "BSHS"],
+  "courses": ["SCY", "SCM", "LCM"],
+  "standardLevels": ["B", "BB", "A", "AA", "AAA", "AAAA"]
+}

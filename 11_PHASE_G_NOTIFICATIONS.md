@@ -300,3 +300,4 @@ BSPC tsc stays clean; Coach bar stays jest-only.
   (recommended) / (b) runbook line only.
 - **D-G6**: pipeline scheduling — (a) no Deno changes; cutover-runbook
   cron + end-to-end drain verification line (recommended) / (b) pg_cron.
+> ⚠️ HISTORICAL — superseded by the fresh-launch model in Director Rulings 56/57; retain the notification contracts, but do not execute migration/backfill steps.
