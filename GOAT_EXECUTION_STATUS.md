@@ -12,7 +12,7 @@ Fresh local bars: Family 920 tests / 132 suites plus pgTAP 437 / 19 files; Coach
 | 2 | DONE | Canonical SQL contains the shipped 9-group enum and storage truth through migrations 00014/00015. |
 | 3 | DONE | Family `supabase/config.toml` enumerates every migration through 00019. |
 | 4 | DONE | Applicable historical UNIFY docs and consumed audit prompt carry the Rulings 56/57 banner. |
-| 5 | PARTIAL | Public launch heads restored and PR 19 identified; green hosted PRs and merges to `main` still required. |
+| 5 | PARTIAL | Family PR 19 and Coach PR 12 merged green into their launch lines; promotion from those lines to `main` correctly waits for item 9 GREEN and item 21 live rotation. |
 | 6 | DONE | `STATE_OF_THE_UNION.md` exists; update it at every subsequent mission close. |
 | 7 | DONE | `rulings/INDEX.md`, template, and Rulings 56–58 are indexed. |
 | 8 | DONE | Append-only `NOTES.md` template adopted and new entries appended chronologically. |
@@ -50,7 +50,7 @@ Fresh local bars: Family 920 tests / 132 suites plus pgTAP 437 / 19 files; Coach
 | 40 | DONE | Family and Coach enforce local contract drift; UNIFY CI checks out all three repositories and compares both app contracts to canonical SQL. |
 | 41 | DONE | Coach typecheck, knip, strict-type, randomness, process, and circular-dependency gates are green. |
 | 42 | DONE | Node 22 is pinned in engines, `.nvmrc`, Functions, portal, and CI; Node 22.23.1 verification is green. |
-| 43 | PARTIAL | Non-owner release checks need a consolidated dashboard; public policy/store/device keys remain owner-gated. |
+| 43 | PARTIAL | `LAUNCH_GATE_DASHBOARD.md` consolidates non-owner release checks; public policy/store/device values remain owner-gated. |
 | 44 | OWNER | Family EAS project initialization/projectId needs the Expo account owner. |
 | 45 | PARTIAL | 9-group copy is corrected; screenshot regeneration and store-form drafts/final values remain. |
 | 46 | DONE | Family threshold is enforced and both CIs publish coverage/test artifacts; Coach has explicit global thresholds. |
@@ -106,7 +106,7 @@ Fresh local bars: Family 920 tests / 132 suites plus pgTAP 437 / 19 files; Coach
 | 96 | DONE | Coach `shared/domain` plus drift-checked Family copy contain groups/courses/standards/time truth. |
 | 97 | DONE | `M9_MONOREPO_PLAN.md` defines target tree, subtree history preservation, parity checks, rollback, and post-tag gate. |
 | 98 | OWNER | Usage alerts require Supabase/Sentry/PostHog owner access; paid-trigger policy remains documentable. |
-| 99 | PARTIAL | EAS adoption and weekly Supabase log-drain ritual remain. |
+| 99 | PARTIAL | `COST_AND_OBSERVABILITY_POLICY.md` adds EAS adoption and the count-only Supabase log skim to the weekly ritual; console enablement and first review remain owner-gated. |
 | 100 | OWNER | Forbidden until every prior gate is complete: green hosted CI, prod GREEN, device links, tag, baseline, announcement, and LAUNCHED ruling. |
 
 ## Current execution frontier

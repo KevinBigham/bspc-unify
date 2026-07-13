@@ -7098,3 +7098,10 @@ Remaining Milestone 1 gates before real family data:
 - Bar delta: +2 Family Jest and +1 suite; no test or snapshot deletion
 - Hosted evidence: Family PR 19, Coach PR 12, and UNIFY PR 12 are open; CI repairs include explicit Gitleaks pull-request tokens and deterministic date fixtures
 - Follow-up/owner: merge only after hosted checks are green; Kevin retains production, remote shadow/staging, legal, account, device, beta-duration, and final-launch evidence
+
+## 2026-07-12 — Launch-line mission merges
+
+- Target: Family PR 19 and Coach PR 12
+- Sanitized result: PASS — all Family and Coach hosted checks green; Family merged to `demo/expo-go-compat` as `5abf21b`, Coach merged to `demo/device-build` as `3b5269f`
+- Safety: no direct `main` promotion; item 5 continues to wait for the item 9 production GREEN and item 21 live-account rotation gates
+- Follow-up/owner: bootstrap and observe UNIFY cross-repository CI, then present the consolidated owner gate pack

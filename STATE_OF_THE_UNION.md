@@ -6,11 +6,11 @@ Last measured: 2026-07-12. This is the living mission-close dashboard; update it
 
 | Line | Public remote head restored into this export | Fresh local bar |
 |---|---|---|
-| Family `demo/expo-go-compat` + draft PR 19 | PR head includes the GOAT launch-rail and route-state missions | Node 22 typecheck + lint; Jest 920/132; pgTAP 437/19 after clean reset |
-| Coach `demo/device-build` + draft PR 12 | PR head includes the GOAT proof/scaling mission | Node 22 full quality; client Jest 1,210/128; Functions 191/16; portal build + knip green |
+| Family `demo/expo-go-compat` | PR 19 merged green as `5abf21b` | Node 22 typecheck + lint; Jest 920/132; pgTAP 437/19 after clean reset |
+| Coach `demo/device-build` | PR 12 merged green as `3b5269f` | Node 22 full quality; client Jest 1,210/128; Functions 191/16; portal build + knip green |
 | UNIFY `main` + draft PR 12 | evidence ledger/runbooks plus cross-repo drift CI | docs/schema and cross-repo contract checks |
 
-Real-clone evidence is published in Family PR 19, Coach PR 12, and UNIFY PR 12. Merge, protection, tag, and final-launch claims remain open until their hosted evidence exists.
+Real-clone evidence is published in Family PR 19, Coach PR 12, and UNIFY PR 12. Family and Coach are merged into their launch lines; `main` promotion, protection, tag, and final-launch claims remain open until their prerequisite evidence exists.
 
 ## Blocker board
 
