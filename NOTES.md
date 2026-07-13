@@ -7160,3 +7160,12 @@ Remaining Milestone 1 gates before real family data:
 - Current availability record: PENDING; no staging target authorization has been provided and zero schedule objects are authorized
 - Family implementation authority is local/shadow only: foundation + digest SQL + sweep Edge Function/Sentry, dark-deployable, zero schedules
 - Production probe, bootstrap, migration apply, secret creation, deployments, and all schedule activation remain separately Kevin-gated
+
+## 2026-07-12 — Director Ruling 67 and Family PR 22 merge
+
+- Required read-back: `scheduler_runs` enables RLS, revokes all table privileges from PUBLIC/anon/authenticated, and grants SELECT/INSERT/UPDATE only to `service_role`; no direct family, anonymous, staff-client, or public-client path exists
+- Family PR 22 was marked ready only after the read-back matched; every hosted check was green at head `df4d951`
+- Merge result: `42050b4`; final launch-line tree equals the hosted-green PR head tree
+- New pinned Family bars: Jest 933/134, pgTAP 480/21, Deno 5/5
+- Selected drafts: UNIFY GOAT 43 truth reconciliation; Coach GOAT 95 four-scheduler retirement; Family push retry/DLQ
+- Owner gates unchanged: no production probe, staging/throwaway command, secret, deployment, schedule object, or owner/external gate was executed or claimed complete

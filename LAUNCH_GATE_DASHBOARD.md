@@ -6,14 +6,14 @@ This dashboard separates deterministic agent checks from owner/external launch g
 
 | Gate | Command / evidence | Current local state |
 |---|---|---|
-| Family static + Jest | `npm run typecheck && npm run lint && npm test -- --runInBand` | GREEN — 924 / 132; 10 snapshots |
+| Family static + Jest | `npm run typecheck && npm run lint && npm test -- --runInBand` | GREEN — 933 / 134; 10 snapshots |
 | Family coverage | `npm run test:coverage -- --runInBand` | GREEN — 86.27 / 82.31 / 83.42 / 87.34 |
-| Family schema | `npm run check:pgtap-floor && npm run check:schema-drift && npm run test:rls` | GREEN — 437 / 19 after clean reset |
-| Coach quality | `npm run quality && npm run quality:dead-code` | GREEN — client 1,212 / 129; Functions 191 / 16; portal build; knip |
+| Family schema + Edge | pgTAP floor/drift/clean reset plus Deno check/tests | GREEN — pgTAP 480 / 21; Deno 5 / 5 |
+| Coach quality | `npm run quality && npm run quality:dead-code` | GREEN — client 1,205 / 127; Functions 171 / 15; portal retired; knip |
 | Coach coverage | `npm run test:coverage -- --runInBand` | GREEN — 82.82 / 70.69 / 84.16 / 87.17 |
 | Critical dependencies | four package-root critical audit gates | GREEN — zero critical/high |
 | Secrets | gitleaks CI + local hooks | GREEN — Family 76-commit and Coach 210-commit history scans plus both worktrees |
-| Hosted CI | launch-line PR checks + UNIFY drift | GREEN — Family PR 19, Coach PR 12, UNIFY PRs 12/13; cross-repo runs 29215889421 and 29215924470 |
+| Hosted CI | launch-line PR checks + UNIFY drift | GREEN — Family PR 22 → `42050b4`; Coach PR 14 → `5643ae2`; UNIFY PR 16 → `40eecbc` |
 
 ## Owner and external gates
 
@@ -29,3 +29,5 @@ This dashboard separates deterministic agent checks from owner/external launch g
 | Beta | two-week exit report with zero P0 and >99.5% crash-free | WAITING |
 
 The release check is GREEN only when every automated row is green and every owner row has a dated evidence link. Never replace `WAITING` with a fake environment value.
+
+No owner/external row above is complete as of this reconciliation.

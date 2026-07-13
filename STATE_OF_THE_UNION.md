@@ -6,11 +6,24 @@ Last measured: 2026-07-12. This is the living mission-close dashboard; update it
 
 | Line | Public remote head restored into this export | Fresh local bar |
 |---|---|---|
-| Family `demo/expo-go-compat` | PR 19 merged green as `5abf21b`; Ruling-60 local mission `88915f2` | Node 22 typecheck + lint; Jest 924/132; pgTAP 437/19 after clean reset |
-| Coach `demo/device-build` | PR 13 merged green as `28f2303`; Ruling-64 PR 14 hosted green and ordered to merge | **Pinned post-retirement bar:** Node 22 full quality; client Jest 1,205/127; Functions 171/15; scheduler-only export pin + knip green |
-| UNIFY `main` | PR 12 merged as `1373bc2`; cross-repo run 29215889421 green | docs/schema and cross-repo contract checks |
+| Family `demo/expo-go-compat` | PR 22 merged green as `42050b4`; final tree equals hosted-green head `df4d951` | Node 22 typecheck + lint; Jest 933/134; pgTAP 480/21; Deno 5/5 |
+| Coach `demo/device-build` | PR 14 merged green as `5643ae2` | **Pinned post-retirement bar:** Node 22 full quality; client Jest 1,205/127; Functions 171/15; scheduler-only export pin + knip green |
+| UNIFY `main` | PR 16 merged green as `40eecbc`; cross-repository drift remains green | docs/schema and cross-repository contract checks |
 
-Real-clone evidence is published in Family PR 19, Coach PR 12, and UNIFY PR 12. All three missions are merged to their intended lines; app promotion to `main`, protection, tag, and final-launch claims remain open until their prerequisite evidence exists.
+Real-clone and hosted evidence is carried by the listed merge commits and their
+PR checks. App promotion to `main`, tagging, and every final-launch claim remain
+open until their recorded prerequisite evidence exists.
+
+## Current pinned bars
+
+| Line | Suite | Pinned bar | Evidence state |
+|---|---|---:|---|
+| Family | Jest | 933 tests / 134 suites / 10 snapshots | Hosted green at PR 22 head; merge tree identical |
+| Family | pgTAP | 480 assertions / 21 files | Hosted clean-reset RLS job green |
+| Family | Deno Edge | 5 tests / 5 passed | Hosted Deno check and test job green |
+| Coach | Client Jest | 1,205 tests / 127 suites | Hosted green at PR 14 head; merge tree identical |
+| Coach | Functions Jest | 171 tests / 15 suites | Hosted green at PR 14 head; merge tree identical |
+| UNIFY | Contract/drift workflows | all configured checks passed | PR 16 and default-branch evidence green |
 
 ## Blocker board
 
@@ -25,11 +38,23 @@ Real-clone evidence is published in Family PR 19, Coach PR 12, and UNIFY PR 12. 
 
 ## Current mission
 
-Phase 3 repository proofs are locally green: migrations now run through `00021`; meet import replay, onboarding audit/collision handling, Supabase roster seeding, calendar merge preservation, Sentry scrubbing, quiet-hours consent, and Coach roster scaling have named proofs. The 100-item state is maintained in `GOAT_EXECUTION_STATUS.md`.
+Family migrations now run through `00022`; Ruling 65 Phase 1 is merged but dark,
+with zero schedules, deployments, or remote writes. Ruling 67 selects three
+separate draft missions: UNIFY GOAT 43 truth reconciliation, Coach GOAT 95
+scheduler-host retirement, and Family push retry/DLQ. The 100-item state remains
+in `GOAT_EXECUTION_STATUS.md`.
+
+## Three outstanding resume gates
+
+| Resume gate | Current state | Exact resume authority |
+|---|---|---|
+| Production truth | WAITING — probe remains unclassified after credential rejection | Kevin says exactly: `credential corrected — go for the read-only production probe` |
+| Supabase scheduler activation | WAITING — `pg_cron`/`pg_net` availability record is pending; zero schedule objects exist | Kevin authorizes a named throwaway/staging read-only check, then separately authorizes any secret/deploy/schedule command |
+| Launch-owner evidence | WAITING — device, legal, DNS/mail, store/account, operations, beta, and launch gates are incomplete | Kevin supplies the specific external evidence or per-action authorization recorded in the dashboard |
 
 ## Next mission per lane
 
-- Family: Phase-4 route-state/a11y/device-prep polish, then publish the green mission PR.
-- Coach: Ruling 64 portal retirement merge, then await selection of the next proposed PARTIAL mission.
-- UNIFY: keep the evidence ledger and gate dashboard current; prepare one owner gate pack.
+- Family: push retry/DLQ follow-on selected by Rulings 66/67; dark draft only.
+- Coach: GOAT 95 scheduler-host retirement with all four schedulers dispositioned.
+- UNIFY: GOAT 43 truth reconciliation; no owner gate may be promoted from WAITING.
 - Kevin: production/shadow/staging, rulings, legal/account/device gates only; no scattered asks.
