@@ -47,7 +47,7 @@ Fresh local bars: Family 920 tests / 132 suites plus pgTAP 437 / 19 files; Coach
 | 37 | PARTIAL | Both apps now scrub user identity, auth/cookies, email, JWT, and capability URLs before transport; configured projects and inspected canary remain owner-gated. |
 | 38 | OWNER | Blocked on explicit item-76 portal-fate ruling; retirement is recommended. |
 | 39 | DONE | Family CI resets local Supabase and runs the 437-assertion pgTAP suite. |
-| 40 | DONE | Family and Coach enforce local contract drift; UNIFY CI checks out all three repositories and compares both app contracts to canonical SQL. |
+| 40 | DONE | Family and Coach enforce local contract drift; UNIFY cross-repository run 29215889421 checked all three launch lines against canonical SQL and passed. |
 | 41 | DONE | Coach typecheck, knip, strict-type, randomness, process, and circular-dependency gates are green. |
 | 42 | DONE | Node 22 is pinned in engines, `.nvmrc`, Functions, portal, and CI; Node 22.23.1 verification is green. |
 | 43 | PARTIAL | `LAUNCH_GATE_DASHBOARD.md` consolidates non-owner release checks; public policy/store/device values remain owner-gated. |

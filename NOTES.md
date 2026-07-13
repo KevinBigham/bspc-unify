@@ -7105,3 +7105,10 @@ Remaining Milestone 1 gates before real family data:
 - Sanitized result: PASS — all Family and Coach hosted checks green; Family merged to `demo/expo-go-compat` as `5abf21b`, Coach merged to `demo/device-build` as `3b5269f`
 - Safety: no direct `main` promotion; item 5 continues to wait for the item 9 production GREEN and item 21 live-account rotation gates
 - Follow-up/owner: bootstrap and observe UNIFY cross-repository CI, then present the consolidated owner gate pack
+
+## 2026-07-12 — UNIFY governance CI observed
+
+- Target: UNIFY PR 12 and first default-branch cross-repository drift run
+- Sanitized result: PASS — PR 12 merged as `1373bc2`; hosted run 29215889421 compared UNIFY canonical/domain truth with Family `demo/expo-go-compat` and Coach `demo/device-build`
+- Bar delta: no application test change; governance evidence moved from local-only to hosted
+- Follow-up/owner: remaining rows marked OWNER/PARTIAL require the specific production, remote-shadow, legal, account, physical-device, elapsed-beta, or explicit product-ruling evidence recorded in the ledger
