@@ -7169,3 +7169,11 @@ Remaining Milestone 1 gates before real family data:
 - New pinned Family bars: Jest 933/134, pgTAP 480/21, Deno 5/5
 - Selected drafts: UNIFY GOAT 43 truth reconciliation; Coach GOAT 95 four-scheduler retirement; Family push retry/DLQ
 - Owner gates unchanged: no production probe, staging/throwaway command, secret, deployment, schedule object, or owner/external gate was executed or claimed complete
+
+## 2026-07-12 — Ruling 67 draft-head reconciliation
+
+- Target: GitHub-hosted checks for Family PR 23, Coach PR 15, and UNIFY PR 17
+- Command: `gh pr view ${PR} --json isDraft,headRefOid,mergeStateStatus,statusCheckRollup` and `gh pr checks ${PR} --watch`
+- Sanitized result: PASS — Family head `d92f509` is DRAFT/CLEAN with all nine checks green, including clean-reset RLS; Coach head `ab26ca0` is DRAFT/CLEAN with all four checks green; UNIFY PR 17 is DRAFT/CLEAN with domain-contract green at its current head
+- Bar delta: launch pins unchanged; candidate Family pgTAP 480/21 → 537/22 and Deno 5/5 → 22/22; candidate Coach Functions 171/15 → 158/13 by intentional scheduler retirement; client bar unchanged at 1,205/127
+- Follow-up/owner: Director supplies explicit ready/merge orders; production probe, staging/extension proof, deployment, schedule activation, and every owner/external gate remain WAITING

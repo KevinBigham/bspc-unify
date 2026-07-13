@@ -15,6 +15,18 @@ This dashboard separates deterministic agent checks from owner/external launch g
 | Secrets | gitleaks CI + local hooks | GREEN — Family 76-commit and Coach 210-commit history scans plus both worktrees |
 | Hosted CI | launch-line PR checks + UNIFY drift | GREEN — Family PR 22 → `42050b4`; Coach PR 14 → `5643ae2`; UNIFY PR 16 → `40eecbc` |
 
+## Active draft checks
+
+| Draft | Candidate evidence | State |
+|---|---|---|
+| Family PR 23 | Jest 933/134; pgTAP 537/22; Deno 22/22; clean-reset RLS | GREEN / DRAFT at `d92f509` |
+| Coach PR 15 | Client 1,205/127; Functions 158/13; zero runtime exports | GREEN / DRAFT at `ab26ca0` |
+| UNIFY PR 17 | Cross-repository domain contract | GREEN / DRAFT at current PR head |
+
+Draft evidence is review evidence only. It does not alter the merged launch-line
+row above or authorize readiness, merge, deployment, schedule activation, or a
+production command.
+
 ## Owner and external gates
 
 | Gate | Required evidence | State |

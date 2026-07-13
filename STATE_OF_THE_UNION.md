@@ -25,6 +25,17 @@ open until their recorded prerequisite evidence exists.
 | Coach | Functions Jest | 171 tests / 15 suites | Hosted green at PR 14 head; merge tree identical |
 | UNIFY | Contract/drift workflows | all configured checks passed | PR 16 and default-branch evidence green |
 
+## Active draft evidence (not launch-pinned)
+
+| Train | Draft head | Candidate bar | Hosted state |
+|---|---|---|---|
+| Family PR 23 | `d92f509` | Jest 933/134; pgTAP 537/22; Deno 22/22 | DRAFT / CLEAN — all nine checks green, including clean-reset RLS |
+| Coach PR 15 | `ab26ca0` | Client Jest 1,205/127; Functions 158/13; runtime export surface exactly zero | DRAFT / CLEAN — quality, secret-history, and advisory checks green |
+| UNIFY PR 17 | current PR head | Contract/drift check | DRAFT / CLEAN — hosted domain-contract green |
+
+These candidate bars do not replace the launch pins above until the Director
+orders each PR ready and merged and the resulting launch-line tree is verified.
+
 ## Blocker board
 
 | Blocker | Owner | Exact unblock |
@@ -39,10 +50,11 @@ open until their recorded prerequisite evidence exists.
 ## Current mission
 
 Family migrations now run through `00022`; Ruling 65 Phase 1 is merged but dark,
-with zero schedules, deployments, or remote writes. Ruling 67 selects three
-separate draft missions: UNIFY GOAT 43 truth reconciliation, Coach GOAT 95
-scheduler-host retirement, and Family push retry/DLQ. The 100-item state remains
-in `GOAT_EXECUTION_STATUS.md`.
+with zero schedules, deployments, or remote writes. All three Ruling-67 mission
+drafts are hosted-green at the heads recorded above: UNIFY GOAT 43 truth
+reconciliation, Coach GOAT 95 scheduler-host retirement, and Family push
+retry/DLQ. None is ready or merged. The 100-item state remains in
+`GOAT_EXECUTION_STATUS.md`.
 
 ## Three outstanding resume gates
 
@@ -54,7 +66,7 @@ in `GOAT_EXECUTION_STATUS.md`.
 
 ## Next mission per lane
 
-- Family: push retry/DLQ follow-on selected by Rulings 66/67; dark draft only.
-- Coach: GOAT 95 scheduler-host retirement with all four schedulers dispositioned.
-- UNIFY: GOAT 43 truth reconciliation; no owner gate may be promoted from WAITING.
+- Family: PR 23 push retry/DLQ follow-on is dark, hosted-green, and awaiting a Director ready/merge order.
+- Coach: PR 15 GOAT 95 scheduler-host retirement is hosted-green with all four schedulers dispositioned and awaits a Director ready/merge order.
+- UNIFY: PR 17 GOAT 43 truth reconciliation is hosted-green; no owner gate is promoted from WAITING.
 - Kevin: production/shadow/staging, rulings, legal/account/device gates only; no scattered asks.

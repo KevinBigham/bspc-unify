@@ -6,6 +6,8 @@
 
 Pinned hosted bars: Family 933 tests / 134 suites plus pgTAP 480 / 21 files and Deno 5/5; Coach 1,205 / 127; Functions 171 / 15; portal source and callables retired. Both application roots typecheck on Node 22. These bars are evidence, not substitutes for production, device, or owner gates.
 
+Active candidate bars remain unmerged: Family PR 23 is green at `d92f509` (Jest 933/134, pgTAP 537/22, Deno 22/22); Coach PR 15 is green at `ab26ca0` (client 1,205/127, Functions 158/13, zero runtime exports); UNIFY PR 17 is green at its current head. All three remain drafts and no owner gate is credited.
+
 | # | State | Acceptance evidence or exact remaining gate |
 |---:|:---:|---|
 | 1 | DONE | `Mission.md` now names the restored public launch heads and measured bars. |
@@ -50,7 +52,7 @@ Pinned hosted bars: Family 933 tests / 134 suites plus pgTAP 480 / 21 files and 
 | 40 | DONE | Family and Coach enforce local contract drift; UNIFY cross-repository run 29215889421 checked all three launch lines against canonical SQL and passed. |
 | 41 | DONE | Coach typecheck, knip, strict-type, randomness, process, and circular-dependency gates are green. |
 | 42 | DONE | Ruling 61 ratifies Node 22; engines, `.nvmrc`, Functions, portal, and CI are aligned and verified. |
-| 43 | PARTIAL | Ruling-67 reconciliation pins all current hosted bars and exactly three resume gates; public policy/store/device and every other owner row remain WAITING. |
+| 43 | PARTIAL | Ruling-67 reconciliation separates merged launch pins from the three hosted-green draft heads and preserves exactly three resume gates; public policy/store/device and every other owner row remain WAITING. |
 | 44 | OWNER | Family EAS project initialization/projectId needs the Expo account owner. |
 | 45 | PARTIAL | 9-group copy is corrected; screenshot regeneration and store-form drafts/final values remain. |
 | 46 | DONE | Family threshold is enforced and both CIs publish coverage/test artifacts; Coach has explicit global thresholds. |
@@ -102,7 +104,7 @@ Pinned hosted bars: Family 933 tests / 134 suites plus pgTAP 480 / 21 files and 
 | 92 | OWNER | Timed launch-day staging rehearsal depends on staging and store accounts. |
 | 93 | DONE | Coach README/ROADMAP/CODEBASE_GUIDE and templates are Supabase-native, Node-22/launch-line accurate; both READMEs name launch lines. |
 | 94 | DONE | Rulings 59 and 62 retain `ACTIVE/migration/` as historical-only with a root banner, no runtime/CI execution, and measured zero bar delta. |
-| 95 | PARTIAL | Portal retirement and the Supabase-native Phase 1 replacement are merged; Ruling 67 authorizes the separate Coach scheduler-host retirement draft. |
+| 95 | PARTIAL | Coach PR 15 dispositions all four schedulers, pins zero runtime exports, documents every remaining non-scheduler Function, and is hosted-green at `ab26ca0`; it remains a draft awaiting Director ready/merge authority. |
 | 96 | DONE | Coach `shared/domain` plus drift-checked Family copy contain groups/courses/standards/time truth. |
 | 97 | DONE | `M9_MONOREPO_PLAN.md` defines target tree, subtree history preservation, parity checks, rollback, and post-tag gate. |
 | 98 | OWNER | Usage alerts require Supabase/Sentry/PostHog owner access; paid-trigger policy remains documentable. |
