@@ -29,7 +29,7 @@ Active candidate bars remain unmerged: Family PR 23 is green at `d92f509` (Jest 
 | 17 | OWNER | Backup/PITR plan selection and a real shadow restore rehearsal remain. |
 | 18 | OWNER | Staging project, credentials, and end-to-end staging release check remain. |
 | 19 | OWNER | Physical iPhone and Android recovery matrix with real email is required. |
-| 20 | DONE | All recovery token/error shapes and expired UX are covered; current Family bar is 924. |
+| 20 | DONE | All recovery token/error shapes and expired UX are covered; current pinned Family bar is 933/134. |
 | 21 | PARTIAL | Placeholder scanner/allowlist exists; live demo accounts still need rotation/disable and tracked history proof. |
 | 22 | DONE | Ruling 63 ratifies ADMIN-APPROVE; invite redemption never auto-approves, and the atomic approval RPC is tested. |
 | 23 | OWNER | Bootstrap guards exist; shadow dry-run and Kevin's live sole-super-admin execution remain. |
@@ -43,7 +43,7 @@ Active candidate bars remain unmerged: Family PR 23 is green at `d92f509` (Jest 
 | 31 | PARTIAL | Family and Coach have Gitleaks CI/hooks and green full-history scans with documented public-client-key fingerprints; UNIFY still lacks scanner CI, a pre-commit variant, and its own full-history report. |
 | 32 | DONE | Critical audit gates and OSV reporting are in both CIs; all four package roots have zero critical advisories, with remaining major-only debt documented. |
 | 33 | DONE | Family deep-link threat model, sanitized analytics route, and no-token logging tests exist. |
-| 34 | DONE | Shared redaction helper/tests protect the production audit and the DB-output inventory proves other scripts print only static repository validation. |
+| 34 | PARTIAL | The production audit uses the shared redactor and has URL/email/UUID/capability tests, while the bootstrap refuses email/UUID output; however, `docs/db-output-redaction.md` omits the DB-executing `bootstrap-super-admin.js`, which forwards stdout/stderr without the shared redactor's full capability/JWT coverage. |
 | 35 | OWNER | Retention/deletion semantics require Director/legal ruling before implementation and shadow proof. |
 | 36 | PARTIAL | `ACCESS_REVIEW_RUNBOOK.md` contains the count-only query and escalation path; the first production run remains owner-gated. |
 | 37 | PARTIAL | Both apps now scrub user identity, auth/cookies, email, JWT, and capability URLs before transport; configured projects and inspected canary remain owner-gated. |
@@ -69,11 +69,11 @@ Active candidate bars remain unmerged: Family PR 23 is green at `d92f509` (Jest 
 | 57 | DONE | Family invite redemption screen, token deep link, MSW tests, and pending-only semantics are implemented. |
 | 58 | DONE | Family has an executable exact 24-route loading/error/empty matrix plus a readable audit; the sweep added a retryable notification-preference failure state. |
 | 59 | DONE | Today reads recent `schedule_change_log` summaries and renders neutral New/Changed/Back-on badges with API/component tests. |
-| 60 | DONE | Shared date/time utilities and deterministic timezone tests are in both app trees. |
+| 60 | PARTIAL | Shared date/time utilities and deterministic timezone tests exist in both app trees, but direct `toLocaleDateString`/`toLocaleTimeString` and private render helpers remain across Family PDF/notification/progress/schedule surfaces and multiple Coach calendar/meet/attendance screens. The required every-render convergence is unproven. |
 | 61 | DONE | Ruling 60 is merged: urgent bypasses the 21:00–07:00 CT time window, normal/FYI remain suppressed, and opt-out blocks every tier; current Family bar is 933/134. |
 | 62 | DONE | Commit prevents in-app navigation, uses `Linking.openURL`, tracks failure, and returns with a useful toast under named tests. |
 | 63 | DONE | Glossary search/filter/empty states and horizontally safe standards filters/table exist; a named AR-1 test proves free-text standards render. |
-| 64 | DONE | One shared hundredths parser/formatter is used by both apps with round-trip coverage. |
+| 64 | PARTIAL | Shared hundredths utilities and round-trip tests exist, but Family standards/legacy/PDF code and Coach standards, meet timing, analytics, document export, and progression/split charts still define independent formatters. The required single utility everywhere is not true. |
 | 65 | OWNER | Sunlight/wet-hand Deck Mode QA is a physical-device gate. |
 | 66 | PARTIAL | Kind pending-state copy, gated data, coach escalation, and configured support mailto are tested; the monitored mailbox value remains owner-gated. |
 | 67 | PARTIAL | Pure 200-swimmer filter/sort is under 100ms and roster aggregation fanout fell from ~400 channels to one; physical perceived/two-tap measurement remains. |
@@ -82,7 +82,7 @@ Active candidate bars remain unmerged: Family PR 23 is green at `d92f509` (Jest 
 | 70 | DONE | Checked-in adversarial SDIF/HY3 golden files cover malformed rows, weird IDs, DQ, and unknown events with coach-readable line errors. |
 | 71 | DONE | Migration 00020 adds import identity; conflict-safe upserts and an import-twice test prove idempotency while PR counts remain trigger-owned. |
 | 72 | OWNER | Kevin's authoritative coaching corpus is not available in the workspace. |
-| 73 | DONE | AST tests prove AI upload/navigation affordances unreachable; consent is prominent and service-enforced; signed uploads target Supabase Storage. |
+| 73 | PARTIAL | Fail-closed AST tests prove v1 media AI upload/navigation affordances unreachable and signed uploads target Supabase Storage; video tagging has prominent UI and service consent gates, but audio and swimmer voice-note media surfaces do not display or require the same consent gate, so the every-media-surface clause remains open. |
 | 74 | DONE | Coach generate/share/status/revoke parent-invite flow and tests exist. |
 | 75 | DONE | `docs/aggregation-contract.md` maps every screen/service to pgTAP-014 views; tests pin mappings, source refresh, and all fresh-club empty cases. |
 | 76 | DONE | Ruling 64 retirement merged in Coach PR 14 with its intentional post-retirement baseline pinned. |
@@ -113,4 +113,4 @@ Active candidate bars remain unmerged: Family PR 23 is green at `d92f509` (Jest 
 
 ## Current execution frontier
 
-The repository-owned frontier includes the three active Ruling-67 draft closeouts plus the newly re-opened GOAT 31 and 40 CI gaps. Those CI gaps start only after the current train missions close or the Director explicitly selects them; one-mission-per-train still applies. Production, legal, account, device, beta-duration, and final-ship states are deliberately not represented as complete without evidence.
+The repository-owned frontier includes the three active Ruling-67 draft closeouts plus the re-opened GOAT 31, 34, 40, 60, 64, and 73 gaps. Those gaps start only after the current train missions close or the Director explicitly selects them; one-mission-per-train still applies. Production, legal, account, device, beta-duration, and final-ship states are deliberately not represented as complete without evidence.

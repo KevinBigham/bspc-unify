@@ -7185,3 +7185,12 @@ Remaining Milestone 1 gates before real family data:
 - Sanitized result: FAIL-CLOSED correction — `Mission.md` carried obsolete heads/bars; GOAT 31 lacks UNIFY scanner coverage; GOAT 40 lacks the literal full canonical-SQL↔migration assertion and all-repo enforcement; GOAT 41 lacks its required shippable-line ruling
 - Bar delta: unchanged — documentation/status correction only; all currently configured hosted checks remain green
 - Follow-up/owner: keep 31/40/41 PARTIAL until their exact missing acceptance evidence lands; do not open cross-train implementation work while Family PR 23 and Coach PR 15 remain active drafts
+
+## 2026-07-12 — Broad-claim acceptance audit
+
+- Target: local launch-line Family and Coach source compared with GOAT 34, 58, 60, 64, 73, and 93 acceptance clauses
+- Command: read-only inventory of route-state tests, DB-output scripts/redactors, date and hundredths render helpers, media upload/consent surfaces, and Coach launch documentation
+- Sanitized result: route #58 remains DONE because its exact 24-route matrix and throwing-component boundary tests prove containment; documentation #93 remains DONE; GOAT 34, 60, 64, and 73 fail their literal every/all/single-surface clauses and are corrected to PARTIAL
+- Exact gaps: the DB-output inventory omits the bootstrap and its full output paths lack shared-redactor coverage; direct/local date and hundredths formatters remain in both apps; audio and swimmer voice-note surfaces lack the prominent consent contract proven on video
+- Bar delta: unchanged — UNIFY truth-only correction; no app code, test expectation, hosted resource, or production target changed
+- Follow-up/owner: Director rules audio/voice-note consent semantics before GOAT 73 implementation; agent-owned convergence/redaction work waits for train selection after current drafts close
