@@ -7150,3 +7150,5 @@ Remaining Milestone 1 gates before real family data:
 - Ruling 65 proposal: `dailyDigest` direct pg_cron SQL; attendance sweep scheduled Edge Function; `syncCalendar` Edge Function held dark pending feed approval
 - Capture 2 preserved: scheduler-run retry/dead state folds into the scheduler foundation; push-delivery retry/DLQ remains a separate Family candidate; sanitized Edge Function Sentry coverage is proposed with the first Edge scheduler implementation
 - Production probe remains held pending the Director's exact future authorization phrase; no production command was run
+- Protected next-train PRs: Coach 14, Family 21, and UNIFY 16 are open as drafts with hosted checks green at their current heads
+- Approved legacy BSPC sweep completed: PRs 3, 5, 6, 7, 8, 9, 10, and 15 received one-line capture/ruling links and were closed; no other PR state changed
