@@ -7177,3 +7177,11 @@ Remaining Milestone 1 gates before real family data:
 - Sanitized result: PASS — Family head `d92f509` is DRAFT/CLEAN with all nine checks green, including clean-reset RLS; Coach head `ab26ca0` is DRAFT/CLEAN with all four checks green; UNIFY PR 17 is DRAFT/CLEAN with domain-contract green at its current head
 - Bar delta: launch pins unchanged; candidate Family pgTAP 480/21 → 537/22 and Deno 5/5 → 22/22; candidate Coach Functions 171/15 → 158/13 by intentional scheduler retirement; client bar unchanged at 1,205/127
 - Follow-up/owner: Director supplies explicit ready/merge orders; production probe, staging/extension proof, deployment, schedule activation, and every owner/external gate remain WAITING
+
+## 2026-07-12 — GOAT ledger evidence correction
+
+- Target: local UNIFY truth artifacts and the configured Family, Coach, and UNIFY CI definitions
+- Command: read-only comparison of `BSPC_GOAT_AUDIT.md` items 1, 31, 40, and 41 against `Mission.md`, `GOAT_EXECUTION_STATUS.md`, and the three repositories' workflow/verifier files
+- Sanitized result: FAIL-CLOSED correction — `Mission.md` carried obsolete heads/bars; GOAT 31 lacks UNIFY scanner coverage; GOAT 40 lacks the literal full canonical-SQL↔migration assertion and all-repo enforcement; GOAT 41 lacks its required shippable-line ruling
+- Bar delta: unchanged — documentation/status correction only; all currently configured hosted checks remain green
+- Follow-up/owner: keep 31/40/41 PARTIAL until their exact missing acceptance evidence lands; do not open cross-train implementation work while Family PR 23 and Coach PR 15 remain active drafts

@@ -44,6 +44,9 @@ orders each PR ready and merged and the resulting launch-line tree is verified.
 | Production/staging/shadow writes are not authorized | Kevin | Provide target and per-command `go`; never infer authorization |
 | Physical recovery/device matrix/field test incomplete | Kevin + agent | Install internal builds on iPhone and Android and execute the sanitized device checklists |
 | Legal/DNS/store/mailbox/account work lacks external evidence | Kevin | Complete the phase gate pack and return non-secret confirmations/URLs |
+| GOAT 31 is incomplete across all repos | Agent | After the current train missions close, add UNIFY scanner CI + pre-commit coverage and record a sanitized full-history scan |
+| GOAT 40 does not enforce its full contract | Agent | Land one canonical-SQL↔migrations↔app-domain↔metadata verifier in every repo CI without warning-pass behavior |
+| GOAT 41 lacks its required ruling | Director | Issue a durable ruling declaring the Coach launch line shippable after reviewing the green quality evidence |
 | Ruling 66 extension-availability rider is pending | Kevin + agent | After staging authorization, verify `pg_cron` + `pg_net` read-only and record versions before creating any schedule object |
 | Closed beta requires 3–5 families and two elapsed weeks | Kevin | Start only after entry gates pass; record exit metrics after the full window |
 
@@ -53,8 +56,9 @@ Family migrations now run through `00022`; Ruling 65 Phase 1 is merged but dark,
 with zero schedules, deployments, or remote writes. All three Ruling-67 mission
 drafts are hosted-green at the heads recorded above: UNIFY GOAT 43 truth
 reconciliation, Coach GOAT 95 scheduler-host retirement, and Family push
-retry/DLQ. None is ready or merged. The 100-item state remains in
-`GOAT_EXECUTION_STATUS.md`.
+retry/DLQ. None is ready or merged. Truth reconciliation also corrected GOAT
+31, 40, and 41 from DONE to PARTIAL because their literal acceptance clauses
+remain incomplete. The 100-item state remains in `GOAT_EXECUTION_STATUS.md`.
 
 ## Three outstanding resume gates
 

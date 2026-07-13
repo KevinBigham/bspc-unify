@@ -40,7 +40,7 @@ Active candidate bars remain unmerged: Family PR 23 is green at `d92f509` (Jest 
 | 28 | OWNER | Redlined public policy URLs and monitored privacy/support mailboxes remain. |
 | 29 | PARTIAL | pgTAP media walls and Coach consent affordance/service tests are green; physical-device affordance proof remains. |
 | 30 | OWNER | Await lawyer-defined consent architecture; the agent must not invent compliance. |
-| 31 | DONE | Gitleaks CI and hooks exist; real full-history scans passed (Family 76 commits, Coach 210) plus both current worktree scans, with exact public-client-key fingerprints documented. |
+| 31 | PARTIAL | Family and Coach have Gitleaks CI/hooks and green full-history scans with documented public-client-key fingerprints; UNIFY still lacks scanner CI, a pre-commit variant, and its own full-history report. |
 | 32 | DONE | Critical audit gates and OSV reporting are in both CIs; all four package roots have zero critical advisories, with remaining major-only debt documented. |
 | 33 | DONE | Family deep-link threat model, sanitized analytics route, and no-token logging tests exist. |
 | 34 | DONE | Shared redaction helper/tests protect the production audit and the DB-output inventory proves other scripts print only static repository validation. |
@@ -49,8 +49,8 @@ Active candidate bars remain unmerged: Family PR 23 is green at `d92f509` (Jest 
 | 37 | PARTIAL | Both apps now scrub user identity, auth/cookies, email, JWT, and capability URLs before transport; configured projects and inspected canary remain owner-gated. |
 | 38 | DONE | Ruling 64 retired the parent portal and its two callables; Coach PR 14 merged green. |
 | 39 | DONE | Family CI resets local Supabase and runs the 480-assertion / 21-file pgTAP suite. |
-| 40 | DONE | Family and Coach enforce local contract drift; UNIFY cross-repository run 29215889421 checked all three launch lines against canonical SQL and passed. |
-| 41 | DONE | Coach typecheck, knip, strict-type, randomness, process, and circular-dependency gates are green. |
+| 40 | PARTIAL | Family enforces migration inventory/domain/metadata checks, Coach enforces its shared-domain copy, and UNIFY compares all three domain contracts to canonical enum values; the required full canonical-SQL↔migration assertion and all-repo CI enforcement are not implemented. |
+| 41 | PARTIAL | Coach typecheck, knip, strict-type, randomness, process, and circular-dependency gates are green; the roadmap's explicit durable ruling declaring the line shippable is still absent. |
 | 42 | DONE | Ruling 61 ratifies Node 22; engines, `.nvmrc`, Functions, portal, and CI are aligned and verified. |
 | 43 | PARTIAL | Ruling-67 reconciliation separates merged launch pins from the three hosted-green draft heads and preserves exactly three resume gates; public policy/store/device and every other owner row remain WAITING. |
 | 44 | OWNER | Family EAS project initialization/projectId needs the Expo account owner. |
@@ -113,4 +113,4 @@ Active candidate bars remain unmerged: Family PR 23 is green at `d92f509` (Jest 
 
 ## Current execution frontier
 
-The repository-owned frontier is reduced to hosted-CI closeout and documentable device/owner gate preparation. Production, legal, account, device, beta-duration, and final-ship states are deliberately not represented as complete without evidence.
+The repository-owned frontier includes the three active Ruling-67 draft closeouts plus the newly re-opened GOAT 31 and 40 CI gaps. Those CI gaps start only after the current train missions close or the Director explicitly selects them; one-mission-per-train still applies. Production, legal, account, device, beta-duration, and final-ship states are deliberately not represented as complete without evidence.

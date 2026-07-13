@@ -12,8 +12,9 @@ This dashboard separates deterministic agent checks from owner/external launch g
 | Coach quality | `npm run quality && npm run quality:dead-code` | GREEN — client 1,205 / 127; Functions 171 / 15; portal retired; knip |
 | Coach coverage | `npm run test:coverage -- --runInBand` | GREEN — 82.82 / 70.69 / 84.16 / 87.17 |
 | Critical dependencies | four package-root critical audit gates | GREEN — zero critical/high |
-| Secrets | gitleaks CI + local hooks | GREEN — Family 76-commit and Coach 210-commit history scans plus both worktrees |
-| Hosted CI | launch-line PR checks + UNIFY drift | GREEN — Family PR 22 → `42050b4`; Coach PR 14 → `5643ae2`; UNIFY PR 16 → `40eecbc` |
+| Secrets | gitleaks CI + local hooks | PARTIAL — Family and Coach history/worktree scans green; UNIFY scanner CI/hook/history proof missing |
+| Cross-repository drift | canonical SQL ↔ migrations ↔ both apps ↔ store metadata | PARTIAL — domain contracts are green, but the full canonical/migration assertion and all-repo enforcement are missing |
+| Hosted CI | currently configured launch-line PR checks + UNIFY domain drift | GREEN — Family PR 22 → `42050b4`; Coach PR 14 → `5643ae2`; UNIFY PR 16 → `40eecbc` |
 
 ## Active draft checks
 

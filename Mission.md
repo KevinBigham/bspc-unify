@@ -1,12 +1,12 @@
 <!--
   Mission.md — the single self-contained handoff for finishing the BSPC two-app launch.
   Authored 2026-06-27 by Claude (Opus 4.8) for handoff to Codex.
-  The canonical schema is law; the five green bars are the gate; one small reviewable change at a time is the method.
+  The canonical schema is law; the current pinned bars are the gate; one small reviewable change at a time is the method.
 -->
 
 # Mission
 
-You are **Codex**, an autonomous coding agent finishing a two-app swim-club product for the Blue Springs Power Cats (BSPC). There are two mobile apps — a **Coach app** (staff write-tools) and a **swimmer/family app** (parent-facing, information-first) — plus a Next.js parent portal. All three talk to **one shared Supabase Postgres backend** defined by a single canonical schema. Your north star: drive the product from "code-complete, locally green" to "live in the App Store and Google Play, safely serving families with minor children," by executing a fixed sequence of operational milestones — each one a small, well-tested, reviewable change — while never touching anything that legally or financially belongs to the product owner, Kevin (a non-coder).
+You are **Codex**, an autonomous coding agent finishing a two-app swim-club product for the Blue Springs Power Cats (BSPC). There are two mobile apps — a **Coach app** (staff write-tools) and a **swimmer/family app** (parent-facing, information-first). Ruling 64 retired the former Next.js parent portal and its two callables. Both apps talk to **one shared Supabase Postgres backend** defined by a single canonical schema. Your north star: drive the product from "code-complete, locally green" to "live in the App Store and Google Play, safely serving families with minor children," by executing a fixed sequence of operational milestones — each one a small, well-tested, reviewable change — while never touching anything that legally or financially belongs to the product owner, Kevin (a non-coder).
 
 **The fresh-launch decision, in plain terms:** Both legacy Firebase projects were attested **empty**. There is **no data to migrate**. Everything that was once planned to copy real Firebase data into Supabase — the "Sitting 2" cutover, identity remediation, the four cutover tools (`probe-firebase-inventory`, `provision-identities`, `backfill-identity-graph`, `backfill-roster`), and Firebase decommission of real data — is **CANCELLED and already deleted from the Coach repo**. Many design docs in `UNIFY/` (numbered 00–20) were written under the OLD migration plan. When any doc describes migrating, backfilling, or remediating real Firebase data, **treat it as HISTORICAL, not as remaining work.** We are launching fresh on Supabase: empty production database, schema applied clean, then real families onboarded going forward.
 
@@ -43,17 +43,17 @@ When you hit a carve-out, stop and surface it to Kevin with a one-line "this is 
 
 ## Repo map & how they connect
 
-Three independent git repos under `/Users/kevin/bspc-unify/`. They are NOT a monorepo; the **only** thing binding them is the single shared Supabase Postgres backend.
+Three independent Git repos share the workspace. They are NOT a monorepo; the **only** thing binding them is the single shared Supabase Postgres backend.
 
 | Repo | Path | Role | Backend | Stack |
 |---|---|---|---|---|
-| **UNIFY** | `/Users/kevin/bspc-unify/UNIFY` | Design source-of-truth + **canonical Postgres schema** + migration logbook | — | Markdown + SQL |
-| **BSPC** | `/Users/kevin/bspc-unify/BSPC` (live code in `ACTIVE/`) | Swimmer/family app **and the Supabase backend** (migrations + pgTAP) | Supabase/Postgres | Expo SDK 54 / RN 0.81 / Expo Router 6 |
-| **BSPC-Coach-App** | `/Users/kevin/bspc-unify/BSPC-Coach-App` | Coach Expo app + temporarily Firebase-hosted schedulers pending Ruling 65 rehome; portal retired | Supabase canonical data | Expo SDK 54 + Functions (Node 22) |
+| **UNIFY** | `bspc-unify` | Design source-of-truth + **canonical Postgres schema** + migration logbook | — | Markdown + SQL |
+| **BSPC** | `BSPC` (live code in `ACTIVE/`) | Swimmer/family app **and the Supabase backend** (migrations + pgTAP) | Supabase/Postgres | Expo SDK 54 / RN 0.81 / Expo Router 6 |
+| **BSPC-Coach-App** | `BSPC-Coach-App` | Coach Expo app + the Firebase-hosted scheduler surface being retired by draft PR 15 | Supabase canonical data | Expo SDK 54 + Functions (Node 22) |
 
-**The canonical schema is law:** `/Users/kevin/bspc-unify/UNIFY/01_CANONICAL_SCHEMA.sql`. Both apps' table shapes derive from it. If app code needs a column or table the schema lacks, you **propose a migration** — you never hack around the schema.
+**The canonical schema is law:** `UNIFY/01_CANONICAL_SCHEMA.sql`. Both apps' table shapes derive from it. If app code needs a column or table the schema lacks, you **propose a migration** — you never hack around the schema.
 
-**Where the schema physically lives & ships:** the executable migrations are in `/Users/kevin/bspc-unify/BSPC/ACTIVE/supabase/migrations/` — 21 files, `00001_initial_schema.sql` … `00021_family_approval_audit_and_collision.sql`. The pgTAP suite that proves the RLS walls is in `/Users/kevin/bspc-unify/BSPC/ACTIVE/supabase/tests/database/` — 19 files through `019-meet-import-idempotency.test.sql`. **The BSPC repo is the one that owns the database.** The Coach app and parent portal are clients of that same database.
+**Where the schema physically lives & ships:** the executable launch-line migrations are in `BSPC/ACTIVE/supabase/migrations/` — 22 files through `00022_scheduler_phase1.sql`. The pgTAP suite that proves the RLS walls is in `BSPC/ACTIVE/supabase/tests/database/` — 21 files. Draft Family PR 23 adds migration `00023_push_retry_dlq.sql` and a twenty-second pgTAP file, but those are candidate evidence until merged. **The BSPC repo owns the database.** The Coach app is a client of that same database.
 
 **Connection diagram:**
 
@@ -66,10 +66,11 @@ Three independent git repos under `/Users/kevin/bspc-unify/`. They are NOT a mon
                   RLS + Auth      │               │   RLS + Auth
         ┌──────────────────────────┘               └────────────────────────┐
         ▼                                                                    ▼
-  BSPC family app (Expo)                                       Coach app (Expo) + parent portal (Next.js)
-  /Users/.../BSPC/ACTIVE                                       /Users/.../BSPC-Coach-App
+  BSPC family app (Expo)                                       Coach app (Expo)
+  BSPC/ACTIVE                                                  BSPC-Coach-App
   reads via RLS, never writes coach data                       writes roster/notes/times/media (staff RLS)
-                                                               + Firebase Cloud Functions (schedulers, callables)
+                                                               + Firebase Cloud Functions (two merged schedulers;
+                                                                 draft candidate exports zero)
 ```
 
 **Key UNIFY docs (read these before touching a milestone they cover):**
@@ -86,26 +87,27 @@ Three independent git repos under `/Users/kevin/bspc-unify/`. They are NOT a mon
 
 ## Current state
 
-**Launch lines and heads verified from the public remotes on 2026-07-12:**
-- **BSPC family app:** `demo/expo-go-compat` @ `a4c8861` (Ruling 58 launch line), with open PR 19 based at `7bc9680` and this local mission layered on it. The local migration ledger is now `00001`–`00021` with a 19-file pgTAP suite.
-- **Coach app:** `demo/device-build` @ `9405fec` (Ruling 58 launch line). It contains the Wave-A product work, Functions hardening, and the closed dead-code gate.
-- **UNIFY:** `main` @ `37b20a7` before this roadmap execution pass.
+**Merged launch truth verified from public remotes on 2026-07-12:**
+- **BSPC family app:** `demo/expo-go-compat`; PR 22 merged green as `42050b4`, and the final tree equals hosted-green head `df4d951`. The merged ledger runs through `00022`.
+- **Coach app:** `demo/device-build`; PR 14 merged green as `5643ae2`, retiring the portal and its two callables.
+- **UNIFY:** `main`; PR 16 merged green as `40eecbc`.
 
-The supplied workspace is an exported snapshot with no `.git` directories. Branch promotion, PR merges, protection rules, and tags must be performed in real Git clones; local evidence here must never be presented as proof that those hosted actions occurred.
+Current execution uses real Git worktrees and hosted PR evidence. Local output is never presented as proof of a remote merge. Three Ruling-67 missions remain drafts: Family PR 23 at `d92f509`, Coach PR 15 at `ab26ca0`, and UNIFY PR 17 at its current head.
 
 **GREEN test bars — these are the bar. Never advance with any of these red:**
 
 | Repo / suite | Bar | How counted |
 |---|---|---|
-| Coach client jest | **1,212 tests / 129 suites** | `npm test -- --runInBand` |
-| Coach Functions jest | **191 tests / 16 suites** | `npm --prefix functions test -- --runInBand` |
-| Coach isolated `date.test` | **17 tests** | runs inside the client suite; see UTC gate below |
-| BSPC client jest | **924 tests / 132 suites** | `npm test -- --runInBand` |
-| BSPC pgTAP | **437 assertions / 19 files** | clean local reset, then `npm run test:rls` |
+| Coach client Jest | **1,205 tests / 127 suites** | hosted green at PR 14 head; merge tree identical |
+| Coach Functions Jest | **171 tests / 15 suites** | hosted green at PR 14 head; merge tree identical |
+| BSPC client Jest | **933 tests / 134 suites / 10 snapshots** | hosted green at PR 22 head; merge tree identical |
+| BSPC pgTAP | **480 assertions / 21 files** | hosted clean-reset RLS job green |
+| BSPC Deno Edge | **5 tests / 5 passed** | hosted Deno check and test job green |
+| UNIFY contract/drift | **all configured checks passed** | PR 16 and default-branch evidence green; item 40's broader acceptance remains PARTIAL |
 
-**Coach Functions launch export surface** (confirmed by code and exact-set test): `sweepAttendanceEvaluations` and `dailyDigest` only. Ruling 64 deleted the two portal callables; other deferred handlers remain source modules until their specific disposition is authorized. Ruling 65 requires both schedulers to leave Firebase before launch closure.
+**Coach Functions merged launch export surface** (confirmed by code and exact-set test): `sweepAttendanceEvaluations` and `dailyDigest` only. Ruling 64 deleted the two portal callables. Draft PR 15 dispositions all four scheduled modules and pins the candidate runtime export surface to zero; it does not change the launch pin until merged.
 
-These bars were freshly measured locally on 2026-07-12 after restoring the public launch branches. Production, staging, device, legal, DNS, store, beta, and hosted Git state remain separate gates; local green bars do not imply launch readiness.
+Production, staging, device, legal, DNS, store, beta, and final-launch state remain separate gates. Green repository bars do not imply launch readiness.
 
 ---
 
@@ -127,70 +129,66 @@ These bars were freshly measured locally on 2026-07-12 after restoring the publi
 
 ## How to build, test, and run each repo
 
-All commands use absolute paths. The shell resets cwd between calls, so `cd` into the repo as the first compound step.
+Run commands from the named repository root. Use committed lockfiles and Node 22.
 
-### BSPC family app + backend — `/Users/kevin/bspc-unify/BSPC/ACTIVE`
+### BSPC family app + backend — `BSPC/ACTIVE`
 
 ```bash
 # install
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm install
+npm ci
 
 # run app (Expo)
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm start        # TUI: i / a / w
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run ios
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run android
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run web
+npm start        # TUI: i / a / w
+npm run ios
+npm run android
+npm run web
 
-# jest (bar = 924)
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm test
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run test:coverage   # 75% threshold
+# Jest (merged bar = 933 / 134 / 10 snapshots)
+TZ=UTC npm test -- --runInBand
+npm run test:coverage -- --runInBand   # threshold enforced in CI
 
-# pgTAP RLS suite (bar = 343) — needs Supabase CLI + Docker running
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm exec -- supabase --agent no start
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run test:rls   # bar = 437 / 19
+# pgTAP RLS suite (merged bar = 480 / 21) — needs Supabase CLI + Docker
+npx supabase start
+npm run test:rls
 
 # quality gates
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run typecheck
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run lint
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run release:check:staging
+npm run typecheck
+npm run lint
+npm run check:schema-drift
+npm run release:check:staging
 
 # E2E (Maestro)
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && maestro test .maestro/demo-account-smoke.yaml
+maestro test .maestro/demo-account-smoke.yaml
 ```
 
-### Coach app + Functions + parent portal — `/Users/kevin/bspc-unify/BSPC-Coach-App`
+### Coach app + Functions — `BSPC-Coach-App`
 
 ```bash
-# install all three workspaces
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm ci --legacy-peer-deps
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm --prefix functions ci
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm --prefix parent-portal ci
+# install both workspaces
+npm ci --legacy-peer-deps
+npm --prefix functions ci
 
 # run
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm start                       # Coach app (Expo)
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm --prefix parent-portal run dev   # portal → localhost:3000
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm --prefix functions run serve     # Functions emulator
+npm start
+npm --prefix functions run serve
 
-# jest — Coach client (bar = 1,212 / 129)
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm test -- --runInBand
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && TZ=UTC npm test -- --runInBand        # force UTC if near the boundary
-
-# jest — Functions (bar = 191 / 16)
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm --prefix functions test -- --runInBand
+# Jest — merged bars: client 1,205 / 127; Functions 171 / 15
+TZ=UTC npm test -- --runInBand
+npm --prefix functions test -- --runInBand
 
 # typecheck / lint / build
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm run typecheck
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm run lint:errors
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm --prefix functions run build
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm --prefix parent-portal run build
+npm run typecheck
+npm run lint:errors
+npm --prefix functions run build
 
-# whole-repo gate (typecheck + lint + both jest suites + functions build + portal + madge + custom checks)
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm run quality
+# whole-repo gates
+npm run quality
+npm run quality:dead-code
+npm run check:domain-drift
 
 # hygiene
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm run madge:circular   # no output = pass
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm run quality:dead-code
-cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm run sync:functions-shared:verify
+npm run madge:circular
+npm run sync:functions-shared:verify
 ```
 
 > **Note on the functions↔app shared code:** `notificationRules` logic is mirrored into `functions/` by `scripts/sync-functions-shared.js`. If you edit the source, run `npm run sync:functions-shared` and verify with `:verify` — CI gates on it.
@@ -199,9 +197,9 @@ cd /Users/kevin/bspc-unify/BSPC-Coach-App && npm run sync:functions-shared:verif
 
 ## The work — ordered milestones
 
-Execute these in order. Each is its own branch off `fresh-launch-cd` (Coach) or a fresh branch off the BSPC baseline, merged only when its acceptance criteria are green. Several wait on a human dependency — start the coding that *doesn't* depend on the human, and stop cleanly at the gate.
+Execute these in order. Each is its own branch off `demo/device-build` (Coach), `demo/expo-go-compat` (Family), or `main` (UNIFY), merged only when its acceptance criteria are green and the Director explicitly orders the merge. Several wait on a human dependency — start the coding that *doesn't* depend on the human, and stop cleanly at the gate.
 
-> **Pre-flight (do once, before Milestone 1):** confirm all five green bars on a clean checkout. If any bar is red on `fresh-launch-cd` / the BSPC baseline as-is, that is the first bug to fix — do not start milestones on a red tree.
+> **Pre-flight (before every mission):** confirm the current pinned bars in `STATE_OF_THE_UNION.md` on the applicable launch line. If any required bar is red, that is the first bug to fix — do not start another mission.
 
 ---
 
@@ -210,17 +208,17 @@ Execute these in order. Each is its own branch off `fresh-launch-cd` (Coach) or 
 **Goal:** A real, empty production Supabase project with the full canonical schema applied, RLS active on every table, storage buckets created with correct policies, auth + email templates configured, and a synthetic password-reset proven end-to-end. No real family data yet.
 
 **Concrete coding tasks:**
-- **Verify the migration set is clean and idempotent against an empty DB.** Run the full 13-migration push on a *throwaway* Supabase project first (`npm exec -- supabase --agent no db push` from `/Users/kevin/bspc-unify/BSPC/ACTIVE/supabase`). Fix any migration that fails on a truly-empty database (the schema was authored partly under the migration era — assert no migration silently assumes pre-existing Firebase-derived rows).
-- **Write a read-only schema/RLS/bucket audit script** (e.g. `BSPC/ACTIVE/scripts/audit-prod-schema.ts` or SQL in `supabase/tests/`) that asserts: 13 migrations present; RLS enabled on all `public` tables; the 4 storage buckets exist and are **private** with the documented size limits (media-audio 100 MB, media-video 500 MB, profile-photos 5 MB, practice-plans 25 MB); storage RLS policies present. This script is reused as the Phase-1 exit check.
+- **Keep the launch migration set clean against an empty DB.** Family CI resets a clean local Supabase and executes the full pgTAP suite on every PR. A separately authorized staging/throwaway proof is still required where the roadmap says remote shadow evidence.
+- **Run the existing read-only production schema/RLS/bucket audit only after Kevin's exact authorization phrase.** The audit reports migration-ledger state, RLS, and the 4 private buckets with their documented size limits. It never applies migrations. Any production push is a later, separate per-command authorization.
 - **Stage (do not send) the auth email templates** — invite + password-reset — as files/text in the repo (and into `19_FAMILY_COMMS_DRAFTS.md`). Configuring them in the dashboard and setting the redirect/deep-link allow-list is a Kevin/runbook step.
 - **Write the synthetic end-to-end recovery test procedure** as a runnable checklist script: throwaway account → trigger reset (custom SMTP) → tap link on a real device → set password → sign in → confirm deep-link. Record pass/fail (sanitized) in `UNIFY/NOTES.md`.
-- **Deploy the 4 BSPC edge functions** (`send-notification`, `approve-family`, `cleanup-tokens`, `calendar-feed`) — drafted/tested locally; the live `npm exec -- supabase --agent no functions deploy` runbook step is gated on Kevin's "go."
+- **Keep Edge Functions dark until separately authorized.** Source and hosted CI evidence do not authorize deployment, secrets, scheduler invocation, or schedule creation.
 
 **Human dependency:** Kevin creates the production Supabase project (US region, Postgres 17), provides URL + keys at run-time, configures the SMTP sender and dashboard auth settings, and gives "go" before any command runs against the real project. **Do not create the project or any secret.**
 
 **Acceptance criteria:**
-- All 13 migrations apply cleanly to an empty throwaway DB; audit script passes (RLS on every table, 4 private buckets, storage policies present).
-- BSPC bars still green: `TZ=UTC npm test` = 835, `npm run test:rls` = 343.
+- The read-only production probe has a GREEN/YELLOW/RED classification and sanitized NOTES entry; any migration gap has a separately approved disposition.
+- Current Family pinned bars remain green: Jest 933/134, pgTAP 480/21, Deno 5/5.
 - Synthetic reset checklist documented and dry-run-proven on the throwaway project.
 - `UNIFY/16_PROD_BACKEND_PROVISIONING.md` exit checklist fully checked (sanitized notes only).
 
@@ -277,9 +275,9 @@ Execute these in order. Each is its own branch off `fresh-launch-cd` (Coach) or 
 - Implement/verify the staff onboarding flow end-to-end against the canonical tables: `families` insert, `profiles.family_id` link, `swimmers` insert, `guardianships` insert (the access primitive — never client-inserted; via the SECURITY-DEFINER path), and an approval-log entry.
 - Build the roster-seeding path via `BSPC-Coach-App/scripts/seed-roster.ts` (CSV → `swimmers`), **not** the demo-data script. Confirm rows land with correct fields and RLS visibility.
 - Write a synthetic end-to-end onboarding proof against a throwaway Supabase: full flow + rollback; **duplicate-family handling** (re-run is idempotent or fails with a clear error); **swimmer name-collision detection**.
-- Verify the Coach app surfaces the onboarded family correctly (roster, attendance, times) and the parent portal shows only that family's own swimmers.
+- Verify the Coach app surfaces the onboarded family correctly (roster, attendance, times) and the Family app exposes only that family's own swimmers.
 
-**Human dependency:** OD-3 (new-account provisioning policy — admin-approve parents vs auto-approve; coach provisioning) is an **open governance decision** that gates the exact approval semantics. Surface it; implement the approved policy.
+**Governance state:** Ruling 63 settles OD-3 as ADMIN-APPROVE; no parent account auto-approves while minors' data is live. The guarded implementation is merged. Remote shadow proof and Kevin's live bootstrap execution remain separately gated.
 
 **Acceptance criteria:**
 - Synthetic onboarding + rollback proof passes on a throwaway project, including duplicate and collision cases.
@@ -318,7 +316,7 @@ Execute these in order. Each is its own branch off `fresh-launch-cd` (Coach) or 
 - Cover the pending→approved transition per the OD-3 policy.
 - Tests: generate invite code → enter → redeem → assert `guardianships` inserted; invalid/expired code → clear error; already-redeemed → idempotent/clear error. Use MSW to mock the RPC at the API-abstraction layer (never spy on raw Supabase).
 
-**Human dependency:** none beyond the OD-3 policy decision from Milestone 4. This is pure coding.
+**Human dependency:** none for the repository semantics; Ruling 63 already settles OD-3. Hosted execution remains separately gated where the runbook requires it.
 
 **Acceptance criteria:**
 - Redemption screen + deep link implemented; redemption test suite green.
@@ -343,17 +341,17 @@ Execute these in order. Each is its own branch off `fresh-launch-cd` (Coach) or 
 - Recovery path proven against production (sanitized record).
 - COPPA-wall pgTAP green (`007`, `010`, `009`, `011`, `012`, `013`); consent enforced in RLS/storage.
 - Store assets + announcement drafts complete and handed to Kevin.
-- All five bars green.
+- Every applicable pinned bar green.
 
 ---
 
 ### Milestone 8 — Final cleanup
 
-**Goal:** Remove Firebase remnants and dead code that no longer have a live consumer, leaving a clean Supabase-native tree.
+**Goal:** Retire Firebase remnants and dead code that no longer have a live consumer, retaining only explicitly justified infrastructure until its separately authorized hosted cleanup.
 
 **Concrete coding tasks:**
 - Remove/retire the obsolete legacy config once production Supabase is confirmed live and verified: `firebase.json`, `firestore.rules`, `firestore.indexes.json`, `storage.rules` (these are superseded by Supabase RLS + storage policies). Keep them only if Firebase-hosted schedulers were chosen in Milestone 3.
-- Retire any Cloud Functions with no v1 consumer (the media-AI trio if Proposal C made them permanently dark; the parent-portal callables `getParentPortalDashboard`/`getParentSwimmerPortalData` once the portal reads Postgres directly).
+- Preserve Ruling 64's completed portal/callable retirement. Disposition every scheduler and non-scheduler Function explicitly; draft Coach PR 15 records the candidate zero-export surface without deleting hosted resources.
 - Update `.env.example` in both repos: drop all `FIREBASE_*` keys, keep `SUPABASE_*`. Confirm zero Firebase imports in app runtime (`grep` + madge).
 - Remove dead-code flagged by `knip`; confirm `npm run madge:circular` clean.
 - Finalize docs: `README.md`, `CODEBASE_GUIDE.md`, and a "launch complete" note. Mark the historical UNIFY docs clearly.
@@ -370,14 +368,14 @@ Execute these in order. Each is its own branch off `fresh-launch-cd` (Coach) or 
 ## Definition of done
 
 **Per-milestone:**
-- [ ] **M1 Prod Supabase Phase 1** — 13 migrations clean on empty DB; RLS on every table; 4 private buckets + policies; auth/email staged; synthetic reset proven; BSPC 835 + pgTAP 343 green.
+- [ ] **M1 Prod Supabase Phase 1** — production probe classified; authorized launch migrations applied without gaps; RLS and 4 private buckets/policies verified; auth/email staged; synthetic reset proven; current Family bars green.
 - [ ] **M2 Super-admin bootstrap** — guarded one-row promotion script + tests green; dry-run yields exactly one approved super_admin; no email/UUID emitted.
-- [ ] **M3 Scheduler rehome** — chosen delivery implemented for digest/sweep/syncCalendar; idempotency + parity tests green; Functions bar green.
+- [ ] **M3 Scheduler rehome** — Ruling-66 delivery implemented for digest and attendance sweep; `syncCalendar` remains dark pending feed approval; idempotency + parity tests green; scheduler-host retirement merged.
 - [ ] **M4 Staff-assisted beta** — synthetic onboarding + rollback + duplicate/collision proofs pass; family-access pgTAP green; operator checklist written.
 - [ ] **M5 Device QA** — both apps on real iOS + Android; full practice crash-free; Maestro smoke + Sentry clean.
 - [ ] **M6 Invite-redemption UI** — in-app redemption screen + deep link; redemption tests green; guardianship created end-to-end.
 - [ ] **M7 Public-launch gates** — recovery path proven on prod; COPPA-wall pgTAP green; consent enforced; store assets + announcement drafted for Kevin.
-- [ ] **M8 Final cleanup** — Firebase remnants removed; knip + madge clean; docs current; bars green.
+- [ ] **M8 Final cleanup** — Firebase remnants retired or retained-with-reason; knip + madge clean; docs current; bars green.
 
 **Overall launch-ready:**
 - [ ] Production Supabase live, schema applied, RLS proven by pgTAP against the canonical walls.
@@ -387,13 +385,13 @@ Execute these in order. Each is its own branch off `fresh-launch-cd` (Coach) or 
 - [ ] Both apps pass device QA; closed beta with real coaches/families completed.
 - [ ] Recovery email proven end-to-end on production hardware.
 - [ ] **(HUMAN)** Lawyer Gate-1 sign-off; policies hosted at public URLs; store listings live; apps submitted and approved.
-- [ ] All five green bars (Coach 1103/108, Functions 115/12 (or documented post-cleanup count), BSPC 835, pgTAP 343, date 17) green at the moment of each ship.
+- [ ] Every current pinned bar in `STATE_OF_THE_UNION.md` is green at the moment of each ship; any intentional bar delta is documented before merge.
 
 ---
 
 ## Guardrails & gotchas
 
-- **UTC date flake (Coach):** `date.test` flakes between 00:00–01:59 UTC. Don't run the full Coach suite or `date.test` in that window; force `TZ=UTC` if you must. BSPC's 835 bar only holds under `TZ=UTC` — always set it there.
+- **Timezone determinism:** run date-sensitive suites with their repository-pinned timezone and fixtures. A boundary-hour failure is a defect; never wait out a flaky window or update expected output to hide it.
 - **Husky pre-commit:** `lint-staged` runs ESLint + Prettier on commit; a failure blocks the commit. Fix and re-stage. No `--no-verify`.
 - **Snapshot stability:** never `jest -u` to silence a diff. A snapshot change must be deliberate and explained.
 - **Explicit staging only:** never `git add -A`/`git add .`. Stage by path. This is the main defense against committing `.env`/secrets/PII.
@@ -431,4 +429,4 @@ Codex never attempts these and never blocks waiting silently — it hands them o
 
 ---
 
-*This Mission.md is the single self-contained handoff. The canonical schema (`UNIFY/01_CANONICAL_SCHEMA.sql`) is law; the five green bars are the gate; one small reviewable change at a time is the method; and every item on the Human-only checklist is a wall Codex will not climb. Build the last mile carefully and with maximum transparency.*
+*This Mission.md is the single self-contained handoff. The canonical schema (`UNIFY/01_CANONICAL_SCHEMA.sql`) is law; the current pinned bars are the gate; one small reviewable change at a time is the method; and every item on the Human-only checklist is a wall Codex will not climb. Build the last mile carefully and with maximum transparency.*
