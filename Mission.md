@@ -100,7 +100,7 @@ The supplied workspace is an exported snapshot with no `.git` directories. Branc
 | Coach client jest | **1,210 tests / 128 suites** | `npm test -- --runInBand` |
 | Coach Functions jest | **191 tests / 16 suites** | `npm --prefix functions test -- --runInBand` |
 | Coach isolated `date.test` | **17 tests** | runs inside the client suite; see UTC gate below |
-| BSPC client jest | **918 tests / 131 suites** | `TZ=UTC npm test -- --runInBand` (TZ=UTC is mandatory) |
+| BSPC client jest | **920 tests / 132 suites** | `npm test -- --runInBand` |
 | BSPC pgTAP | **437 assertions / 19 files** | clean local reset, then `npm run test:rls` |
 
 **Coach Functions launch export surface** (confirmed by code and exact-set test): `sweepAttendanceEvaluations` and `dailyDigest` only. Other handlers remain source modules until scheduler/portal/media decisions authorize their final disposition.
@@ -117,7 +117,7 @@ These bars were freshly measured locally on 2026-07-12 after restoring the publi
 4. **Stage explicitly, never `git add -A` / `git add .`.** Add files by exact path. This prevents accidentally committing `.env`, secrets, generated junk, or PII.
 5. **Never touch real secrets or PII.** Never read, print, paste, or commit `.env`, `.env.local`, service-account JSON, private keys, or any real swimmer/family/minor data. Before any command that could emit such data, inspect output for secrets/PII first; record only **sanitized** summaries (path/category/count/status) in `UNIFY/NOTES.md`.
 6. **Commit-message convention.** Terse, accurate, present-tense subject. Body explains the "why" if non-obvious. **Branch first — never commit straight to `main`; open a PR for review.** End every commit message with a `Co-Authored-By:` trailer attributing the agent. The repo's prior convention (while Claude did the work) was `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`; as **Codex**, use your own equivalent (e.g. `Co-Authored-By: Codex <noreply@openai.com>`) rather than impersonating another agent.
-7. **UTC date-flake gate.** The Coach `date.test` has a known flake when the wall clock is between **00:00 and 01:59 UTC**. Do **not** run the full Coach suite or `date.test` in that window; if you must, force `TZ=UTC`. BSPC's suite **always** runs `TZ=UTC` (its 835 bar is only green under UTC).
+7. **Timezone determinism gate.** Relative-date tests pin a safe midday clock or construct local calendar dates. Run both suites in the runner's normal timezone; a boundary-hour failure is a defect to fix, not a window to avoid.
 8. **Husky / lint-staged is normal.** `npm install` runs `prepare` → `husky`. On `git commit`, a pre-commit hook runs `lint-staged` (ESLint `--fix` + Prettier on staged files). If the hook fails, the commit does not land — fix, re-stage, commit again. **Do not use `--no-verify`** unless explicitly told.
 9. **Snapshots must stay unchanged.** Jest snapshot diffs are a deliberate gate. Never run `-u` to paper over a real change — investigate first. A snapshot change must be intentional and called out in the commit.
 10. **zsh caveat.** This shell does not word-split unquoted variables the way bash does, and `=====` can trigger globbing/expansion surprises. Quote arguments; avoid bare `=====` in commands.
@@ -141,9 +141,9 @@ cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run ios
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run android
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run web
 
-# jest — TZ=UTC is MANDATORY (bar = 918)
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && TZ=UTC npm test
-cd /Users/kevin/bspc-unify/BSPC/ACTIVE && TZ=UTC npm run test:coverage   # 75% threshold
+# jest (bar = 920)
+cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm test
+cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm run test:coverage   # 75% threshold
 
 # pgTAP RLS suite (bar = 343) — needs Supabase CLI + Docker running
 cd /Users/kevin/bspc-unify/BSPC/ACTIVE && npm exec -- supabase --agent no start

@@ -7089,3 +7089,12 @@ Remaining Milestone 1 gates before real family data:
 - Sanitized result: PASS — Family Jest 918/131 and pgTAP 437/19; Coach Jest 1,210/128; Functions 191/16; portal production build, madge, knip, strict-types, process/randomness, and critical audit gates green
 - Bar delta: +54 Family Jest, +60 pgTAP, +11 Coach Jest, +1 Functions Jest from the restored public launch baseline; additions cover launch behavior and no tests were deleted
 - Follow-up/owner: publish review branches and hosted CI; Kevin retains production, remote shadow/staging, legal, account, device, beta-duration, and final-launch evidence
+
+## 2026-07-12 — Route-state and hosted-CI repair close
+
+- Target: Family 24-route state contract and all three draft PRs
+- Command: Family typecheck/lint/coverage; exact route inventory; local-date boundary regression; hosted CI inspection
+- Sanitized result: PASS locally — Family Jest 920/132, 10 snapshots; coverage 86.27/82.31/83.42/87.34; notification settings now has a retryable query failure state
+- Bar delta: +2 Family Jest and +1 suite; no test or snapshot deletion
+- Hosted evidence: Family PR 19, Coach PR 12, and UNIFY PR 12 are open; CI repairs include explicit Gitleaks pull-request tokens and deterministic date fixtures
+- Follow-up/owner: merge only after hosted checks are green; Kevin retains production, remote shadow/staging, legal, account, device, beta-duration, and final-launch evidence

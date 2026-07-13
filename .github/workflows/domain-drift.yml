@@ -1,0 +1,28 @@
+name: Cross-repository domain drift
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  domain-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: bspc-unify-main
+      - uses: actions/checkout@v4
+        with:
+          repository: KevinBigham/BSPC
+          ref: codex/fable-v3-marathon
+          path: BSPC-main
+      - uses: actions/checkout@v4
+        with:
+          repository: KevinBigham/BSPC-Coach-App
+          ref: codex/goat-phase3-rails
+          path: BSPC-Coach-App-main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node bspc-unify-main/scripts/check-cross-repo-domain.mjs

@@ -4,7 +4,7 @@
 **Scope:** all 100 numbered items in `BSPC_GOAT_AUDIT.md` §12, executed in the order prescribed by `BSPC_GOAT_EXECUTION_ORDER.md`.
 **Status law:** `DONE` requires a durable artifact plus verification. `PARTIAL` means useful work exists but at least one acceptance clause is unproven. `OWNER` requires Kevin/Director identity, a physical device, a paid/external account, legal advice, or an explicit product ruling.
 
-Fresh local bars: Family 918 tests / 131 suites plus pgTAP 437 / 19 files; Coach 1,210 / 128; Functions 191 / 16; portal production build green. Both application roots typecheck on Node 22.23.1. These bars are evidence, not substitutes for production, device, or owner gates.
+Fresh local bars: Family 920 tests / 132 suites plus pgTAP 437 / 19 files; Coach 1,210 / 128; Functions 191 / 16; portal production build green. Both application roots typecheck on Node 22.23.1. These bars are evidence, not substitutes for production, device, or owner gates.
 
 | # | State | Acceptance evidence or exact remaining gate |
 |---:|:---:|---|
@@ -27,7 +27,7 @@ Fresh local bars: Family 918 tests / 131 suites plus pgTAP 437 / 19 files; Coach
 | 17 | OWNER | Backup/PITR plan selection and a real shadow restore rehearsal remain. |
 | 18 | OWNER | Staging project, credentials, and end-to-end staging release check remain. |
 | 19 | OWNER | Physical iPhone and Android recovery matrix with real email is required. |
-| 20 | DONE | All recovery token/error shapes and expired UX are covered; current Family bar is 918. |
+| 20 | DONE | All recovery token/error shapes and expired UX are covered; current Family bar is 920. |
 | 21 | PARTIAL | Placeholder scanner/allowlist exists; live demo accounts still need rotation/disable and tracked history proof. |
 | 22 | DONE | `decisions/OD3_APPROVAL_POLICY.md`; all new family accounts require staff approval, invite redemption never auto-approves, and atomic approval RPC is tested. |
 | 23 | OWNER | Bootstrap guards exist; shadow dry-run and Kevin's live sole-super-admin execution remain. |
@@ -43,11 +43,11 @@ Fresh local bars: Family 918 tests / 131 suites plus pgTAP 437 / 19 files; Coach
 | 33 | DONE | Family deep-link threat model, sanitized analytics route, and no-token logging tests exist. |
 | 34 | DONE | Shared redaction helper/tests protect the production audit and the DB-output inventory proves other scripts print only static repository validation. |
 | 35 | OWNER | Retention/deletion semantics require Director/legal ruling before implementation and shadow proof. |
-| 36 | PARTIAL | Access-review query/runbook still needs authoring and the first production count-only run. |
+| 36 | PARTIAL | `ACCESS_REVIEW_RUNBOOK.md` contains the count-only query and escalation path; the first production run remains owner-gated. |
 | 37 | PARTIAL | Both apps now scrub user identity, auth/cookies, email, JWT, and capability URLs before transport; configured projects and inspected canary remain owner-gated. |
 | 38 | OWNER | Blocked on explicit item-76 portal-fate ruling; retirement is recommended. |
 | 39 | DONE | Family CI resets local Supabase and runs the 437-assertion pgTAP suite. |
-| 40 | PARTIAL | Family canonical/migration/domain drift check is green; a governance-level cross-repo check in all repos remains. |
+| 40 | DONE | Family and Coach enforce local contract drift; UNIFY CI checks out all three repositories and compares both app contracts to canonical SQL. |
 | 41 | DONE | Coach typecheck, knip, strict-type, randomness, process, and circular-dependency gates are green. |
 | 42 | DONE | Node 22 is pinned in engines, `.nvmrc`, Functions, portal, and CI; Node 22.23.1 verification is green. |
 | 43 | PARTIAL | Non-owner release checks need a consolidated dashboard; public policy/store/device keys remain owner-gated. |
@@ -65,7 +65,7 @@ Fresh local bars: Family 918 tests / 131 suites plus pgTAP 437 / 19 files; Coach
 | 55 | OWNER | Requires measured 200-swimmer/device startup data before the top-three fix pass. |
 | 56 | PARTIAL | Accessibility implementation exists on core surfaces; systematic device screen-reader/max-type audit remains. |
 | 57 | DONE | Family invite redemption screen, token deep link, MSW tests, and pending-only semantics are implemented. |
-| 58 | PARTIAL | Route inventory and deliberate per-feature failure verification across all 24 routes remain. |
+| 58 | DONE | Family has an executable exact 24-route loading/error/empty matrix plus a readable audit; the sweep added a retryable notification-preference failure state. |
 | 59 | DONE | Today reads recent `schedule_change_log` summaries and renders neutral New/Changed/Back-on badges with API/component tests. |
 | 60 | DONE | Shared date/time utilities and deterministic timezone tests are in both app trees. |
 | 61 | DONE | Urgent/normal/FYI have distinct tested presentation; urgency never bypasses opt-out and all push observes the encoded 21:00–07:00 CT quiet window. |
@@ -111,4 +111,4 @@ Fresh local bars: Family 918 tests / 131 suites plus pgTAP 437 / 19 files; Coach
 
 ## Current execution frontier
 
-The agent-owned frontier is: close #31/#34/#40/#43/#50, complete the remaining Phase-3 code/proof artifacts (#70/#71/#73/#75/#80–#85), then the documentable Phase-4/5 operations and cleanup work. Production, legal, account, device, beta-duration, and final-ship states are deliberately not represented as complete without evidence.
+The repository-owned frontier is reduced to hosted-CI closeout and documentable device/owner gate preparation. Production, legal, account, device, beta-duration, and final-ship states are deliberately not represented as complete without evidence.
