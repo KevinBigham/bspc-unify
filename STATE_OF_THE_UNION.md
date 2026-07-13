@@ -20,7 +20,7 @@ Real-clone evidence is published in Family PR 19, Coach PR 12, and UNIFY PR 12. 
 | Production/staging/shadow writes are not authorized | Kevin | Provide target and per-command `go`; never infer authorization |
 | Physical recovery/device matrix/field test incomplete | Kevin + agent | Install internal builds on iPhone and Android and execute the sanitized device checklists |
 | Legal/DNS/store/mailbox/account work lacks external evidence | Kevin | Complete the phase gate pack and return non-secret confirmations/URLs |
-| Portal, scheduler, retention, and aggregation-staleness choices need owner rulings | Director/Kevin | Approve the prepared decision memos before behavior-changing implementation |
+| Ruling 65 scheduler execution split needs Director decision | Director/Kevin | Review `decisions/SCHEDULER_HOME_R65_DESIGN.md` before any implementation |
 | Closed beta requires 3–5 families and two elapsed weeks | Kevin | Start only after entry gates pass; record exit metrics after the full window |
 
 ## Current mission
