@@ -67,3 +67,4 @@ Then write `docs/recovery-device-checklist.md`: the manual synthetic e2e for Kev
 - Stage files by exact path (no `git add -A`). Husky/lint-staged must pass; no `--no-verify`.
 - Commit messages: terse present-tense subject + `Co-Authored-By:` trailer per repo convention.
 - Stop when: implementation + tests green, full suite count documented, device checklist written, and nothing has been pushed.
+> ⚠️ HISTORICAL — superseded by the fresh-launch model in Director Rulings 56/57 and completed by Ruling 58; do not re-run this prompt.

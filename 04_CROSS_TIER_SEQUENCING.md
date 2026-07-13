@@ -202,3 +202,4 @@ throwaway DB before any cutover.
   (single target), not a parallel one.
 - **season_plans:** write its data-layer tests as a prerequisite to Phase H, or
   migrate it untested behind a feature it's safe to leave (no — tests first).
+> ⚠️ HISTORICAL — superseded by the fresh-launch model in Director Rulings 56/57; retain as sequencing history, not executable migration instructions.

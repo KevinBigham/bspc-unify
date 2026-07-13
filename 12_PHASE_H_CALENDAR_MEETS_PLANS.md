@@ -705,3 +705,4 @@ RH-8 row, and §7 item 9's RH-8 item). The other ten bundle items are
 accepted as named (NOTES 2026-06-10). §5 executes the moment D-H9
 resolves; if (b) or (c) is chosen, commit 2's meets walls and the §5.11
 meets manifest lines re-derive from the chosen option first.
+> ⚠️ HISTORICAL — superseded by the fresh-launch model in Director Rulings 56/57; retain the calendar/meet/plan contracts, but do not execute migration/backfill steps.

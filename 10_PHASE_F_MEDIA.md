@@ -361,3 +361,4 @@ Errors-twice, material divergence, and HARD STOP rules apply unchanged.
   dormant `thumbnail_path`/`frame_count` kept; statuses as house TEXT
   CHECK until OD-1; Vertex calls remain mock-tested only (jest-blindness
   acknowledged — flagged every phase the pipeline is touched).
+> ⚠️ HISTORICAL — superseded by the fresh-launch model in Director Rulings 56/57; retain the media/privacy contracts, but do not execute migration/backfill steps.
