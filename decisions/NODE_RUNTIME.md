@@ -2,6 +2,7 @@
 
 - Date: 2026-07-12
 - Status: implemented
+- Ratified by: Director Ruling 61
 - Decision: pin Node 22 across both app roots, Coach Functions, the parent portal, local version files, and CI.
 
 ## Evidence

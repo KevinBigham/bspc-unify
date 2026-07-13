@@ -7120,3 +7120,23 @@ Remaining Milestone 1 gates before real family data:
 - Cleanup: replaced stale pre-mission launch-dashboard bars and waiting claims with measured local and hosted evidence
 - Verification: Family credential guard, Coach knip, UNIFY YAML/diff checks, and cross-repository CI remain green
 - Remaining risk: device, production, legal, external-account, elapsed-beta, and explicit owner-ruling gates are unchanged
+
+## 2026-07-12 — Authorized production schema probe retry
+
+- Target: protected production Supabase database referenced by `~/.bspc-prod.env`
+- Authorization: explicit read-only probe only; migrations `00014`–`00021` were not authorized and were not applied
+- Preflight: the first invocation stopped locally because `psql` was absent from `PATH`; no connection occurred
+- Command correction: exposed the already-installed Homebrew libpq client on `PATH` and reran the same read-only audit
+- Sanitized result: authentication failed before any audit query completed; no database URL, credential, account identifier, roster data, or PII is recorded here
+- Classification: UNCLASSIFIED / STOP — the expected migration-ledger YELLOW cannot be asserted without an authenticated read
+- Writes: none attempted; the audit contains read-only SQL only
+- Exact unblock: correct the production database credential outside the repository, then provide a new per-command `go` for the read-only probe
+
+## 2026-07-12 — Director Rulings 60–65 and conditional ratification
+
+- Rulings recorded: urgent quiet-hours amendment; Node 22 ratification; Ruling-59 ratification; ADMIN-APPROVE; portal retirement; Supabase-native schedulers
+- Family local mission: `88915f2`; 924/132 Jest, typecheck/lint, and coverage green; no deployment performed
+- Coach strict-types remediation: `d534efe`; detector again rejects `as unknown`, its self-test is fail-closed, production escape count is zero, and guarded Supabase row boundaries replace the rejected double-casts
+- Coach bars: client 1,212/129; Functions 191/16; Functions build, portal build, typecheck, lint, madge, knip, strict-types, randomness, and process gates green
+- Read-backs: pgTAP 008 tightens anon access to no SELECT grant; all eight Gitleaks false-positive fingerprints are enumerated in `rulings/MISSION_PR_RATIFICATION_2026-07-12.md`
+- Merge policy: no self-merges; local commits await protected-branch PR publication and explicit Director merge approval
