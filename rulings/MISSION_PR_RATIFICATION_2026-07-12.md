@@ -1,6 +1,6 @@
 # Mission PR ratification — 2026-07-12
 
-The Director retroactively ratified Family PR 19, Coach PR 12, and UNIFY PRs 12–14 on their green hosted CI, conditional on the three evidence read-backs below. Read-backs 1 and 3 are clean. Read-back 2 exposed the double-cast exemption and is remediated by local Coach commit `d534efe`; unconditional ratification awaits that protected-branch PR's green review and merge.
+The Director retroactively ratified Family PR 19, Coach PR 12, and UNIFY PRs 12–14 on their green hosted CI, conditional on the three evidence read-backs below. Read-backs 1 and 3 are clean. Read-back 2 exposed the double-cast exemption and is remediated by Coach PR 13 at commit `9391df8`; unconditional ratification awaits that protected-branch PR's green review and merge.
 
 ## 1. pgTAP 008 before/after — verbatim changed hunks
 
@@ -42,15 +42,36 @@ The migration-20 accommodation is schema-shape-only. The anonymous COPPA wall ch
 +
 +# Keep the detector fail-closed: a future edit cannot silently stop recognizing
 +# the double-cast form this gate exists to prevent.
-+if ! printf '%s\n' 'value as unknown as SpecificRow' | rg -q "$pattern"; then
++if ! printf '%s\n' 'value as unknown as SpecificRow' | grep -Eq "$pattern"; then
 +  echo "Strict-type detector self-test failed: double-cast escape was not detected."
 +  exit 1
 +fi
-+if printf '%s\n' 'value as SpecificRow' | rg -q "$pattern"; then
++if printf '%s\n' 'value as SpecificRow' | grep -Eq "$pattern"; then
 +  echo "Strict-type detector self-test failed: a specific assertion was rejected."
 +  exit 1
 +fi
 
+-if rg -n "$pattern" src app functions/src scripts parent-portal/src \
+-  --glob '*.{ts,tsx}' \
+-  --glob '!**/*.test.*' \
+-  --glob '!**/__tests__/**' \
+-  --glob '!**/__mocks__/**' \
+-  --glob '!**/node_modules/**'; then
++if git grep -n -E "$pattern" -- \
++  ':(glob)src/**/*.ts' \
++  ':(glob)src/**/*.tsx' \
++  ':(glob)app/**/*.ts' \
++  ':(glob)app/**/*.tsx' \
++  ':(glob)functions/src/**/*.ts' \
++  ':(glob)functions/src/**/*.tsx' \
++  ':(glob)scripts/**/*.ts' \
++  ':(glob)scripts/**/*.tsx' \
++  ':(glob)parent-portal/src/**/*.ts' \
++  ':(glob)parent-portal/src/**/*.tsx' \
++  ':(exclude,glob)**/*.test.*' \
++  ':(exclude,glob)**/__tests__/**' \
++  ':(exclude,glob)**/__mocks__/**' \
++  ':(exclude,glob)**/node_modules/**'; then
 -  echo "Weak production types found. Replace any/as any with specific types or guarded unknown."
 +  echo "Weak production types found. Replace any/as any/as unknown with specific types or guarded unknown."
 ```
