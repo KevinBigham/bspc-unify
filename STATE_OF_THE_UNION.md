@@ -51,6 +51,7 @@ orders each PR ready and merged and the resulting launch-line tree is verified.
 | GOAT 60 date renders have not converged | Agent | Replace remaining app/PDF/export-local date renders with one tested cross-app date-format contract, including timezone boundary cases |
 | GOAT 64 hundredths formatting has not converged | Agent | Replace independent Family and Coach formatters with the shared parser/formatter and extend property-based round-trip coverage to Progress/PB-adjacent surfaces |
 | GOAT 73 consent is not prominent on every media surface | Director + agent | Rule whether audio and swimmer voice notes require the same media-consent contract as video, then implement and test every applicable surface without weakening the service gate |
+| GOAT 74 invite handoff names a retired product | Agent | Replace Coach invite labels/share copy with an actionable Family-app handoff and add a screen-level generate/share/status/revoke integration test |
 | Ruling 66 extension-availability rider is pending | Kevin + agent | After staging authorization, verify `pg_cron` + `pg_net` read-only and record versions before creating any schedule object |
 | Closed beta requires 3–5 families and two elapsed weeks | Kevin | Start only after entry gates pass; record exit metrics after the full window |
 
@@ -61,7 +62,7 @@ with zero schedules, deployments, or remote writes. All three Ruling-67 mission
 drafts are hosted-green at the heads recorded above: UNIFY GOAT 43 truth
 reconciliation, Coach GOAT 95 scheduler-host retirement, and Family push
 retry/DLQ. None is ready or merged. Truth reconciliation corrected GOAT 31,
-34, 40, 41, 60, 64, and 73 from DONE to PARTIAL because their literal
+34, 40, 41, 60, 64, 73, and 74 from DONE to PARTIAL because their literal
 acceptance clauses remain incomplete. The 100-item state remains in
 `GOAT_EXECUTION_STATUS.md`.
 

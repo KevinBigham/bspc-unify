@@ -7194,3 +7194,12 @@ Remaining Milestone 1 gates before real family data:
 - Exact gaps: the DB-output inventory omits the bootstrap and its full output paths lack shared-redactor coverage; direct/local date and hundredths formatters remain in both apps; audio and swimmer voice-note surfaces lack the prominent consent contract proven on video
 - Bar delta: unchanged — UNIFY truth-only correction; no app code, test expectation, hosted resource, or production target changed
 - Follow-up/owner: Director rules audio/voice-note consent semantics before GOAT 73 implementation; agent-owned convergence/redaction work waits for train selection after current drafts close
+
+## 2026-07-12 — Remaining-DONE acceptance audit
+
+- Target: every ledger row still marked DONE after the broad-claim correction, compared literally with its roadmap clause and current launch-line artifacts
+- Command: read-only inspection of CI coverage artifacts, fresh-launch banners, recovery/session tests, Maestro checklists, meet-import review/idempotency evidence, aggregation contracts, invite issuance UI, retirement docs, and shared-domain plans
+- Sanitized result: GOAT 74 corrected to PARTIAL; the Coach invite screen and native share message still name and direct recipients to the retired BSPC Parent Portal, so the generated-code primitives do not yet form the required Family-app onboarding handoff
+- Retained DONE evidence: GOAT 46 publishes Family and Coach coverage/test artifacts with enforced thresholds; GOAT 71 has a review screen plus fixture import-twice proof; GOAT 75 pins all four pgTAP-014 mappings and fresh-club empty cases; the other remaining DONE rows had no contradictory acceptance evidence in this pass
+- Bar delta: unchanged — UNIFY truth-only correction; no Coach or Family source, tests, hosted resources, or production target changed
+- Follow-up/owner: repair GOAT 74 only after the active Coach train mission closes or the Director selects it; keep PR 15 one mission wide

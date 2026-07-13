@@ -18,6 +18,7 @@ This dashboard separates deterministic agent checks from owner/external launch g
 | Date/time render convergence | one cross-app formatter + timezone-boundary tests on every render | PARTIAL — shared utilities exist, but direct locale/private render helpers remain in both apps |
 | Hundredths render convergence | one shared parser/formatter + round-trip coverage everywhere | PARTIAL — shared utilities exist, but independent Family and Coach formatters remain |
 | Media consent surface coverage | AI hidden; consent prominent and enforced on every applicable media surface | PARTIAL — AI and video gates are pinned; audio/voice-note consent semantics are not covered |
+| Family onboarding handoff | Coach issuance → actionable Family-app redemption → status/revoke | PARTIAL — service primitives are green, but Coach share copy still sends recipients to the retired parent portal |
 | Hosted CI | currently configured launch-line PR checks + UNIFY domain drift | GREEN — Family PR 22 → `42050b4`; Coach PR 14 → `5643ae2`; UNIFY PR 16 → `40eecbc` |
 
 ## Active draft checks

@@ -83,7 +83,7 @@ Active candidate bars remain unmerged: Family PR 23 is green at `d92f509` (Jest 
 | 71 | DONE | Migration 00020 adds import identity; conflict-safe upserts and an import-twice test prove idempotency while PR counts remain trigger-owned. |
 | 72 | OWNER | Kevin's authoritative coaching corpus is not available in the workspace. |
 | 73 | PARTIAL | Fail-closed AST tests prove v1 media AI upload/navigation affordances unreachable and signed uploads target Supabase Storage; video tagging has prominent UI and service consent gates, but audio and swimmer voice-note media surfaces do not display or require the same consent gate, so the every-media-surface clause remains open. |
-| 74 | DONE | Coach generate/share/status/revoke parent-invite flow and tests exist. |
+| 74 | PARTIAL | Coach generate/share/status/revoke primitives and service tests exist, and the Family app can redeem the generated code; however, the Coach UI/share message still directs recipients to the retired “BSPC Parent Portal” instead of the Family app, so the required end-to-end onboarding handoff is not complete. |
 | 75 | DONE | `docs/aggregation-contract.md` maps every screen/service to pgTAP-014 views; tests pin mappings, source refresh, and all fresh-club empty cases. |
 | 76 | DONE | Ruling 64 retirement merged in Coach PR 14 with its intentional post-retirement baseline pinned. |
 | 77 | PARTIAL | Ruling 65 Phase 1 merged in Family PR 22 with leases/retries/dead state and dark Edge Sentry; staging extension proof and any activation remain gated. |
@@ -113,4 +113,4 @@ Active candidate bars remain unmerged: Family PR 23 is green at `d92f509` (Jest 
 
 ## Current execution frontier
 
-The repository-owned frontier includes the three active Ruling-67 draft closeouts plus the re-opened GOAT 31, 34, 40, 60, 64, and 73 gaps. Those gaps start only after the current train missions close or the Director explicitly selects them; one-mission-per-train still applies. Production, legal, account, device, beta-duration, and final-ship states are deliberately not represented as complete without evidence.
+The repository-owned frontier includes the three active Ruling-67 draft closeouts plus the re-opened GOAT 31, 34, 40, 60, 64, 73, and 74 gaps. Those gaps start only after the current train missions close or the Director explicitly selects them; one-mission-per-train still applies. Production, legal, account, device, beta-duration, and final-ship states are deliberately not represented as complete without evidence.
