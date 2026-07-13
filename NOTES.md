@@ -7112,3 +7112,11 @@ Remaining Milestone 1 gates before real family data:
 - Sanitized result: PASS — PR 12 merged as `1373bc2`; hosted run 29215889421 compared UNIFY canonical/domain truth with Family `demo/expo-go-compat` and Coach `demo/device-build`
 - Bar delta: no application test change; governance evidence moved from local-only to hosted
 - Follow-up/owner: remaining rows marked OWNER/PARTIAL require the specific production, remote-shadow, legal, account, physical-device, elapsed-beta, or explicit product-ruling evidence recorded in the ledger
+
+## 2026-07-12 — Anti-slop truth pass
+
+- Scope: files changed by the GOAT execution across Family, Coach, and UNIFY
+- Fallback review: no masking fallback found; Family trigger-scan detection preserves failure evidence, while Coach import/calendar partial-failure paths are explicit, counted/reported, and regression-tested
+- Cleanup: replaced stale pre-mission launch-dashboard bars and waiting claims with measured local and hosted evidence
+- Verification: Family credential guard, Coach knip, UNIFY YAML/diff checks, and cross-repository CI remain green
+- Remaining risk: device, production, legal, external-account, elapsed-beta, and explicit owner-ruling gates are unchanged
