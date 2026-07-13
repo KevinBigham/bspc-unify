@@ -6,14 +6,32 @@ This dashboard separates deterministic agent checks from owner/external launch g
 
 | Gate | Command / evidence | Current local state |
 |---|---|---|
-| Family static + Jest | `npm run typecheck && npm run lint && npm test -- --runInBand` | GREEN — 924 / 132; 10 snapshots |
+| Family static + Jest | `npm run typecheck && npm run lint && npm test -- --runInBand` | GREEN — 933 / 134; 10 snapshots |
 | Family coverage | `npm run test:coverage -- --runInBand` | GREEN — 86.27 / 82.31 / 83.42 / 87.34 |
-| Family schema | `npm run check:pgtap-floor && npm run check:schema-drift && npm run test:rls` | GREEN — 437 / 19 after clean reset |
-| Coach quality | `npm run quality && npm run quality:dead-code` | GREEN — client 1,212 / 129; Functions 191 / 16; portal build; knip |
+| Family schema + Edge | pgTAP floor/drift/clean reset plus Deno check/tests | GREEN — pgTAP 480 / 21; Deno 5 / 5 |
+| Coach quality | `npm run quality && npm run quality:dead-code` | GREEN — client 1,205 / 127; Functions 171 / 15; portal retired; knip |
 | Coach coverage | `npm run test:coverage -- --runInBand` | GREEN — 82.82 / 70.69 / 84.16 / 87.17 |
 | Critical dependencies | four package-root critical audit gates | GREEN — zero critical/high |
-| Secrets | gitleaks CI + local hooks | GREEN — Family 76-commit and Coach 210-commit history scans plus both worktrees |
-| Hosted CI | launch-line PR checks + UNIFY drift | GREEN — Family PR 19, Coach PR 12, UNIFY PRs 12/13; cross-repo runs 29215889421 and 29215924470 |
+| Secrets | gitleaks CI + local hooks | PARTIAL — Family and Coach history/worktree scans green; UNIFY scanner CI/hook/history proof missing |
+| Cross-repository drift | canonical SQL ↔ migrations ↔ both apps ↔ store metadata | PARTIAL — domain contracts are green, but the full canonical/migration assertion and all-repo enforcement are missing |
+| DB-output redaction coverage | inventory + fail-closed redactor tests for every DB-output script | PARTIAL — production audit is covered; bootstrap inventory and full output-path redaction are incomplete |
+| Date/time render convergence | one cross-app formatter + timezone-boundary tests on every render | PARTIAL — shared utilities exist, but direct locale/private render helpers remain in both apps |
+| Hundredths render convergence | one shared parser/formatter + round-trip coverage everywhere | PARTIAL — shared utilities exist, but independent Family and Coach formatters remain |
+| Media consent surface coverage | AI hidden; consent prominent and enforced on every applicable media surface | PARTIAL — AI and video gates are pinned; audio/voice-note consent semantics are not covered |
+| Family onboarding handoff | Coach issuance → actionable Family-app redemption → status/revoke | PARTIAL — service primitives are green, but Coach share copy still sends recipients to the retired parent portal |
+| Hosted CI | currently configured launch-line PR checks + UNIFY domain drift | GREEN — Family PR 22 → `42050b4`; Coach PR 14 → `5643ae2`; UNIFY PR 16 → `40eecbc` |
+
+## Active draft checks
+
+| Draft | Candidate evidence | State |
+|---|---|---|
+| Family PR 23 | Jest 933/134; pgTAP 537/22; Deno 22/22; clean-reset RLS | GREEN / DRAFT at `d92f509` |
+| Coach PR 15 | Client 1,205/127; Functions 158/13; zero runtime exports | GREEN / DRAFT at `ab26ca0` |
+| UNIFY PR 17 | Cross-repository domain contract | GREEN / DRAFT at current PR head |
+
+Draft evidence is review evidence only. It does not alter the merged launch-line
+row above or authorize readiness, merge, deployment, schedule activation, or a
+production command.
 
 ## Owner and external gates
 
@@ -29,3 +47,5 @@ This dashboard separates deterministic agent checks from owner/external launch g
 | Beta | two-week exit report with zero P0 and >99.5% crash-free | WAITING |
 
 The release check is GREEN only when every automated row is green and every owner row has a dated evidence link. Never replace `WAITING` with a fake environment value.
+
+No owner/external row above is complete as of this reconciliation.

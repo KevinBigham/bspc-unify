@@ -7160,3 +7160,46 @@ Remaining Milestone 1 gates before real family data:
 - Current availability record: PENDING; no staging target authorization has been provided and zero schedule objects are authorized
 - Family implementation authority is local/shadow only: foundation + digest SQL + sweep Edge Function/Sentry, dark-deployable, zero schedules
 - Production probe, bootstrap, migration apply, secret creation, deployments, and all schedule activation remain separately Kevin-gated
+
+## 2026-07-12 — Director Ruling 67 and Family PR 22 merge
+
+- Required read-back: `scheduler_runs` enables RLS, revokes all table privileges from PUBLIC/anon/authenticated, and grants SELECT/INSERT/UPDATE only to `service_role`; no direct family, anonymous, staff-client, or public-client path exists
+- Family PR 22 was marked ready only after the read-back matched; every hosted check was green at head `df4d951`
+- Merge result: `42050b4`; final launch-line tree equals the hosted-green PR head tree
+- New pinned Family bars: Jest 933/134, pgTAP 480/21, Deno 5/5
+- Selected drafts: UNIFY GOAT 43 truth reconciliation; Coach GOAT 95 four-scheduler retirement; Family push retry/DLQ
+- Owner gates unchanged: no production probe, staging/throwaway command, secret, deployment, schedule object, or owner/external gate was executed or claimed complete
+
+## 2026-07-12 — Ruling 67 draft-head reconciliation
+
+- Target: GitHub-hosted checks for Family PR 23, Coach PR 15, and UNIFY PR 17
+- Command: `gh pr view ${PR} --json isDraft,headRefOid,mergeStateStatus,statusCheckRollup` and `gh pr checks ${PR} --watch`
+- Sanitized result: PASS — Family head `d92f509` is DRAFT/CLEAN with all nine checks green, including clean-reset RLS; Coach head `ab26ca0` is DRAFT/CLEAN with all four checks green; UNIFY PR 17 is DRAFT/CLEAN with domain-contract green at its current head
+- Bar delta: launch pins unchanged; candidate Family pgTAP 480/21 → 537/22 and Deno 5/5 → 22/22; candidate Coach Functions 171/15 → 158/13 by intentional scheduler retirement; client bar unchanged at 1,205/127
+- Follow-up/owner: Director supplies explicit ready/merge orders; production probe, staging/extension proof, deployment, schedule activation, and every owner/external gate remain WAITING
+
+## 2026-07-12 — GOAT ledger evidence correction
+
+- Target: local UNIFY truth artifacts and the configured Family, Coach, and UNIFY CI definitions
+- Command: read-only comparison of `BSPC_GOAT_AUDIT.md` items 1, 31, 40, and 41 against `Mission.md`, `GOAT_EXECUTION_STATUS.md`, and the three repositories' workflow/verifier files
+- Sanitized result: FAIL-CLOSED correction — `Mission.md` carried obsolete heads/bars; GOAT 31 lacks UNIFY scanner coverage; GOAT 40 lacks the literal full canonical-SQL↔migration assertion and all-repo enforcement; GOAT 41 lacks its required shippable-line ruling
+- Bar delta: unchanged — documentation/status correction only; all currently configured hosted checks remain green
+- Follow-up/owner: keep 31/40/41 PARTIAL until their exact missing acceptance evidence lands; do not open cross-train implementation work while Family PR 23 and Coach PR 15 remain active drafts
+
+## 2026-07-12 — Broad-claim acceptance audit
+
+- Target: local launch-line Family and Coach source compared with GOAT 34, 58, 60, 64, 73, and 93 acceptance clauses
+- Command: read-only inventory of route-state tests, DB-output scripts/redactors, date and hundredths render helpers, media upload/consent surfaces, and Coach launch documentation
+- Sanitized result: route #58 remains DONE because its exact 24-route matrix and throwing-component boundary tests prove containment; documentation #93 remains DONE; GOAT 34, 60, 64, and 73 fail their literal every/all/single-surface clauses and are corrected to PARTIAL
+- Exact gaps: the DB-output inventory omits the bootstrap and its full output paths lack shared-redactor coverage; direct/local date and hundredths formatters remain in both apps; audio and swimmer voice-note surfaces lack the prominent consent contract proven on video
+- Bar delta: unchanged — UNIFY truth-only correction; no app code, test expectation, hosted resource, or production target changed
+- Follow-up/owner: Director rules audio/voice-note consent semantics before GOAT 73 implementation; agent-owned convergence/redaction work waits for train selection after current drafts close
+
+## 2026-07-12 — Remaining-DONE acceptance audit
+
+- Target: every ledger row still marked DONE after the broad-claim correction, compared literally with its roadmap clause and current launch-line artifacts
+- Command: read-only inspection of CI coverage artifacts, fresh-launch banners, recovery/session tests, Maestro checklists, meet-import review/idempotency evidence, aggregation contracts, invite issuance UI, retirement docs, and shared-domain plans
+- Sanitized result: GOAT 74 corrected to PARTIAL; the Coach invite screen and native share message still name and direct recipients to the retired BSPC Parent Portal, so the generated-code primitives do not yet form the required Family-app onboarding handoff
+- Retained DONE evidence: GOAT 46 publishes Family and Coach coverage/test artifacts with enforced thresholds; GOAT 71 has a review screen plus fixture import-twice proof; GOAT 75 pins all four pgTAP-014 mappings and fresh-club empty cases; the other remaining DONE rows had no contradictory acceptance evidence in this pass
+- Bar delta: unchanged — UNIFY truth-only correction; no Coach or Family source, tests, hosted resources, or production target changed
+- Follow-up/owner: repair GOAT 74 only after the active Coach train mission closes or the Director selects it; keep PR 15 one mission wide
